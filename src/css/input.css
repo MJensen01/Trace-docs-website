@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --color-terminal: #f59e0b;
+  --color-terminal-hover: #fbbf24;
+}
+
+@layer base {
+  ::selection {
+    background-color: var(--color-terminal);
+    color: #0f172a;
+  }
+}
