@@ -12,5 +12,68 @@
 </head>
 <body class="bg-slate-950 text-slate-300 font-sans antialiased">
   {{ content | safe }}
+
+  <script>
+  (function () {
+    // --- OS Detection (zero CLS: all panels hidden by default, JS reveals one) ---
+    function detectOS() {
+      var ua = navigator.userAgent || "";
+      if (/Win/.test(ua)) return "windows";
+      if (/Mac/.test(ua)) return "macos";
+      if (/Linux/.test(ua)) return "linux";
+      return "windows"; // sensible default
+    }
+
+    function activateOS(os) {
+      // Tabs
+      document.querySelectorAll(".os-tab").forEach(function (tab) {
+        var isActive = tab.getAttribute("data-os") === os;
+        tab.setAttribute("aria-selected", isActive ? "true" : "false");
+        if (isActive) {
+          tab.classList.add("border-terminal", "text-white", "bg-terminal/10");
+          tab.classList.remove("border-slate-700", "text-slate-400");
+        } else {
+          tab.classList.remove("border-terminal", "text-white", "bg-terminal/10");
+          tab.classList.add("border-slate-700", "text-slate-400");
+        }
+      });
+      // Panels
+      document.querySelectorAll(".os-panel").forEach(function (panel) {
+        if (panel.getAttribute("data-os-panel") === os) {
+          panel.classList.remove("hidden");
+        } else {
+          panel.classList.add("hidden");
+        }
+      });
+    }
+
+    // Tab click handler
+    document.querySelectorAll(".os-tab").forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        activateOS(this.getAttribute("data-os"));
+      });
+    });
+
+    // Auto-detect on load
+    activateOS(detectOS());
+
+    // --- Copy Checksum ---
+    document.querySelectorAll("[data-copy-checksum]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var checksum = this.getAttribute("data-copy-checksum");
+        var button = this;
+        navigator.clipboard.writeText(checksum).then(function () {
+          var original = button.textContent;
+          button.textContent = "Copied!";
+          button.classList.add("text-terminal", "border-terminal/60");
+          setTimeout(function () {
+            button.textContent = original;
+            button.classList.remove("text-terminal", "border-terminal/60");
+          }, 2000);
+        });
+      });
+    });
+  })();
+  </script>
 </body>
 </html>

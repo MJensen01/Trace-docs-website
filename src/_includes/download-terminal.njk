@@ -1,0 +1,96 @@
+{# ═══════════════════════════════════════════════════════════════
+   DOWNLOAD TERMINAL COMPONENT
+   A dark terminal-style box with OS-aware download buttons.
+   Requires: trace global data (src/_data/trace.js)
+   ═══════════════════════════════════════════════════════════════ #}
+
+<section id="download" class="relative py-24 lg:py-32 border-t border-slate-800/60">
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="text-center max-w-2xl mx-auto mb-12">
+      <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Get Trace</p>
+      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Download <span class="text-terminal">v{{ trace.currentVersion }}</span></h2>
+      <p class="mt-4 text-slate-400 leading-relaxed">Offline-first. No account required. Verify every binary with the SHA-256 checksum below.</p>
+    </div>
+
+    {# Terminal window #}
+    <div class="max-w-3xl mx-auto border border-slate-800 bg-slate-900 rounded-lg shadow-2xl overflow-hidden">
+
+      {# Title bar with traffic-light controls #}
+      <div class="flex items-center gap-2 px-4 py-3 bg-slate-900 border-b border-slate-800">
+        <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+        <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+        <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
+        <span class="ml-4 font-mono text-xs text-slate-500">trace — downloads</span>
+        <span class="ml-auto font-mono text-xs text-slate-600">v{{ trace.currentVersion }}</span>
+      </div>
+
+      {# Terminal body #}
+      <div class="p-6 sm:p-8">
+
+        {# OS selection tabs — all rendered server-side, JS highlights the detected one #}
+        <div class="flex flex-wrap gap-2 mb-8" role="tablist" aria-label="Operating system">
+          {% for key, platform in trace.platformAssets %}
+          <button
+            type="button"
+            role="tab"
+            aria-selected="false"
+            data-os="{{ key }}"
+            class="os-tab font-mono text-xs sm:text-sm px-4 py-2 border border-slate-700 text-slate-400 hover:border-terminal/60 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-terminal focus:ring-offset-2 focus:ring-offset-slate-900"
+          >
+            <span class="text-terminal mr-1">{{ platform.icon }}</span>{{ platform.label }}
+          </button>
+          {% endfor %}
+        </div>
+
+        {# Download panels — one per OS, toggled by JS #}
+        {% for key, platform in trace.platformAssets %}
+        <div
+          data-os-panel="{{ key }}"
+          class="os-panel hidden"
+          role="tabpanel"
+        >
+          {# File info line #}
+          <div class="font-mono text-sm mb-4">
+            <p class="text-slate-500"># {{ platform.label }} ({{ platform.arch }})</p>
+          </div>
+
+          {# Download row #}
+          <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+            <a
+              href="{{ trace.downloadBaseUrl }}/{{ platform.fileName }}"
+              class="inline-flex items-center justify-center font-mono text-sm font-semibold bg-terminal text-slate-950 px-6 py-3 hover:bg-terminal-hover transition-colors focus:outline-none focus:ring-2 focus:ring-terminal focus:ring-offset-2 focus:ring-offset-slate-900"
+              download
+            >
+              [ Download {{ platform.fileName }} ]
+            </a>
+            <span class="font-mono text-xs text-slate-500">{{ platform.fileSize }}</span>
+          </div>
+
+          {# SHA-256 checksum row #}
+          <div class="border border-slate-800 bg-slate-950/60 p-4 rounded">
+            <div class="flex items-start sm:items-center justify-between gap-3">
+              <div class="min-w-0">
+                <p class="font-mono text-xs text-slate-500 mb-1">SHA-256</p>
+                <p class="font-mono text-xs text-slate-400 break-all leading-relaxed" data-checksum="{{ key }}">{{ platform.sha256 }}</p>
+              </div>
+              <button
+                type="button"
+                data-copy-checksum="{{ platform.sha256 }}"
+                class="shrink-0 font-mono text-xs border border-slate-700 text-slate-400 px-3 py-1.5 hover:border-terminal/60 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-terminal"
+                aria-label="Copy SHA-256 checksum for {{ platform.label }}"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        {# All-platforms hint #}
+        <p class="mt-6 font-mono text-xs text-slate-600 text-center">
+          Select your platform above &middot; All binaries served from <span class="text-slate-500">download.trace-docs.com</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

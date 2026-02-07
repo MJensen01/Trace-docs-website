@@ -1,0 +1,26 @@
+name: Deploy Artifacts to R2
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "build-artifacts/**"
+
+jobs:
+  upload:
+    name: Upload to Cloudflare R2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload to R2
+        uses: ryand56/r2-upload-action@latest
+        with:
+          r2-account-id: ${{ secrets.R2_ACCOUNT_ID }}
+          r2-access-key-id: ${{ secrets.R2_ACCESS_KEY_ID }}
+          r2-secret-access-key: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          r2-bucket: trace-downloads
+          source-dir: ./build-artifacts/
+          destination-dir: ./
