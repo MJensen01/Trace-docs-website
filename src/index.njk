@@ -67,28 +67,28 @@ title: "Trace — Offline-First Documentation for Engineers"
       <p class="mt-4 text-slate-400 leading-relaxed">Three operations. One tool. From raw input to finished documentation in a single, unbroken workflow.</p>
     </div>
 
-    {# Capability 1 — Multi-Format Ingestion #}
+    {# Capability 1 — Screen & Video Capture #}
     <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-24 lg:mb-32">
       <div>
         <div class="inline-flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold">01</div>
-        <h3 class="font-mono text-2xl font-bold text-white mb-4">Multi-Format Ingestion</h3>
+        <h3 class="font-mono text-2xl font-bold text-white mb-4">Screen &amp; Video Capture</h3>
         <p class="text-slate-400 leading-relaxed mb-4">
-          Screenshots, log files, terminal output, code snippets, plain-text notes — Trace accepts them all. Drag, drop, paste, or capture inline. Every format is normalized and indexed on import.
+          Instantly record your screen, grab static screenshots, and drop them directly into a living document. Point, click, capture — no terminal required.
         </p>
         <ul class="space-y-2 font-mono text-sm text-slate-500">
-          <li><span class="text-terminal mr-2">&gt;</span>Images (PNG, JPG, GIF, SVG)</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Log files &amp; terminal output</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Code blocks with syntax detection</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Screen recordings</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Screenshots</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Image paste &amp; drag-and-drop</li>
           <li><span class="text-terminal mr-2">&gt;</span>Freeform text &amp; annotations</li>
         </ul>
       </div>
       <div>
         <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
           <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
-            <span class="font-mono text-terminal text-lg">&gt;_</span>
+            <span class="font-mono text-terminal text-lg">&#9634;</span>
           </div>
           <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
-          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Capture interface — showing a document with mixed content types: an embedded screenshot, a code block, a log snippet, and a text annotation side by side]</p>
+          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: GUI capture interface — showing the screen/video recording controls, a captured screenshot embedded in a document, and the capture panel sidebar]</p>
         </div>
       </div>
     </div>
@@ -125,11 +125,11 @@ title: "Trace — Offline-First Documentation for Engineers"
         <div class="inline-flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold">03</div>
         <h3 class="font-mono text-2xl font-bold text-white mb-4">Instant Export</h3>
         <p class="text-slate-400 leading-relaxed mb-4">
-          One click. Your structured document becomes a Markdown file, a PDF, or a self-contained HTML page. No rendering delays, no external dependencies, no upload step.
+          One click. Your structured document becomes a polished PDF with embedded images — ready to hand off, archive, or print. Also exports to Markdown and standalone HTML.
         </p>
         <ul class="space-y-2 font-mono text-sm text-slate-500">
+          <li><span class="text-terminal mr-2">&gt;</span><span class="text-white font-medium">PDF with embedded images</span></li>
           <li><span class="text-terminal mr-2">&gt;</span>Markdown (.md)</li>
-          <li><span class="text-terminal mr-2">&gt;</span>PDF with embedded images</li>
           <li><span class="text-terminal mr-2">&gt;</span>Standalone HTML page</li>
           <li><span class="text-terminal mr-2">&gt;</span>All exports generated locally</li>
         </ul>
@@ -166,7 +166,7 @@ title: "Trace — Offline-First Documentation for Engineers"
         </div>
         <h3 class="font-mono text-lg font-semibold text-white mb-3">Zero Latency</h3>
         <p class="text-slate-400 leading-relaxed">
-          Local SQLite database with instant full-text search. Your documentation loads in milliseconds, not round-trips.
+          Everything runs on your local filesystem. Your documentation loads instantly — no servers, no round-trips, no spinners.
         </p>
       </article>
 
@@ -209,8 +209,8 @@ title: "Trace — Offline-First Documentation for Engineers"
     {# Technical stats grid #}
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
       <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
-        <p class="font-mono text-3xl font-bold text-terminal mb-2">&lt;1ms</p>
-        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Search Latency</p>
+        <p class="font-mono text-3xl font-bold text-terminal mb-2">Instant</p>
+        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">UI Response</p>
       </div>
       <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
         <p class="font-mono text-3xl font-bold text-terminal mb-2">~80MB</p>
@@ -231,11 +231,11 @@ title: "Trace — Offline-First Documentation for Engineers"
 
       {# Left column — Technical breakdown #}
       <div class="space-y-10">
-        {# SQLite #}
+        {# Filesystem Storage #}
         <div class="border-l-2 border-terminal pl-6">
-          <h3 class="font-mono text-lg font-semibold text-white mb-2">Local SQLite Database</h3>
+          <h3 class="font-mono text-lg font-semibold text-white mb-2">Filesystem-Based Storage</h3>
           <p class="text-slate-400 leading-relaxed">
-            All documents, captures, and metadata are stored in a single SQLite file on disk. Full-text search is powered by FTS5 — the same engine used by production systems handling millions of rows. No external database process, no configuration, no ports to expose.
+            Your documentation is stored as lightweight, universal Markdown files on disk. No proprietary databases, no opaque binary formats — just files you can read, move, and back up with any tool you already use.
           </p>
         </div>
 
@@ -255,11 +255,11 @@ title: "Trace — Offline-First Documentation for Engineers"
           </p>
         </div>
 
-        {# Sub-ms Search #}
+        {# Instant Search #}
         <div class="border-l-2 border-terminal pl-6">
-          <h3 class="font-mono text-lg font-semibold text-white mb-2">Sub-Millisecond Search</h3>
+          <h3 class="font-mono text-lg font-semibold text-white mb-2">Instant Search</h3>
           <p class="text-slate-400 leading-relaxed">
-            Full-text search across your entire documentation set returns results in under one millisecond. Indexed locally, queried locally. No network latency, no loading spinners, no pagination delays.
+            Search across your documents instantly. Results appear as you type — no loading states, no network latency, no waiting.
           </p>
         </div>
       </div>
@@ -274,25 +274,13 @@ title: "Trace — Offline-First Documentation for Engineers"
           <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Search interface in action — showing instant search results populating as the user types, with sub-millisecond response time visible in the UI]</p>
         </div>
 
-        {# Terminal-style benchmark demo #}
-        <div class="border border-slate-800 bg-slate-900/60">
-          <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
-            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
-            <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-            <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
-            <span class="ml-4 font-mono text-xs text-slate-500">trace — benchmarks</span>
+        {# GUI workflow screenshot #}
+        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
+            <span class="font-mono text-terminal text-lg">&uarr;</span>
           </div>
-          <div class="p-6 font-mono text-sm leading-relaxed">
-            <p class="text-slate-500">&#35; Query 1,200 documents</p>
-            <p class="text-slate-300 mt-1"><span class="text-terminal">$</span> trace search "deployment runbook"</p>
-            <p class="text-green-400 mt-1">&check; 14 results in 0.6ms</p>
-            <p class="text-slate-500 mt-3">&#35; Full export to PDF</p>
-            <p class="text-slate-300 mt-1"><span class="text-terminal">$</span> trace export --format pdf --doc server-migration</p>
-            <p class="text-green-400 mt-1">&check; server-migration.pdf (24 pages, 11 images) — 340ms</p>
-            <p class="text-slate-500 mt-3">&#35; Database size on disk</p>
-            <p class="text-slate-300 mt-1"><span class="text-terminal">$</span> ls -lh ~/.trace/trace.db</p>
-            <p class="text-slate-300 mt-1">-rw-r--r-- 1 user user <span class="text-terminal">12M</span> trace.db</p>
-          </div>
+          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
+          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Export workflow — showing the GUI export dialog with PDF generation in progress, format options, and the resulting document preview]</p>
         </div>
       </div>
     </div>
