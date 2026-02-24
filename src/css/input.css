@@ -13,3 +13,13 @@
     color: #0f172a;
   }
 }
+
+@layer components {
+  /* Screenshot placeholder — dashed frame for image insertion points */
+  .screenshot-placeholder {
+    transition: border-color 0.2s ease;
+  }
+  .screenshot-placeholder:hover {
+    border-color: var(--color-terminal);
+  }
+}

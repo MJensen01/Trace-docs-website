@@ -1,6 +1,6 @@
 ---
 layout: base.njk
-title: "Trace — Offline Documentation for IT Pros"
+title: "Trace — Offline-First Documentation for Engineers"
 ---
 
 {# ═══════════════════════════════════════════════════════════════
@@ -11,49 +11,35 @@ title: "Trace — Offline Documentation for IT Pros"
   <div class="absolute inset-0 opacity-5" style="background-image: linear-gradient(rgba(248,250,252,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(248,250,252,.1) 1px, transparent 1px); background-size: 4rem 4rem;"></div>
 
   <div class="relative mx-auto max-w-7xl w-full px-6 py-24 lg:py-32">
-    <div class="grid lg:grid-cols-2 gap-16 items-center">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
       {# Left column — Copy #}
       <div>
         <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-4">v{{ trace.currentVersion }} — Now Available</p>
         <h1 class="font-mono text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight">
-          Documentation<br>for the<br><span class="text-terminal">Disconnected.</span>
+          Document<br>everything.<br><span class="text-terminal">Depend on nothing.</span>
         </h1>
         <p class="mt-6 text-lg text-slate-400 max-w-lg leading-relaxed">
-          The offline-first documentation tool for IT professionals. No logins. No subscriptions. Just Trace.
+          An offline-first documentation tool built for engineers who need speed, portability, and zero dependencies. No logins. No subscriptions. No cloud. Just Trace.
         </p>
         <div class="mt-10 flex flex-wrap gap-4">
           <a href="#download" class="inline-flex items-center font-mono text-sm font-semibold bg-terminal text-slate-950 px-6 py-3 hover:bg-terminal-hover transition-colors focus:outline-none focus:ring-2 focus:ring-terminal focus:ring-offset-2 focus:ring-offset-slate-950">
             [ Download Trace v{{ trace.currentVersion }} ]
           </a>
-          <a href="#workflow" class="inline-flex items-center font-mono text-sm font-semibold border border-slate-700 text-slate-300 px-6 py-3 hover:border-slate-500 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950">
-            See How It Works &rarr;
+          <a href="#capabilities" class="inline-flex items-center font-mono text-sm font-semibold border border-slate-700 text-slate-300 px-6 py-3 hover:border-slate-500 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950">
+            See Capabilities &rarr;
           </a>
         </div>
       </div>
 
-      {# Right column — Stylized terminal mockup #}
-      <div class="hidden lg:block" aria-hidden="true">
-        <div class="border border-slate-800 bg-slate-900/60 shadow-2xl">
-          {# Title bar #}
-          <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
-            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
-            <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-            <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
-            <span class="ml-4 font-mono text-xs text-slate-500">trace — ~/projects/server-migration</span>
+      {# Right column — App screenshot placeholder #}
+      <div class="order-first lg:order-last">
+        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
+            <span class="font-mono text-terminal text-lg">&#9634;</span>
           </div>
-          {# Terminal body #}
-          <div class="p-6 font-mono text-sm leading-relaxed">
-            <p class="text-slate-500">&#35; Capture phase</p>
-            <p class="text-slate-300"><span class="text-terminal">$</span> trace capture --screenshot eth0-config</p>
-            <p class="text-green-400 mt-1">&check; Screenshot saved &rarr; captures/eth0-config.png</p>
-            <p class="text-slate-300 mt-3"><span class="text-terminal">$</span> trace capture --log "Swapped primary NIC"</p>
-            <p class="text-green-400 mt-1">&check; Log entry added &rarr; 14:32:07</p>
-            <p class="text-slate-500 mt-4">&#35; Build documentation</p>
-            <p class="text-slate-300"><span class="text-terminal">$</span> trace build --format markdown</p>
-            <p class="text-green-400 mt-1">&check; server-migration.md generated (3 sections, 2 images)</p>
-            <p class="mt-4 text-slate-300"><span class="text-terminal">$</span> <span class="animate-pulse">_</span></p>
-          </div>
+          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
+          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Main application dashboard — showing the primary workspace with a document open, sidebar navigation, and capture panel visible]</p>
         </div>
       </div>
     </div>
@@ -68,14 +54,105 @@ title: "Trace — Offline Documentation for IT Pros"
 </section>
 
 {# ═══════════════════════════════════════════════════════════════
+   CORE CAPABILITIES
+   ═══════════════════════════════════════════════════════════════ #}
+<section id="capabilities" class="relative py-24 lg:py-32 border-t border-slate-800/60">
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="text-center max-w-2xl mx-auto mb-20">
+      <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Core Capabilities</p>
+      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Ingest. Structure. Export.</h2>
+      <p class="mt-4 text-slate-400 leading-relaxed">Three operations. One tool. From raw input to finished documentation in a single, unbroken workflow.</p>
+    </div>
+
+    {# Capability 1 — Multi-Format Ingestion #}
+    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-24 lg:mb-32">
+      <div>
+        <div class="inline-flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold">01</div>
+        <h3 class="font-mono text-2xl font-bold text-white mb-4">Multi-Format Ingestion</h3>
+        <p class="text-slate-400 leading-relaxed mb-4">
+          Screenshots, log files, terminal output, code snippets, plain-text notes — Trace accepts them all. Drag, drop, paste, or capture inline. Every format is normalized and indexed on import.
+        </p>
+        <ul class="space-y-2 font-mono text-sm text-slate-500">
+          <li><span class="text-terminal mr-2">&gt;</span>Images (PNG, JPG, GIF, SVG)</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Log files &amp; terminal output</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Code blocks with syntax detection</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Freeform text &amp; annotations</li>
+        </ul>
+      </div>
+      <div>
+        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
+            <span class="font-mono text-terminal text-lg">&gt;_</span>
+          </div>
+          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
+          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Capture interface — showing a document with mixed content types: an embedded screenshot, a code block, a log snippet, and a text annotation side by side]</p>
+        </div>
+      </div>
+    </div>
+
+    {# Capability 2 — Rapid Structuring #}
+    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-24 lg:mb-32">
+      <div class="order-2 lg:order-1">
+        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
+            <span class="font-mono text-terminal text-lg">&#123;&#125;</span>
+          </div>
+          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
+          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Document structuring view — showing the section tree/outline sidebar, drag-and-drop reordering of captures, and tag assignment panel]</p>
+        </div>
+      </div>
+      <div class="order-1 lg:order-2">
+        <div class="inline-flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold">02</div>
+        <h3 class="font-mono text-2xl font-bold text-white mb-4">Rapid Structuring</h3>
+        <p class="text-slate-400 leading-relaxed mb-4">
+          Organize captures into logical sections with drag-and-drop. Tag entries, link related items, and build a coherent document from raw fragments — in seconds, not hours.
+        </p>
+        <ul class="space-y-2 font-mono text-sm text-slate-500">
+          <li><span class="text-terminal mr-2">&gt;</span>Drag-and-drop section ordering</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Tagging &amp; cross-referencing</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Hierarchical document outlines</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Inline annotations on any capture</li>
+        </ul>
+      </div>
+    </div>
+
+    {# Capability 3 — Instant Export #}
+    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <div>
+        <div class="inline-flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold">03</div>
+        <h3 class="font-mono text-2xl font-bold text-white mb-4">Instant Export</h3>
+        <p class="text-slate-400 leading-relaxed mb-4">
+          One click. Your structured document becomes a Markdown file, a PDF, or a self-contained HTML page. No rendering delays, no external dependencies, no upload step.
+        </p>
+        <ul class="space-y-2 font-mono text-sm text-slate-500">
+          <li><span class="text-terminal mr-2">&gt;</span>Markdown (.md)</li>
+          <li><span class="text-terminal mr-2">&gt;</span>PDF with embedded images</li>
+          <li><span class="text-terminal mr-2">&gt;</span>Standalone HTML page</li>
+          <li><span class="text-terminal mr-2">&gt;</span>All exports generated locally</li>
+        </ul>
+      </div>
+      <div>
+        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
+            <span class="font-mono text-terminal text-lg">&uarr;</span>
+          </div>
+          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
+          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Export dialog — showing format selection (Markdown/PDF/HTML), a preview of the rendered output, and the generated file ready for download or sharing]</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ═══════════════════════════════════════════════════════════════
    ANTI-SAAS GUARANTEE — FEATURE GRID
    ═══════════════════════════════════════════════════════════════ #}
 <section id="features" class="relative py-24 lg:py-32 border-t border-slate-800/60">
   <div class="mx-auto max-w-7xl px-6">
     <div class="text-center max-w-2xl mx-auto mb-16">
       <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">The Anti-SaaS Guarantee</p>
-      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Offline Architecture</h2>
-      <p class="mt-4 text-slate-400 leading-relaxed">No cloud. No accounts. No telemetry. Trace runs entirely on your machine — the way tools should work.</p>
+      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Your Machine. Your Data. Period.</h2>
+      <p class="mt-4 text-slate-400 leading-relaxed">No cloud. No accounts. No telemetry. Trace runs entirely on your hardware — the way engineering tools should work.</p>
     </div>
 
     <div class="grid md:grid-cols-3 gap-6">
@@ -97,7 +174,7 @@ title: "Trace — Offline Documentation for IT Pros"
         </div>
         <h3 class="font-mono text-lg font-semibold text-white mb-3">Air-Gapped Ready</h3>
         <p class="text-slate-400 leading-relaxed">
-          Works perfectly in secure server rooms, air-gapped networks, and anywhere WiFi doesn't reach. No internet required — ever.
+          Works in secure environments, air-gapped networks, and anywhere connectivity is unreliable or nonexistent. No internet required — ever.
         </p>
       </article>
 
@@ -108,7 +185,7 @@ title: "Trace — Offline Documentation for IT Pros"
         </div>
         <h3 class="font-mono text-lg font-semibold text-white mb-3">Data Sovereignty</h3>
         <p class="text-slate-400 leading-relaxed">
-          Your data stays on your drive. Period. No sync servers, no third-party storage, no compliance nightmares.
+          Your data stays on your drive. No sync servers, no third-party storage, no compliance headaches. Full control, always.
         </p>
       </article>
     </div>
@@ -116,83 +193,124 @@ title: "Trace — Offline Documentation for IT Pros"
 </section>
 
 {# ═══════════════════════════════════════════════════════════════
-   CAPTURE-TO-DOCS WORKFLOW
+   UNDER THE HOOD — TECHNICAL / OPTIMIZATION
    ═══════════════════════════════════════════════════════════════ #}
-<section id="workflow" class="relative py-24 lg:py-32 border-t border-slate-800/60">
+<section id="internals" class="relative py-24 lg:py-32 border-t border-slate-800/60">
   <div class="mx-auto max-w-7xl px-6">
     <div class="text-center max-w-2xl mx-auto mb-16">
-      <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">The Workflow</p>
-      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Don't just take notes.<br><span class="text-terminal">Trace</span> them.</h2>
-      <p class="mt-4 text-slate-400 leading-relaxed">Seamlessly move from raw capture to structured documentation in one fluid workflow.</p>
+      <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Under the Hood</p>
+      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Engineered for<br><span class="text-terminal">Performance.</span></h2>
+      <p class="mt-4 text-slate-400 leading-relaxed">Trace is built for engineers who care about what's running on their machines. Here's what's inside.</p>
     </div>
 
-    {# Workflow steps #}
-    <div class="grid md:grid-cols-3 gap-0 items-start">
-
-      {# Step 1 — Capture #}
-      <div class="relative text-center px-8 py-10">
-        <div class="font-mono text-5xl font-bold text-slate-800 mb-4">01</div>
-        <div class="inline-flex items-center justify-center w-16 h-16 border-2 border-terminal bg-terminal/10 mb-6">
-          <span class="font-mono text-terminal text-2xl font-bold">&gt;</span>
-        </div>
-        <h3 class="font-mono text-xl font-semibold text-white mb-3">Capture</h3>
-        <p class="text-slate-400 leading-relaxed">Screenshots, log snippets, terminal output, quick notes — grab everything as it happens.</p>
-        {# Connector arrow (hidden on mobile) #}
-        <div class="hidden md:block absolute top-1/2 -right-3 text-slate-700 text-2xl" aria-hidden="true">&rarr;</div>
+    {# Technical stats grid #}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+      <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
+        <p class="font-mono text-3xl font-bold text-terminal mb-2">&lt;1ms</p>
+        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Search Latency</p>
       </div>
-
-      {# Step 2 — Trace #}
-      <div class="relative text-center px-8 py-10 border-t md:border-t-0 md:border-x border-slate-800/60">
-        <div class="font-mono text-5xl font-bold text-slate-800 mb-4">02</div>
-        <div class="inline-flex items-center justify-center w-16 h-16 border-2 border-terminal bg-terminal/10 mb-6">
-          <span class="font-mono text-terminal text-2xl font-bold">&#123;&#125;</span>
-        </div>
-        <h3 class="font-mono text-xl font-semibold text-white mb-3">Structure</h3>
-        <p class="text-slate-400 leading-relaxed">Organize captures into logical sections. Tag, annotate, and link related items together.</p>
-        <div class="hidden md:block absolute top-1/2 -right-3 text-slate-700 text-2xl" aria-hidden="true">&rarr;</div>
+      <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
+        <p class="font-mono text-3xl font-bold text-terminal mb-2">~80MB</p>
+        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Memory at Idle</p>
       </div>
-
-      {# Step 3 — Publish #}
-      <div class="text-center px-8 py-10 border-t md:border-t-0 border-slate-800/60">
-        <div class="font-mono text-5xl font-bold text-slate-800 mb-4">03</div>
-        <div class="inline-flex items-center justify-center w-16 h-16 border-2 border-terminal bg-terminal/10 mb-6">
-          <span class="font-mono text-terminal text-2xl font-bold">&uarr;</span>
-        </div>
-        <h3 class="font-mono text-xl font-semibold text-white mb-3">Publish</h3>
-        <p class="text-slate-400 leading-relaxed">Export to Markdown, PDF, or HTML. Share with your team or keep it in your local knowledge base.</p>
+      <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
+        <p class="font-mono text-3xl font-bold text-terminal mb-2">3</p>
+        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Platforms</p>
+      </div>
+      <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
+        <p class="font-mono text-3xl font-bold text-terminal mb-2">0</p>
+        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Network Calls</p>
       </div>
     </div>
 
-    {# Terminal-style workflow summary #}
-    <div class="mt-16 border border-slate-800 bg-slate-900/60 p-6 max-w-2xl mx-auto font-mono text-sm">
-      <p class="text-slate-500">&#35; The Trace pipeline</p>
-      <p class="mt-2 text-slate-300">
-        <span class="text-terminal">Capture</span>
-        <span class="text-slate-600 mx-3">|</span>
-        <span class="text-terminal">Structure</span>
-        <span class="text-slate-600 mx-3">|</span>
-        <span class="text-terminal">Publish</span>
-      </p>
-      <p class="mt-1 text-slate-500">(snippets/logs) &rarr; (organize) &rarr; (markdown/pdf/html)</p>
+    {# Technical detail — Two column layout #}
+    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+
+      {# Left column — Technical breakdown #}
+      <div class="space-y-10">
+        {# SQLite #}
+        <div class="border-l-2 border-terminal pl-6">
+          <h3 class="font-mono text-lg font-semibold text-white mb-2">Local SQLite Database</h3>
+          <p class="text-slate-400 leading-relaxed">
+            All documents, captures, and metadata are stored in a single SQLite file on disk. Full-text search is powered by FTS5 — the same engine used by production systems handling millions of rows. No external database process, no configuration, no ports to expose.
+          </p>
+        </div>
+
+        {# Portability #}
+        <div class="border-l-2 border-terminal pl-6">
+          <h3 class="font-mono text-lg font-semibold text-white mb-2">Portable &amp; Self-Contained</h3>
+          <p class="text-slate-400 leading-relaxed">
+            Trace ships as a single binary per platform — Windows, macOS (Universal), and Linux. No runtime dependencies. No framework installations. Copy it to a USB drive, an air-gapped workstation, or a fresh OS install. It just runs.
+          </p>
+        </div>
+
+        {# Resource overhead #}
+        <div class="border-l-2 border-terminal pl-6">
+          <h3 class="font-mono text-lg font-semibold text-white mb-2">Low Resource Overhead</h3>
+          <p class="text-slate-400 leading-relaxed">
+            Trace idles at roughly 80 MB of RAM and negligible CPU. It won't compete with your compiler, your containers, or your 47 browser tabs. Designed to stay out of the way until you need it.
+          </p>
+        </div>
+
+        {# Sub-ms Search #}
+        <div class="border-l-2 border-terminal pl-6">
+          <h3 class="font-mono text-lg font-semibold text-white mb-2">Sub-Millisecond Search</h3>
+          <p class="text-slate-400 leading-relaxed">
+            Full-text search across your entire documentation set returns results in under one millisecond. Indexed locally, queried locally. No network latency, no loading spinners, no pagination delays.
+          </p>
+        </div>
+      </div>
+
+      {# Right column — Screenshot + terminal demo #}
+      <div class="space-y-6">
+        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
+          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
+            <span class="font-mono text-terminal text-lg">&#9632;</span>
+          </div>
+          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
+          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Search interface in action — showing instant search results populating as the user types, with sub-millisecond response time visible in the UI]</p>
+        </div>
+
+        {# Terminal-style benchmark demo #}
+        <div class="border border-slate-800 bg-slate-900/60">
+          <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
+            <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
+            <span class="ml-4 font-mono text-xs text-slate-500">trace — benchmarks</span>
+          </div>
+          <div class="p-6 font-mono text-sm leading-relaxed">
+            <p class="text-slate-500">&#35; Query 1,200 documents</p>
+            <p class="text-slate-300 mt-1"><span class="text-terminal">$</span> trace search "deployment runbook"</p>
+            <p class="text-green-400 mt-1">&check; 14 results in 0.6ms</p>
+            <p class="text-slate-500 mt-3">&#35; Full export to PDF</p>
+            <p class="text-slate-300 mt-1"><span class="text-terminal">$</span> trace export --format pdf --doc server-migration</p>
+            <p class="text-green-400 mt-1">&check; server-migration.pdf (24 pages, 11 images) — 340ms</p>
+            <p class="text-slate-500 mt-3">&#35; Database size on disk</p>
+            <p class="text-slate-300 mt-1"><span class="text-terminal">$</span> ls -lh ~/.trace/trace.db</p>
+            <p class="text-slate-300 mt-1">-rw-r--r-- 1 user user <span class="text-terminal">12M</span> trace.db</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 {# ═══════════════════════════════════════════════════════════════
-   BUILT BY IT, FOR IT
+   BUILT FOR ENGINEERS
    ═══════════════════════════════════════════════════════════════ #}
 <section class="relative py-24 lg:py-32 border-t border-slate-800/60">
   <div class="mx-auto max-w-3xl px-6 text-center">
-    <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Built by IT, for IT</p>
+    <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Built for Engineers</p>
     <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white leading-tight">
-      We know you don't have<br>time to document.
+      You don't have time<br>to document.
     </h2>
     <div class="mt-8 space-y-6 text-lg text-slate-400 leading-relaxed">
       <p>
-        Between the tickets, the outages, and the "quick questions" that eat your afternoon — documentation is the thing that always gets pushed to tomorrow.
+        Between the deploys, the debugging sessions, and the "quick questions" that eat your afternoon — documentation is the task that always gets pushed to tomorrow.
       </p>
       <p>
-        Trace bridges the gap between the <span class="text-white font-medium">chaos of the job</span> and the <span class="text-white font-medium">order you need</span>. It captures your work as you do it, so the docs write themselves.
+        Trace bridges the gap between the <span class="text-white font-medium">work you're doing</span> and the <span class="text-white font-medium">records you need</span>. It captures your process as it happens, so the docs write themselves.
       </p>
       <p class="text-terminal font-mono text-base">
         Stop choosing between doing the work and documenting it.
@@ -220,7 +338,7 @@ title: "Trace — Offline Documentation for IT Pros"
       <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Security & Verification</p>
       <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Verify Your Download</h2>
       <p class="mt-4 text-slate-400 leading-relaxed">
-        Trace is <span class="text-white font-medium">Offline-First</span> — every binary is hosted on our dedicated CDN at
+        Every binary is hosted on our dedicated CDN at
         <span class="font-mono text-terminal text-sm">download.trace-docs.com</span>.
         Always verify the integrity of your download before installing.
       </p>
@@ -277,7 +395,7 @@ title: "Trace — Offline Documentation for IT Pros"
       {# Brand #}
       <div class="sm:col-span-2 lg:col-span-1">
         <p class="font-mono text-lg font-bold text-white">Trace<span class="text-terminal">.</span></p>
-        <p class="mt-2 text-sm text-slate-500 leading-relaxed">Offline-first documentation<br>for IT professionals.</p>
+        <p class="mt-2 text-sm text-slate-500 leading-relaxed">Offline-first documentation<br>for engineers.</p>
       </div>
 
       {# Product links #}
@@ -285,8 +403,9 @@ title: "Trace — Offline Documentation for IT Pros"
         <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-4">Product</p>
         <ul class="space-y-2 text-sm">
           <li><a href="#download" class="text-slate-400 hover:text-white transition-colors">Download</a></li>
+          <li><a href="#capabilities" class="text-slate-400 hover:text-white transition-colors">Capabilities</a></li>
           <li><a href="#features" class="text-slate-400 hover:text-white transition-colors">Features</a></li>
-          <li><a href="#workflow" class="text-slate-400 hover:text-white transition-colors">Workflow</a></li>
+          <li><a href="#internals" class="text-slate-400 hover:text-white transition-colors">Under the Hood</a></li>
         </ul>
       </nav>
 
