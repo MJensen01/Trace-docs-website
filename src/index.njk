@@ -26,10 +26,10 @@ title: "Trace — Offline-First Documentation for Engineers"
           Offline-first documentation for engineers who need speed, portability, and zero dependencies. No logins. No subscriptions. No cloud.
         </p>
         <div class="mt-10 flex flex-wrap gap-5">
-          <a href="#download" class="inline-flex items-center font-mono text-base font-semibold bg-terminal text-slate-950 px-8 py-4 hover:bg-terminal-hover hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-0.5 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-terminal focus:ring-offset-2 focus:ring-offset-slate-950">
+          <a href="#download" class="inline-flex items-center font-mono text-base font-semibold bg-terminal text-slate-950 px-8 py-4 hover:bg-terminal-hover hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-0.5 hover:scale-105 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-terminal focus:ring-offset-2 focus:ring-offset-slate-950">
             [ Download Trace v{{ trace.currentVersion }} ]
           </a>
-          <a href="#capabilities" class="inline-flex items-center font-mono text-base font-semibold border border-slate-700 text-slate-300 px-8 py-4 hover:border-slate-400 hover:text-white hover:-translate-y-0.5 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950">
+          <a href="#capabilities" class="inline-flex items-center font-mono text-base font-semibold border border-slate-700 text-slate-300 px-8 py-4 hover:border-slate-400 hover:text-white hover:-translate-y-0.5 hover:scale-[1.03] transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950">
             See Capabilities &rarr;
           </a>
         </div>
@@ -333,62 +333,6 @@ title: "Trace — Offline-First Documentation for Engineers"
 {% include "download-terminal.njk" %}
 
 {# ═══════════════════════════════════════════════════════════════
-   SECURITY & VERIFICATION
-   ═══════════════════════════════════════════════════════════════ #}
-<section id="verify" class="relative py-24 lg:py-32 border-t border-slate-800/60">
-  <div class="mx-auto max-w-4xl px-6">
-    <div class="text-center max-w-2xl mx-auto mb-12">
-      <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Security & Verification</p>
-      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Verify Your Download</h2>
-      <p class="mt-4 text-slate-400 leading-relaxed">
-        Every binary is hosted on our dedicated CDN at
-        <span class="font-mono text-terminal text-sm">download.trace-docs.com</span>.
-        Always verify the integrity of your download before installing.
-      </p>
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-6">
-      {# Windows verification #}
-      <div class="border border-slate-800 bg-slate-900/60 rounded-lg overflow-hidden">
-        <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
-          <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
-          <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-          <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
-          <span class="ml-4 font-mono text-xs text-slate-500">PowerShell / CMD</span>
-        </div>
-        <div class="p-5 font-mono text-sm leading-relaxed">
-          <p class="text-slate-500"># Windows — CertUtil</p>
-          <p class="text-slate-300 mt-2"><span class="text-terminal">></span> CertUtil -hashfile {{ trace.platformAssets.windows.fileName }} SHA256</p>
-          <p class="text-slate-500 mt-3"># Or with PowerShell</p>
-          <p class="text-slate-300 mt-2"><span class="text-terminal">></span> Get-FileHash {{ trace.platformAssets.windows.fileName }} -Algorithm SHA256</p>
-        </div>
-      </div>
-
-      {# macOS / Linux verification #}
-      <div class="border border-slate-800 bg-slate-900/60 rounded-lg overflow-hidden">
-        <div class="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
-          <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
-          <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-          <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
-          <span class="ml-4 font-mono text-xs text-slate-500">Terminal</span>
-        </div>
-        <div class="p-5 font-mono text-sm leading-relaxed">
-          <p class="text-slate-500"># macOS</p>
-          <p class="text-slate-300 mt-2"><span class="text-terminal">$</span> shasum -a 256 {{ trace.platformAssets.macos.fileName }}</p>
-          <p class="text-slate-500 mt-3"># Linux</p>
-          <p class="text-slate-300 mt-2"><span class="text-terminal">$</span> sha256sum {{ trace.platformAssets.linux.fileName }}</p>
-        </div>
-      </div>
-    </div>
-
-    <p class="mt-8 font-mono text-xs text-slate-600 text-center leading-relaxed">
-      Compare the output with the SHA-256 checksum shown in the download terminal above.<br>
-      If the hashes match, your file is authentic and unmodified.
-    </p>
-  </div>
-</section>
-
-{# ═══════════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════════ #}
 <footer class="border-t border-slate-800/60 py-16">
@@ -428,7 +372,7 @@ title: "Trace — Offline-First Documentation for Engineers"
         <ul class="space-y-2 text-sm">
           <li><a href="#" class="text-slate-400 hover:text-white transition-colors">Privacy</a></li>
           <li><a href="#" class="text-slate-400 hover:text-white transition-colors">License</a></li>
-          <li><a href="#verify" class="text-slate-400 hover:text-white transition-colors">Security & Verification</a></li>
+          <li><a href="#" class="text-slate-400 hover:text-white transition-colors">Security</a></li>
         </ul>
       </nav>
     </div>
