@@ -16,6 +16,9 @@ module.exports = function (eleventyConfig) {
     "src/assets/listings/*.{jpg,jpeg,png,webp}": "assets/listings",
     "src/assets/vendor/leaflet/*.{js,css}": "assets/vendor/leaflet",
     "src/assets/vendor/leaflet/images/*.png": "assets/vendor/leaflet/images",
+    "src/assets/icons/*.png": "assets/icons",
+    "src/manifest.webmanifest": "manifest.webmanifest",
+    "src/robots.txt": "robots.txt",
   });
 
   eleventyConfig.ignores.add("**/desktop.ini");

@@ -9,6 +9,13 @@
   <title>{% if title %}{{ title }} · {% endif %}Matt &amp; Evelyn&rsquo;s Home Finder</title>
   <meta name="description" content="{{ description | default('A private list of rentals we are considering, with rent, commute times and maps.') }}">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A1%3C/text%3E%3C/svg%3E">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Home Finder">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#faf8f4">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#17140f">
   <link rel="stylesheet" href="/css/output.css">
   <!-- Client for the small write-API (worker/index.js). Deferred, so every page
        script that needs it can wait for DOMContentLoaded. -->
