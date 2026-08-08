@@ -1,0 +1,153 @@
+---
+layout: base.njk
+useMap: true
+title: Map
+description: Every listing plotted, coloured by how it sits against our budget.
+permalink: /map/
+---
+
+<div class="mx-auto max-w-6xl px-4 pt-5 sm:px-6">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h1 class="font-serif text-2xl font-semibold leading-tight tracking-tight text-sand-900 sm:text-3xl dark:text-sand-50">Everywhere we&rsquo;re looking</h1>
+      <p class="mt-1 text-sm text-sand-600 dark:text-sand-400">
+        All {{ homes.mapPoints.length }} listings, plus work and family. Tap a dot for the details.
+      </p>
+    </div>
+    <a href="/" class="tap rounded-full border border-sand-300 bg-white px-4 text-sm font-semibold text-clay-700 hover:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-clay-300">
+      <span aria-hidden="true" class="mr-1.5">&larr;</span> Back to the list
+    </a>
+  </div>
+
+  <div class="mt-4 overflow-hidden rounded-2xl border border-sand-200 dark:border-sand-800">
+    <div id="all-map" class="map-shell h-[68vh] min-h-[24rem] w-full" role="img" aria-label="Map of all tracked listings"></div>
+  </div>
+
+  <ul class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-sand-600 dark:text-sand-300">
+    {% set legend = [
+      { band: "in-budget", label: "In budget", count: homes.counts.inBudget },
+      { band: "stretch", label: "Stretch", count: homes.counts.stretch },
+      { band: "over", label: "Over budget", count: homes.counts.over },
+      { band: "unknown", label: "Rent unknown", count: homes.counts.unknown }
+    ] %}
+    {% for item in legend %}
+      <li class="band-{{ item.band }} flex items-center gap-1.5">
+        <span class="band-bar h-3 w-3 rounded-full ring-2 ring-white" aria-hidden="true"></span>
+        {{ item.label }} <span class="tabular-nums text-sand-400 dark:text-sand-500">({{ item.count }})</span>
+      </li>
+    {% endfor %}
+    <li class="flex items-center gap-1.5">
+      <span class="flex h-4 w-4 items-center justify-center rounded-full bg-route-work text-[9px] text-white" aria-hidden="true">&#128188;</span>
+      Work &mdash; {{ homes.anchors.work.short }}
+    </li>
+    <li class="flex items-center gap-1.5">
+      <span class="flex h-4 w-4 items-center justify-center rounded-full bg-route-home text-[9px] text-white" aria-hidden="true">&#127968;</span>
+      Family &mdash; {{ homes.anchors.home.short }}
+    </li>
+  </ul>
+
+  <p class="mt-2 pb-4 text-xs text-sand-500 dark:text-sand-400">Drive times are free-flow estimates (no traffic).</p>
+</div>
+
+<script id="all-map-data" type="application/json">{{ { points: homes.mapPoints, anchors: homes.anchors } | jsonScript | safe }}</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var host = document.getElementById("all-map");
+  var payload = document.getElementById("all-map-data");
+  if (!host || !payload || typeof L === "undefined") return;
+
+  var data;
+  try { data = JSON.parse(payload.textContent); } catch (err) { return; }
+
+  var BAND_COLORS = {
+    "in-budget": "#059669",
+    "stretch": "#d97706",
+    "over": "#78716c",
+    "unknown": "#64748b"
+  };
+  var WORK_COLOR = "#2563eb";
+  var HOME_COLOR = "#7c3aed";
+
+  L.Icon.Default.imagePath = "/assets/vendor/leaflet/images/";
+
+  var map = L.map(host, { scrollWheelZoom: true });
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  var bounds = [];
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char];
+    });
+  }
+
+  function anchorIcon(color, glyph) {
+    return L.divIcon({
+      className: "",
+      html: '<span class="anchor-pin" style="background:' + color + '">' + glyph + "</span>",
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+      popupAnchor: [0, -16]
+    });
+  }
+
+  (data.points || []).forEach(function (point) {
+    if (point.lat === null || point.lon === null) return;
+
+    var marker = L.circleMarker([point.lat, point.lon], {
+      radius: 8,
+      color: "#ffffff",
+      weight: 2,
+      opacity: point.gone ? 0.5 : 1,
+      fillColor: BAND_COLORS[point.band] || BAND_COLORS.unknown,
+      fillOpacity: point.gone ? 0.35 : 0.95
+    }).addTo(map);
+
+    var size = [];
+    if (point.beds) size.push(escapeHtml(point.beds) + " bd");
+    if (point.baths) size.push(escapeHtml(point.baths) + " ba");
+
+    var html =
+      '<p style="font-weight:600;font-size:0.95rem;margin:0 0 2px">' + escapeHtml(point.title) + "</p>" +
+      '<p style="margin:0 0 6px;color:#78716c;font-size:0.75rem">' + escapeHtml(point.place) + "</p>" +
+      '<p style="margin:0 0 6px;font-size:0.9rem"><strong>' + escapeHtml(point.rent || "Rent TBD") + "</strong>" +
+      (size.length ? ' <span style="color:#78716c">&middot; ' + size.join(" &middot; ") + "</span>" : "") + "</p>" +
+      '<p style="margin:0 0 2px;font-size:0.78rem"><span style="color:' + WORK_COLOR + '">&#9679;</span> Work: ' +
+      (point.work ? escapeHtml(point.work) : "unknown") + "</p>" +
+      '<p style="margin:0 0 8px;font-size:0.78rem"><span style="color:' + HOME_COLOR + '">&#9679;</span> Family: ' +
+      (point.home ? escapeHtml(point.home) : "unknown") + "</p>" +
+      (point.gone ? '<p style="margin:0 0 8px;font-size:0.75rem;color:#be123c">No longer listed</p>' : "") +
+      '<a href="/listing/' + encodeURIComponent(point.id) + '/" style="font-weight:600;color:#a95c34">See full details &rarr;</a>';
+
+    marker.bindPopup(html, { minWidth: 190 });
+    bounds.push([point.lat, point.lon]);
+  });
+
+  ["work", "home"].forEach(function (key) {
+    var anchor = data.anchors && data.anchors[key];
+    if (!anchor || anchor.lat === null) return;
+    var color = key === "work" ? WORK_COLOR : HOME_COLOR;
+    var glyph = key === "work" ? "&#128188;" : "&#127968;";
+    var name = key === "work" ? "Work" : "Family";
+    L.marker([anchor.lat, anchor.lon], {
+      icon: anchorIcon(color, glyph),
+      title: anchor.label,
+      alt: name + ": " + anchor.label,
+      zIndexOffset: 1000
+    })
+      .addTo(map)
+      .bindPopup("<strong>" + name + "</strong><br>" + escapeHtml(anchor.label));
+    bounds.push([anchor.lat, anchor.lon]);
+  });
+
+  if (bounds.length) {
+    map.fitBounds(bounds, { padding: [30, 30] });
+  } else {
+    map.setView([40.3, -74.65], 10);
+  }
+});
+</script>

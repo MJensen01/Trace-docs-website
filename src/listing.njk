@@ -1,0 +1,324 @@
+---
+layout: base.njk
+useMap: true
+pagination:
+  data: homes.listings
+  size: 1
+  alias: l
+permalink: "/listing/{{ l.id }}/"
+eleventyComputed:
+  title: "{{ l.title }}"
+  description: "{{ l.title }} in {{ l.place }}."
+---
+
+<div class="mx-auto max-w-3xl px-4 pb-16 pt-5 sm:px-6">
+
+  <a href="/" class="tap -ml-2 gap-1.5 rounded-xl px-2 text-sm font-medium text-sand-500 hover:text-clay-700 dark:text-sand-400 dark:hover:text-clay-300">
+    <span aria-hidden="true">&larr;</span> All listings
+  </a>
+
+  <article class="band-{{ l.bandKey }} mt-2">
+
+    <!-- Hero -->
+    <div class="overflow-hidden rounded-2xl border border-sand-200 dark:border-sand-800">
+      {% if l.img %}
+        <!-- Screenshots vary in shape, so let the real one show rather than crop it. -->
+        <img src="{{ l.img }}" alt="Screenshot of the {{ l.title }} listing"
+             class="max-h-[34rem] w-full bg-sand-100 object-contain object-top dark:bg-sand-800">
+      {% else %}
+        <div class="photo-placeholder flex aspect-[16/9] w-full flex-col items-center justify-center gap-2 text-sand-500 dark:text-sand-400">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 opacity-70" aria-hidden="true">
+            <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/>
+          </svg>
+          <p class="text-xs font-medium">No screenshot saved yet</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Title + rent -->
+    <header class="mt-5">
+      <h1 class="font-serif text-2xl font-semibold leading-tight tracking-tight text-sand-900 sm:text-3xl dark:text-sand-50">{{ l.title }}</h1>
+      <p class="mt-1.5 text-sm text-sand-600 dark:text-sand-400">
+        {% if l.subtitle %}{{ l.subtitle }}<br class="sm:hidden">{% endif %}
+        {% if l.subtitle %}<span class="hidden sm:inline">&middot; </span>{% endif %}{{ l.place }}
+      </p>
+
+      <div class="mt-3 flex flex-wrap items-center gap-1.5">
+        <span class="band-pill inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold">{{ l.band.label }}</span>
+        <span class="inline-flex items-center rounded-full border border-sand-200 bg-sand-100 px-2.5 py-1 text-xs font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">{{ l.tierLabel }}</span>
+        <span class="inline-flex items-center rounded-full border border-sand-200 bg-sand-100 px-2.5 py-1 text-xs font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">{{ l.kind | capitalize }}</span>
+        {% if l.isGone %}
+          <span class="inline-flex items-center rounded-full border border-rose-300 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300">No longer listed</span>
+        {% else %}
+          <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium {% if l.verificationInfo.tone == 'good' %}border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300{% else %}border-sand-200 bg-sand-100 text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300{% endif %}">{{ l.verificationInfo.label }}</span>
+        {% endif %}
+      </div>
+    </header>
+
+    <div class="mt-5 flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900">
+      <div>
+        <p class="font-serif text-4xl font-semibold leading-none tabular-nums text-sand-900 dark:text-sand-50">
+          {{ l.rentLabel if l.rentLabel else "Rent TBD" }}
+        </p>
+        <p class="mt-1.5 text-sm text-sand-500 dark:text-sand-400">
+          {% if l.overByLabel %}
+            {% if l.bandKey == "stretch" %}
+              <span class="font-semibold text-amber-600 dark:text-amber-400">{{ l.overByLabel }} over budget</span>
+            {% else %}
+              <span class="font-semibold text-rose-600 dark:text-rose-400">{{ l.overByLabel }} over budget</span>
+            {% endif %}
+            <span class="text-sand-400 dark:text-sand-500">&middot; cap is {{ homes.budgetMaxLabel }}</span>
+          {% elif l.rentLabel %}
+            per month &middot; under the {{ homes.budgetMaxLabel }} cap
+          {% else %}
+            No rent published &mdash; call to ask
+          {% endif %}
+        </p>
+      </div>
+      <p class="text-lg leading-none text-amber-500" aria-label="Our rating: {{ l.rating }} out of 5">
+        <span aria-hidden="true">{% for on in l.stars %}{% if on %}&#9733;{% else %}<span class="text-sand-300 dark:text-sand-700">&#9733;</span>{% endif %}{% endfor %}</span>
+      </p>
+    </div>
+
+    <!-- Actions -->
+    <div class="mt-4 flex flex-wrap gap-2">
+      {% if l.url %}
+        <a href="{{ l.url }}" target="_blank" rel="noopener noreferrer"
+           class="tap grow gap-2 rounded-xl bg-clay-600 px-5 text-sm font-semibold text-white hover:bg-clay-700 sm:grow-0">
+          View original listing
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+            <path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>
+          </svg>
+        </a>
+      {% endif %}
+      {% if l.hasRoute %}
+        <a href="#map-section" class="tap grow gap-2 rounded-xl border border-sand-300 bg-white px-5 text-sm font-semibold text-sand-700 hover:border-clay-400 hover:text-clay-700 sm:grow-0 dark:border-sand-700 dark:bg-sand-900 dark:text-sand-200 dark:hover:text-clay-300">
+          See on map
+        </a>
+      {% endif %}
+    </div>
+    {% if not l.url %}
+      <p class="mt-2 text-xs text-sand-500 dark:text-sand-400">No direct link on file &mdash; this one came from a market survey rather than a single listing.</p>
+    {% endif %}
+
+    <!-- Commutes -->
+    <div class="mt-6 grid gap-3 sm:grid-cols-2">
+      <div class="rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900">
+        <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">
+          <span class="h-2.5 w-2.5 rounded-full bg-route-work" aria-hidden="true"></span> Drive to work
+        </p>
+        <p class="mt-1.5 text-lg font-semibold tabular-nums {% if l.workSlow %}text-rose-600 dark:text-rose-400{% else %}text-sand-900 dark:text-sand-50{% endif %}">{{ l.workLabel if l.workLabel else "Unknown" }}</p>
+        <p class="mt-0.5 text-xs text-sand-500 dark:text-sand-400">{{ homes.anchors.work.label }}</p>
+      </div>
+      <div class="rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900">
+        <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">
+          <span class="h-2.5 w-2.5 rounded-full bg-route-home" aria-hidden="true"></span> Drive to family
+        </p>
+        <p class="mt-1.5 text-lg font-semibold tabular-nums text-sand-900 dark:text-sand-50">{{ l.homeLabel if l.homeLabel else "Unknown" }}</p>
+        <p class="mt-0.5 text-xs text-sand-500 dark:text-sand-400">{{ homes.anchors.home.label }}</p>
+      </div>
+    </div>
+
+    <!-- Facts -->
+    <h2 class="mt-8 font-serif text-lg font-semibold text-sand-900 dark:text-sand-50">The details</h2>
+    {% set facts = [
+      { label: "Bedrooms", value: l.bedsLabel },
+      { label: "Bathrooms", value: l.bathsLabel },
+      { label: "Size", value: l.sqftLabel },
+      { label: "Available", value: l.available },
+      { label: "Lease", value: l.lease },
+      { label: "Move-in cost", value: l.move_in_cost },
+      { label: "Last checked", value: l.lastCheckedLabel }
+    ] %}
+    <dl class="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-sand-200 bg-sand-200 sm:grid-cols-4 dark:border-sand-800 dark:bg-sand-800">
+      {% for fact in facts %}
+        <div class="bg-white px-4 py-3 dark:bg-sand-900">
+          <dt class="text-xs font-medium text-sand-500 dark:text-sand-400">{{ fact.label }}</dt>
+          <dd class="mt-0.5 text-sm font-medium text-sand-800 dark:text-sand-100">
+            {% if fact.value and fact.value != "—" %}{{ fact.value }}{% else %}<span class="text-sand-400 dark:text-sand-500">Not listed</span>{% endif %}
+          </dd>
+        </div>
+      {% endfor %}
+      <div class="bg-white px-4 py-3 dark:bg-sand-900">
+        <dt class="text-xs font-medium text-sand-500 dark:text-sand-400">Added</dt>
+        <dd class="mt-0.5 text-sm font-medium text-sand-800 dark:text-sand-100">{{ l.addedLabel if l.addedLabel else "—" }}</dd>
+      </div>
+    </dl>
+
+    <!-- Pros & cons -->
+    {% if l.prosList.length or l.consList.length %}
+      <div class="mt-8 grid gap-4 sm:grid-cols-2">
+        {% if l.prosList.length %}
+          <section class="rounded-2xl border border-emerald-200/70 bg-emerald-50/50 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/25">
+            <h2 class="font-serif text-base font-semibold text-emerald-800 dark:text-emerald-300">What we like</h2>
+            <ul class="mt-2 space-y-1.5">
+              {% for item in l.prosList %}
+                <li class="flex gap-2 text-sm leading-relaxed text-sand-700 dark:text-sand-200">
+                  <span class="mt-[0.45em] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                  <span>{{ item }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% endif %}
+        {% if l.consList.length %}
+          <section class="rounded-2xl border border-amber-200/70 bg-amber-50/50 p-4 dark:border-amber-900/60 dark:bg-amber-950/25">
+            <h2 class="font-serif text-base font-semibold text-amber-800 dark:text-amber-300">Watch out for</h2>
+            <ul class="mt-2 space-y-1.5">
+              {% for item in l.consList %}
+                <li class="flex gap-2 text-sm leading-relaxed text-sand-700 dark:text-sand-200">
+                  <span class="mt-[0.45em] h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" aria-hidden="true"></span>
+                  <span>{{ item }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if l.notes %}
+      <section class="mt-6 rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900">
+        <h2 class="font-serif text-base font-semibold text-sand-900 dark:text-sand-50">Notes</h2>
+        <p class="mt-1.5 text-sm leading-relaxed text-sand-600 dark:text-sand-300">{{ l.notes }}</p>
+      </section>
+    {% endif %}
+
+    <!-- Map -->
+    {% if l.hasRoute %}
+      {% set mapPayload = { listing: { lat: l.lat, lon: l.lon, title: l.title, band: l.bandKey, rent: l.rentLabel }, route: l.route, anchors: homes.anchors } %}
+      <section id="map-section" class="mt-8 scroll-mt-20">
+        <h2 class="font-serif text-lg font-semibold text-sand-900 dark:text-sand-50">Where it is, and both drives</h2>
+
+        <div class="mt-3 overflow-hidden rounded-2xl border border-sand-200 dark:border-sand-800">
+          <div id="listing-map" class="map-shell h-[22rem] w-full sm:h-[26rem]" role="img" aria-label="Map of {{ l.title }} with driving routes to work and family"></div>
+          <div class="map-shell border-t border-sand-200 px-4 py-3 dark:border-sand-800">
+            <ul class="space-y-1.5 text-sm">
+              <li class="flex items-center gap-2.5">
+                <span class="h-1 w-6 shrink-0 rounded-full bg-route-work" aria-hidden="true"></span>
+                <span><strong class="font-semibold">Work &mdash; {{ homes.anchors.work.short }}:</strong> {{ l.workLabel if l.workLabel else "unknown" }}</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <span class="h-1 w-6 shrink-0 rounded-full bg-route-home" aria-hidden="true"></span>
+                <span><strong class="font-semibold">Home &mdash; {{ homes.anchors.home.short }}:</strong> {{ l.homeLabel if l.homeLabel else "unknown" }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="mt-2 text-xs text-sand-500 dark:text-sand-400">Drive times are free-flow estimates (no traffic).</p>
+        <script id="map-data" type="application/json">{{ mapPayload | jsonScript | safe }}</script>
+      </section>
+    {% endif %}
+
+    <!-- Prev / next -->
+    <nav class="mt-10 grid gap-2 border-t border-sand-200 pt-5 sm:grid-cols-2 dark:border-sand-800" aria-label="Other listings">
+      <a href="/listing/{{ l.prev.id }}/" class="group rounded-xl border border-sand-200 bg-white px-4 py-3 hover:border-clay-400 dark:border-sand-800 dark:bg-sand-900">
+        <span class="text-xs font-medium text-sand-500 dark:text-sand-400">&larr; Previous</span>
+        <span class="mt-0.5 block truncate text-sm font-semibold text-sand-800 group-hover:text-clay-700 dark:text-sand-100 dark:group-hover:text-clay-300">{{ l.prev.title }}</span>
+      </a>
+      <a href="/listing/{{ l.next.id }}/" class="group rounded-xl border border-sand-200 bg-white px-4 py-3 text-right hover:border-clay-400 dark:border-sand-800 dark:bg-sand-900">
+        <span class="text-xs font-medium text-sand-500 dark:text-sand-400">Next &rarr;</span>
+        <span class="mt-0.5 block truncate text-sm font-semibold text-sand-800 group-hover:text-clay-700 dark:text-sand-100 dark:group-hover:text-clay-300">{{ l.next.title }}</span>
+      </a>
+    </nav>
+
+  </article>
+</div>
+
+{% if l.hasRoute %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var host = document.getElementById("listing-map");
+  var payload = document.getElementById("map-data");
+  if (!host || !payload || typeof L === "undefined") return;
+
+  var data;
+  try { data = JSON.parse(payload.textContent); } catch (err) { return; }
+
+  var BAND_COLORS = {
+    "in-budget": "#059669",
+    "stretch": "#d97706",
+    "over": "#78716c",
+    "unknown": "#64748b"
+  };
+  var WORK_COLOR = "#2563eb";
+  var HOME_COLOR = "#7c3aed";
+
+  L.Icon.Default.imagePath = "/assets/vendor/leaflet/images/";
+
+  var map = L.map(host, { scrollWheelZoom: false });
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 19,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+  }).addTo(map);
+
+  var bounds = [];
+
+  function anchorIcon(color, glyph) {
+    return L.divIcon({
+      className: "",
+      html: '<span class="anchor-pin" style="background:' + color + '">' + glyph + "</span>",
+      iconSize: [32, 32],
+      iconAnchor: [16, 16],
+      popupAnchor: [0, -14]
+    });
+  }
+
+  function drawRoute(leg, color) {
+    if (leg && leg.geometry && leg.geometry.length > 1) {
+      L.polyline(leg.geometry, {
+        color: color,
+        weight: 5,
+        opacity: 0.85,
+        lineCap: "round",
+        lineJoin: "round"
+      }).addTo(map);
+      leg.geometry.forEach(function (point) { bounds.push(point); });
+    }
+  }
+
+  drawRoute(data.route && data.route.work, WORK_COLOR);
+  drawRoute(data.route && data.route.home, HOME_COLOR);
+
+  if (data.anchors && data.anchors.work && data.anchors.work.lat !== null) {
+    L.marker([data.anchors.work.lat, data.anchors.work.lon], {
+      icon: anchorIcon(WORK_COLOR, "&#128188;"),
+      title: data.anchors.work.label,
+      alt: "Work: " + data.anchors.work.label
+    }).addTo(map).bindPopup("<strong>Work</strong><br>" + data.anchors.work.label);
+    bounds.push([data.anchors.work.lat, data.anchors.work.lon]);
+  }
+
+  if (data.anchors && data.anchors.home && data.anchors.home.lat !== null) {
+    L.marker([data.anchors.home.lat, data.anchors.home.lon], {
+      icon: anchorIcon(HOME_COLOR, "&#127968;"),
+      title: data.anchors.home.label,
+      alt: "Family: " + data.anchors.home.label
+    }).addTo(map).bindPopup("<strong>Family</strong><br>" + data.anchors.home.label);
+    bounds.push([data.anchors.home.lat, data.anchors.home.lon]);
+  }
+
+  if (data.listing && data.listing.lat !== null) {
+    var here = [data.listing.lat, data.listing.lon];
+    L.circleMarker(here, {
+      radius: 10,
+      color: "#ffffff",
+      weight: 3,
+      fillColor: BAND_COLORS[data.listing.band] || BAND_COLORS.unknown,
+      fillOpacity: 1
+    }).addTo(map).bindPopup(
+      "<strong>" + data.listing.title + "</strong>" +
+      (data.listing.rent ? "<br>" + data.listing.rent + " / mo" : "")
+    );
+    bounds.push(here);
+  }
+
+  if (bounds.length) {
+    map.fitBounds(bounds, { padding: [28, 28] });
+  } else {
+    map.setView([40.3, -74.65], 10);
+  }
+});
+</script>
+{% endif %}

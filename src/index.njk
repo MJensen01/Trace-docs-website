@@ -1,375 +1,306 @@
 ---
 layout: base.njk
-title: "Trace — Offline-First Documentation for Engineers"
+description: Every rental we are tracking, with rent, commute times and ratings.
 ---
 
-{# ═══════════════════════════════════════════════════════════════
-   HERO SECTION
-   ═══════════════════════════════════════════════════════════════ #}
-<section class="relative min-h-screen flex items-center overflow-hidden">
-  {# Background grid pattern #}
-  <div class="absolute inset-0 opacity-5" style="background-image: linear-gradient(rgba(248,250,252,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(248,250,252,.1) 1px, transparent 1px); background-size: 4rem 4rem;"></div>
+<div class="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
 
-  <div class="relative mx-auto max-w-7xl w-full px-6 py-24 lg:py-32">
-    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+  <section class="mb-7">
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-clay-600 dark:text-clay-400">Our shortlist</p>
+    <h1 class="mt-1.5 font-serif text-3xl font-semibold leading-tight tracking-tight text-sand-900 sm:text-4xl dark:text-sand-50">
+      Matt &amp; Evelyn&rsquo;s Home Finder
+    </h1>
+    <p class="mt-2 max-w-2xl text-sm leading-relaxed text-sand-600 dark:text-sand-400">
+      {{ homes.counts.total }} places we&rsquo;re tracking near {{ homes.anchors.work.short }} and {{ homes.anchors.home.short }}.
+      Budget is {{ homes.budgetMaxLabel }}, stretching to {{ homes.budgetStretchLabel }}.
+      Last updated {{ homes.updatedLabel }}.
+    </p>
 
-      {# Left column — Copy #}
-      <div>
-        <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-6">v{{ trace.currentVersion }} — Now Available</p>
-        <h1 class="font-mono text-6xl sm:text-7xl lg:text-8xl font-bold text-white leading-none tracking-tighter">
-          Trace<span class="text-terminal">.</span>
-        </h1>
-        <p class="mt-4 font-mono text-base sm:text-lg text-slate-500 tracking-tight">
-          Document everything. Depend on nothing.
-        </p>
-        <p class="mt-6 text-base text-slate-400 max-w-lg leading-relaxed">
-          Offline-first documentation for engineers who need speed, portability, and zero dependencies. No logins. No subscriptions. No cloud.
-        </p>
-        <div class="mt-10 flex flex-wrap gap-5">
-          <a href="#download" class="inline-flex items-center font-mono text-base font-semibold bg-terminal text-slate-950 px-8 py-4 hover:bg-terminal-hover hover:shadow-[0_0_20px_rgba(245,158,11,0.3)] hover:-translate-y-0.5 hover:scale-105 transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-terminal focus:ring-offset-2 focus:ring-offset-slate-950">
-            [ Download Trace v{{ trace.currentVersion }} ]
-          </a>
-          <a href="#capabilities" class="inline-flex items-center font-mono text-base font-semibold border border-slate-700 text-slate-300 px-8 py-4 hover:border-slate-400 hover:text-white hover:-translate-y-0.5 hover:scale-[1.03] transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950">
-            See Capabilities &rarr;
-          </a>
+    <dl class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+      {% set stats = [
+        { label: "In budget", value: homes.counts.inBudget, band: "in-budget" },
+        { label: "Stretch", value: homes.counts.stretch, band: "stretch" },
+        { label: "Over budget", value: homes.counts.over, band: "over" },
+        { label: "Rated 4★ or 5★", value: homes.counts.topRated, band: "unknown" }
+      ] %}
+      {% for stat in stats %}
+        <div class="band-{{ stat.band }} rounded-2xl border border-sand-200 bg-white px-3.5 py-3 dark:border-sand-800 dark:bg-sand-900">
+          <dt class="flex items-center gap-1.5 text-xs font-medium text-sand-500 dark:text-sand-400">
+            <span class="band-bar h-2 w-2 shrink-0 rounded-full" aria-hidden="true"></span>
+            {{ stat.label }}
+          </dt>
+          <dd class="mt-0.5 font-serif text-2xl font-semibold tabular-nums text-sand-900 dark:text-sand-50">{{ stat.value }}</dd>
         </div>
-      </div>
+      {% endfor %}
+    </dl>
+  </section>
 
-      {# Right column — App screenshot placeholder #}
-      <div class="order-first lg:order-last">
-        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
-          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
-            <span class="font-mono text-terminal text-lg">&#9634;</span>
+  <section aria-label="Filter and sort" class="mb-5">
+    <h2 class="sr-only">Filters</h2>
+    <div class="-mx-4 overflow-x-auto px-4 pb-1 no-scrollbar sm:mx-0 sm:overflow-visible sm:px-0">
+      <div class="flex w-max gap-2 sm:w-full sm:flex-wrap">
+        {% set chips = [
+          { group: "all", value: "", label: "All" },
+          { group: "band", value: "in-budget", label: "In budget", band: "in-budget" },
+          { group: "band", value: "stretch", label: "Stretch", band: "stretch" },
+          { group: "kind", value: "apartment", label: "Apartments" },
+          { group: "kind", value: "townhouse", label: "Townhouses" },
+          { group: "state", value: "PA", label: "PA" },
+          { group: "state", value: "NJ", label: "NJ" },
+          { group: "rating", value: "4", label: "★ 4+" }
+        ] %}
+        {% for chip in chips %}
+          <button type="button"
+                  class="chip {% if chip.band %}band-{{ chip.band }}{% endif %} border-sand-300 bg-white text-sand-700 hover:border-clay-400 hover:text-clay-700 aria-pressed:border-clay-600 aria-pressed:bg-clay-600 aria-pressed:text-white dark:border-sand-700 dark:bg-sand-900 dark:text-sand-300 dark:hover:text-clay-300 dark:aria-pressed:border-clay-500 dark:aria-pressed:bg-clay-600 dark:aria-pressed:text-white"
+                  data-group="{{ chip.group }}"
+                  data-value="{{ chip.value }}"
+                  aria-pressed="{{ 'true' if chip.group == 'all' else 'false' }}">
+            {% if chip.band %}<span class="band-bar h-2 w-2 shrink-0 rounded-full" aria-hidden="true"></span>{% endif %}
+            {{ chip.label }}
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="mt-3 flex flex-wrap items-center gap-2">
+      <span class="text-xs font-medium uppercase tracking-wider text-sand-500 dark:text-sand-400">Sort</span>
+      {% set sorts = [
+        { value: "rating", label: "Rating" },
+        { value: "rent", label: "Rent" },
+        { value: "work", label: "Work commute" }
+      ] %}
+      {% for sort in sorts %}
+        <button type="button"
+                class="chip border-transparent bg-sand-100 text-sand-700 hover:bg-sand-200 aria-pressed:bg-sand-800 aria-pressed:text-sand-50 dark:bg-sand-800 dark:text-sand-300 dark:hover:bg-sand-700 dark:aria-pressed:bg-sand-100 dark:aria-pressed:text-sand-900"
+                data-sort="{{ sort.value }}"
+                aria-pressed="{{ 'true' if loop.first else 'false' }}">{{ sort.label }}</button>
+      {% endfor %}
+    </div>
+
+    <p id="result-count" class="mt-3 text-sm text-sand-500 dark:text-sand-400" role="status" aria-live="polite">
+      Showing all {{ homes.counts.total }} listings
+    </p>
+  </section>
+
+  <div id="grid" class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,19rem),1fr))] gap-4">
+    {% for l in homes.listings %}
+      <article class="listing-card band-{{ l.bandKey }} group relative flex flex-col overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-sand-300 hover:shadow-md dark:border-sand-800 dark:bg-sand-900 dark:hover:border-sand-700{% if l.isGone %} opacity-55 saturate-50{% endif %}"
+               data-band="{{ l.bandKey }}"
+               data-kind="{{ l.kind }}"
+               data-state="{{ l.state }}"
+               data-rating="{{ l.rating | default(0) }}"
+               data-rent="{{ l.rent if l.rent else '' }}"
+               data-work="{{ l.workMin if l.workMin else '' }}"
+               data-gone="{{ 1 if l.isGone else 0 }}">
+
+        <span class="band-bar absolute inset-x-0 top-0 h-1" aria-hidden="true"></span>
+
+        {% if l.img %}
+          <img src="{{ l.img }}" alt="Screenshot of the {{ l.title }} listing" loading="lazy" decoding="async"
+               class="aspect-[16/9] w-full border-b border-sand-200 object-cover object-top dark:border-sand-800">
+        {% endif %}
+
+        <div class="flex flex-1 flex-col gap-3 p-4 pt-4">
+
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h3 class="font-serif text-[1.0625rem] font-semibold leading-snug text-sand-900 dark:text-sand-50">
+                <a href="/listing/{{ l.id }}/" class="after:absolute after:inset-0 after:content-['']">{{ l.title }}</a>
+              </h3>
+              <p class="mt-0.5 truncate text-xs text-sand-500 dark:text-sand-400">
+                {% if l.subtitle %}{{ l.subtitle }} &middot; {% endif %}{{ l.place }}
+              </p>
+            </div>
+            <div class="shrink-0 text-right">
+              <p class="font-serif text-2xl font-semibold leading-none tabular-nums text-sand-900 dark:text-sand-50">
+                {{ l.rentLabel if l.rentLabel else "TBD" }}
+              </p>
+              <p class="mt-1 text-[0.6875rem] font-medium text-sand-400 dark:text-sand-500">
+                {% if l.rentLabel %}per month{% else %}rent unknown{% endif %}
+              </p>
+            </div>
           </div>
-          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
-          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Main application dashboard — showing the primary workspace with a document open, sidebar navigation, and capture panel visible]</p>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  {# Scroll indicator #}
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 hidden lg:block">
-    <div class="w-5 h-9 border-2 border-slate-700 rounded-full flex justify-center pt-2">
-      <div class="w-1 h-2 bg-slate-500 rounded-full animate-bounce"></div>
-    </div>
-  </div>
-</section>
-
-{# ═══════════════════════════════════════════════════════════════
-   CORE CAPABILITIES
-   ═══════════════════════════════════════════════════════════════ #}
-<section id="capabilities" class="relative py-24 lg:py-32 border-t border-slate-800/60">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="text-center max-w-2xl mx-auto mb-20">
-      <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Core Capabilities</p>
-      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Ingest. Structure. Export.</h2>
-      <p class="mt-4 text-slate-400 leading-relaxed">Three operations. One tool. From raw input to finished documentation in a single, unbroken workflow.</p>
-    </div>
-
-    {# Capability 1 — Screen & Video Capture #}
-    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-24 lg:mb-32">
-      <div>
-        <div class="inline-flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold">01</div>
-        <h3 class="font-mono text-2xl font-bold text-white mb-4">Screen &amp; Video Capture</h3>
-        <p class="text-slate-400 leading-relaxed mb-4">
-          Instantly record your screen, grab static screenshots, and drop them directly into a living document. Point, click, capture — no terminal required.
-        </p>
-        <ul class="space-y-2 font-mono text-sm text-slate-500">
-          <li><span class="text-terminal mr-2">&gt;</span>Screen recordings</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Screenshots</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Image paste &amp; drag-and-drop</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Freeform text &amp; annotations</li>
-        </ul>
-      </div>
-      <div>
-        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
-          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
-            <span class="font-mono text-terminal text-lg">&#9634;</span>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <span class="band-pill inline-flex items-center rounded-full border px-2 py-0.5 text-[0.6875rem] font-semibold">{{ l.band.label }}</span>
+            {% if l.isGone %}
+              <span class="inline-flex items-center rounded-full border border-rose-300 bg-rose-50 px-2 py-0.5 text-[0.6875rem] font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300">No longer listed</span>
+            {% elif l.verification == "needs-call" %}
+              <span class="inline-flex items-center rounded-full border border-sand-300 bg-sand-100 px-2 py-0.5 text-[0.6875rem] font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">Needs a call</span>
+            {% elif l.verification == "unverified" %}
+              <span class="inline-flex items-center rounded-full border border-sand-300 bg-sand-100 px-2 py-0.5 text-[0.6875rem] font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">Unverified</span>
+            {% endif %}
+            <span class="text-[0.6875rem] text-sand-400 dark:text-sand-500">{{ l.kind | capitalize }}</span>
           </div>
-          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
-          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: GUI capture interface — showing the screen/video recording controls, a captured screenshot embedded in a document, and the capture panel sidebar]</p>
-        </div>
-      </div>
-    </div>
 
-    {# Capability 2 — Rapid Structuring #}
-    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center mb-24 lg:mb-32">
-      <div class="order-2 lg:order-1">
-        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
-          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
-            <span class="font-mono text-terminal text-lg">&#123;&#125;</span>
-          </div>
-          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
-          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Document structuring view — showing the section tree/outline sidebar, drag-and-drop reordering of captures, and tag assignment panel]</p>
-        </div>
-      </div>
-      <div class="order-1 lg:order-2">
-        <div class="inline-flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold">02</div>
-        <h3 class="font-mono text-2xl font-bold text-white mb-4">Rapid Structuring</h3>
-        <p class="text-slate-400 leading-relaxed mb-4">
-          Organize captures into logical sections with drag-and-drop. Tag entries, link related items, and build a coherent document from raw fragments — in seconds, not hours.
-        </p>
-        <ul class="space-y-2 font-mono text-sm text-slate-500">
-          <li><span class="text-terminal mr-2">&gt;</span>Drag-and-drop section ordering</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Tagging &amp; cross-referencing</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Hierarchical document outlines</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Inline annotations on any capture</li>
-        </ul>
-      </div>
-    </div>
+          <p class="text-sm text-sand-600 dark:text-sand-300">
+            {% if l.specs.length %}{{ l.specs | join(" &middot; ") | safe }}{% else %}<span class="text-sand-400 dark:text-sand-500">Size not listed</span>{% endif %}
+          </p>
 
-    {# Capability 3 — Instant Export #}
-    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-      <div>
-        <div class="inline-flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold">03</div>
-        <h3 class="font-mono text-2xl font-bold text-white mb-4">Instant Export</h3>
-        <p class="text-slate-400 leading-relaxed mb-4">
-          One click. Your structured document becomes a polished PDF with embedded images — ready to hand off, archive, or print. Also exports to Markdown and standalone HTML.
-        </p>
-        <ul class="space-y-2 font-mono text-sm text-slate-500">
-          <li><span class="text-terminal mr-2">&gt;</span><span class="text-white font-medium">PDF with embedded images</span></li>
-          <li><span class="text-terminal mr-2">&gt;</span>Markdown (.md)</li>
-          <li><span class="text-terminal mr-2">&gt;</span>Standalone HTML page</li>
-          <li><span class="text-terminal mr-2">&gt;</span>All exports generated locally</li>
-        </ul>
-      </div>
-      <div>
-        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
-          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
-            <span class="font-mono text-terminal text-lg">&uarr;</span>
-          </div>
-          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
-          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Export dialog — showing format selection (Markdown/PDF/HTML), a preview of the rendered output, and the generated file ready for download or sharing]</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+          <dl class="mt-auto grid grid-cols-2 gap-x-3 gap-y-1 border-t border-sand-100 pt-3 text-xs dark:border-sand-800">
+            <div>
+              <dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">
+                <span class="h-2 w-2 rounded-full bg-route-work" aria-hidden="true"></span> Work
+              </dt>
+              <dd class="mt-0.5 tabular-nums {% if l.workSlow %}font-semibold text-rose-600 dark:text-rose-400{% else %}text-sand-700 dark:text-sand-200{% endif %}">
+                {{ l.workLabel if l.workLabel else "—" }}
+              </dd>
+            </div>
+            <div>
+              <dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">
+                <span class="h-2 w-2 rounded-full bg-route-home" aria-hidden="true"></span> Home
+              </dt>
+              <dd class="mt-0.5 tabular-nums text-sand-700 dark:text-sand-200">{{ l.homeLabel if l.homeLabel else "—" }}</dd>
+            </div>
+          </dl>
 
-{# ═══════════════════════════════════════════════════════════════
-   ANTI-SAAS GUARANTEE — FEATURE GRID
-   ═══════════════════════════════════════════════════════════════ #}
-<section id="features" class="relative py-24 lg:py-32 border-t border-slate-800/60">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="text-center max-w-2xl mx-auto mb-16">
-      <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">The Anti-SaaS Guarantee</p>
-      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Your Machine. Your Data. Period.</h2>
-      <p class="mt-4 text-slate-400 leading-relaxed">No cloud. No accounts. No telemetry. Trace runs entirely on your hardware — the way engineering tools should work.</p>
-    </div>
+          <p class="text-sm leading-none text-amber-500" aria-label="Rated {{ l.rating | default(0) }} out of 5">
+            <span aria-hidden="true">{% for on in l.stars %}{% if on %}&#9733;{% else %}<span class="text-sand-300 dark:text-sand-700">&#9733;</span>{% endif %}{% endfor %}</span>
+          </p>
 
-    <div class="grid md:grid-cols-3 gap-6">
-      {# Card 1 — Zero Latency #}
-      <article class="group border border-slate-800 bg-slate-900/40 p-8 hover:border-terminal/40 transition-colors">
-        <div class="flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold group-hover:bg-terminal/10 transition-colors">
-          &gt;_
         </div>
-        <h3 class="font-mono text-lg font-semibold text-white mb-3">Zero Latency</h3>
-        <p class="text-slate-400 leading-relaxed">
-          Everything runs on your local filesystem. Your documentation loads instantly — no servers, no round-trips, no spinners.
-        </p>
       </article>
-
-      {# Card 2 — Air-Gapped Ready #}
-      <article class="group border border-slate-800 bg-slate-900/40 p-8 hover:border-terminal/40 transition-colors">
-        <div class="flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold group-hover:bg-terminal/10 transition-colors">
-          &#9632;
-        </div>
-        <h3 class="font-mono text-lg font-semibold text-white mb-3">Air-Gapped Ready</h3>
-        <p class="text-slate-400 leading-relaxed">
-          Works in secure environments, air-gapped networks, and anywhere connectivity is unreliable or nonexistent. No internet required — ever.
-        </p>
-      </article>
-
-      {# Card 3 — Data Sovereignty #}
-      <article class="group border border-slate-800 bg-slate-900/40 p-8 hover:border-terminal/40 transition-colors">
-        <div class="flex items-center justify-center w-12 h-12 border border-slate-700 bg-slate-800 mb-6 font-mono text-terminal text-lg font-bold group-hover:bg-terminal/10 transition-colors">
-          &#128274;
-        </div>
-        <h3 class="font-mono text-lg font-semibold text-white mb-3">Data Sovereignty</h3>
-        <p class="text-slate-400 leading-relaxed">
-          Your data stays on your drive. No sync servers, no third-party storage, no compliance headaches. Full control, always.
-        </p>
-      </article>
-    </div>
+    {% endfor %}
   </div>
-</section>
 
-{# ═══════════════════════════════════════════════════════════════
-   UNDER THE HOOD — TECHNICAL / OPTIMIZATION
-   ═══════════════════════════════════════════════════════════════ #}
-<section id="internals" class="relative py-24 lg:py-32 border-t border-slate-800/60">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="text-center max-w-2xl mx-auto mb-16">
-      <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Under the Hood</p>
-      <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white">Engineered for<br><span class="text-terminal">Performance.</span></h2>
-      <p class="mt-4 text-slate-400 leading-relaxed">Trace is built for engineers who care about what's running on their machines. Here's what's inside.</p>
-    </div>
+  <p id="empty-state" class="hidden rounded-2xl border border-dashed border-sand-300 px-6 py-12 text-center text-sm text-sand-500 dark:border-sand-700 dark:text-sand-400">
+    Nothing matches those filters. Try tapping <strong class="font-semibold">All</strong>.
+  </p>
 
-    {# Technical stats grid #}
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-      <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
-        <p class="font-mono text-3xl font-bold text-terminal mb-2">Instant</p>
-        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">UI Response</p>
-      </div>
-      <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
-        <p class="font-mono text-3xl font-bold text-terminal mb-2">~80MB</p>
-        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Memory at Idle</p>
-      </div>
-      <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
-        <p class="font-mono text-3xl font-bold text-terminal mb-2">3</p>
-        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Platforms</p>
-      </div>
-      <div class="border border-slate-800 bg-slate-900/40 p-6 text-center">
-        <p class="font-mono text-3xl font-bold text-terminal mb-2">0</p>
-        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Network Calls</p>
-      </div>
-    </div>
+  <p class="mt-8 text-center">
+    <a href="/map/" class="tap rounded-full border border-sand-300 bg-white px-5 text-sm font-semibold text-clay-700 hover:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-clay-300">See them all on the map</a>
+  </p>
 
-    {# Technical detail — Two column layout #}
-    <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+</div>
 
-      {# Left column — Technical breakdown #}
-      <div class="space-y-10">
-        {# Filesystem Storage #}
-        <div class="border-l-2 border-terminal pl-6">
-          <h3 class="font-mono text-lg font-semibold text-white mb-2">Filesystem-Based Storage</h3>
-          <p class="text-slate-400 leading-relaxed">
-            Your documentation is stored as lightweight, universal Markdown files on disk. No proprietary databases, no opaque binary formats — just files you can read, move, and back up with any tool you already use.
-          </p>
-        </div>
+<script>
+(function () {
+  var grid = document.getElementById("grid");
+  if (!grid) return;
 
-        {# Portability #}
-        <div class="border-l-2 border-terminal pl-6">
-          <h3 class="font-mono text-lg font-semibold text-white mb-2">Portable &amp; Self-Contained</h3>
-          <p class="text-slate-400 leading-relaxed">
-            Trace ships as a single binary per platform — Windows, macOS (Universal), and Linux. No runtime dependencies. No framework installations. Copy it to a USB drive, an air-gapped workstation, or a fresh OS install. It just runs.
-          </p>
-        </div>
+  var cards = Array.prototype.slice.call(grid.querySelectorAll(".listing-card"));
+  var chips = Array.prototype.slice.call(document.querySelectorAll("[data-group]"));
+  var sortButtons = Array.prototype.slice.call(document.querySelectorAll("[data-sort]"));
+  var countEl = document.getElementById("result-count");
+  var emptyEl = document.getElementById("empty-state");
+  var STORE_KEY = "home-finder-view";
 
-        {# Resource overhead #}
-        <div class="border-l-2 border-terminal pl-6">
-          <h3 class="font-mono text-lg font-semibold text-white mb-2">Low Resource Overhead</h3>
-          <p class="text-slate-400 leading-relaxed">
-            Trace idles at roughly 80 MB of RAM and negligible CPU. It won't compete with your compiler, your containers, or your 47 browser tabs. Designed to stay out of the way until you need it.
-          </p>
-        </div>
+  var active = { band: [], kind: [], state: [], rating: [] };
+  var sortBy = "rating";
 
-        {# Instant Search #}
-        <div class="border-l-2 border-terminal pl-6">
-          <h3 class="font-mono text-lg font-semibold text-white mb-2">Instant Search</h3>
-          <p class="text-slate-400 leading-relaxed">
-            Search across your documents instantly. Results appear as you type — no loading states, no network latency, no waiting.
-          </p>
-        </div>
-      </div>
+  function num(el, attr) {
+    var raw = el.getAttribute(attr);
+    if (raw === null || raw === "") return null;
+    var value = Number(raw);
+    return isNaN(value) ? null : value;
+  }
 
-      {# Right column — Screenshot + terminal demo #}
-      <div class="space-y-6">
-        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
-          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
-            <span class="font-mono text-terminal text-lg">&#9632;</span>
-          </div>
-          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
-          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Search interface in action — showing instant search results populating as the user types, with sub-millisecond response time visible in the UI]</p>
-        </div>
+  function matches(card) {
+    if (active.band.length && active.band.indexOf(card.getAttribute("data-band")) === -1) return false;
+    if (active.kind.length && active.kind.indexOf(card.getAttribute("data-kind")) === -1) return false;
+    if (active.state.length && active.state.indexOf(card.getAttribute("data-state")) === -1) return false;
+    if (active.rating.length && (num(card, "data-rating") || 0) < 4) return false;
+    return true;
+  }
 
-        {# GUI workflow screenshot #}
-        <div class="screenshot-placeholder border border-dashed border-slate-700 bg-slate-900/30 aspect-[4/3] w-full flex flex-col items-center justify-center p-8 text-center">
-          <div class="w-12 h-12 border border-slate-700 bg-slate-800 flex items-center justify-center mb-4">
-            <span class="font-mono text-terminal text-lg">&uarr;</span>
-          </div>
-          <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-2">Screenshot Placeholder</p>
-          <p class="font-mono text-xs text-slate-600 max-w-xs">[SCREENSHOT PLACEHOLDER: Export workflow — showing the GUI export dialog with PDF generation in progress, format options, and the resulting document preview]</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+  // Nulls (unknown rent, missing commute) always sink to the bottom.
+  function compareNumbers(a, b, attr) {
+    var av = num(a, attr);
+    var bv = num(b, attr);
+    if (av === null && bv === null) return 0;
+    if (av === null) return 1;
+    if (bv === null) return -1;
+    return av - bv;
+  }
 
-{# ═══════════════════════════════════════════════════════════════
-   BUILT FOR ENGINEERS
-   ═══════════════════════════════════════════════════════════════ #}
-<section class="relative py-24 lg:py-32 border-t border-slate-800/60">
-  <div class="mx-auto max-w-3xl px-6 text-center">
-    <p class="font-mono text-terminal text-sm tracking-widest uppercase mb-3">Built for Engineers</p>
-    <h2 class="font-mono text-3xl sm:text-4xl font-bold text-white leading-tight">
-      You don't have time<br>to document.
-    </h2>
-    <div class="mt-8 space-y-6 text-lg text-slate-400 leading-relaxed">
-      <p>
-        Between the deploys, the debugging sessions, and the "quick questions" that eat your afternoon — documentation is the task that always gets pushed to tomorrow.
-      </p>
-      <p>
-        Trace bridges the gap between the <span class="text-white font-medium">work you're doing</span> and the <span class="text-white font-medium">records you need</span>. It captures your process as it happens, so the docs write themselves.
-      </p>
-      <p class="text-terminal font-mono text-base">
-        Stop choosing between doing the work and documenting it.
-      </p>
-    </div>
-    <div class="mt-12">
-      <a href="#download" class="inline-flex items-center font-mono text-sm font-semibold bg-terminal text-slate-950 px-8 py-4 hover:bg-terminal-hover transition-colors focus:outline-none focus:ring-2 focus:ring-terminal focus:ring-offset-2 focus:ring-offset-slate-950">
-        [ Get Started with Trace ]
-      </a>
-    </div>
-  </div>
-</section>
+  function compare(a, b) {
+    // Listings that are gone always go last, whatever the sort.
+    var goneDelta = num(a, "data-gone") - num(b, "data-gone");
+    if (goneDelta !== 0) return goneDelta;
 
-{# ═══════════════════════════════════════════════════════════════
-   DOWNLOAD TERMINAL
-   ═══════════════════════════════════════════════════════════════ #}
-{% include "download-terminal.njk" %}
+    if (sortBy === "rent") return compareNumbers(a, b, "data-rent");
+    if (sortBy === "work") return compareNumbers(a, b, "data-work");
 
-{# ═══════════════════════════════════════════════════════════════
-   FOOTER
-   ═══════════════════════════════════════════════════════════════ #}
-<footer class="border-t border-slate-800/60 py-16">
-  <div class="mx-auto max-w-7xl px-6">
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+    var ratingDelta = (num(b, "data-rating") || 0) - (num(a, "data-rating") || 0);
+    if (ratingDelta !== 0) return ratingDelta;
+    return compareNumbers(a, b, "data-rent");
+  }
 
-      {# Brand #}
-      <div class="sm:col-span-2 lg:col-span-1">
-        <p class="font-mono text-lg font-bold text-white">Trace<span class="text-terminal">.</span></p>
-        <p class="mt-2 text-sm text-slate-500 leading-relaxed">Offline-first documentation<br>for engineers.</p>
-      </div>
+  function anyFilterActive() {
+    return active.band.length + active.kind.length + active.state.length + active.rating.length > 0;
+  }
 
-      {# Product links #}
-      <nav aria-label="Product links">
-        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-4">Product</p>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#download" class="text-slate-400 hover:text-white transition-colors">Download</a></li>
-          <li><a href="#capabilities" class="text-slate-400 hover:text-white transition-colors">Capabilities</a></li>
-          <li><a href="#features" class="text-slate-400 hover:text-white transition-colors">Features</a></li>
-          <li><a href="#internals" class="text-slate-400 hover:text-white transition-colors">Under the Hood</a></li>
-        </ul>
-      </nav>
+  function render() {
+    var visible = 0;
+    cards.forEach(function (card) {
+      var show = matches(card);
+      card.classList.toggle("hidden", !show);
+      if (show) visible++;
+    });
 
-      {# Resources #}
-      <nav aria-label="Resources">
-        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-4">Resources</p>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="text-slate-400 hover:text-white transition-colors">Documentation</a></li>
-          <li><a href="#" class="text-slate-400 hover:text-white transition-colors">Changelog</a></li>
-          <li><a href="#" class="text-slate-400 hover:text-white transition-colors">GitHub</a></li>
-        </ul>
-      </nav>
+    cards.slice().sort(compare).forEach(function (card) {
+      grid.appendChild(card);
+    });
 
-      {# Legal & Security #}
-      <nav aria-label="Legal and security">
-        <p class="font-mono text-xs text-slate-500 uppercase tracking-widest mb-4">Legal</p>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="text-slate-400 hover:text-white transition-colors">Privacy</a></li>
-          <li><a href="#" class="text-slate-400 hover:text-white transition-colors">License</a></li>
-          <li><a href="#" class="text-slate-400 hover:text-white transition-colors">Security</a></li>
-        </ul>
-      </nav>
-    </div>
+    if (countEl) {
+      countEl.textContent = anyFilterActive()
+        ? "Showing " + visible + " of " + cards.length + " listings"
+        : "Showing all " + cards.length + " listings";
+    }
+    if (emptyEl) emptyEl.classList.toggle("hidden", visible !== 0);
+    grid.classList.toggle("hidden", visible === 0);
 
-    <div class="mt-12 pt-8 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-xs text-slate-600">&copy; 2026 Trace Documentation. All rights reserved.</p>
-      <p class="text-xs text-slate-600">
-        A project by <a href="#" class="text-slate-400 hover:text-terminal transition-colors">Matthew Jensen</a>
-      </p>
-    </div>
-  </div>
-</footer>
+    chips.forEach(function (chip) {
+      var group = chip.getAttribute("data-group");
+      if (group === "all") {
+        chip.setAttribute("aria-pressed", anyFilterActive() ? "false" : "true");
+        return;
+      }
+      var on = active[group] && active[group].indexOf(chip.getAttribute("data-value")) !== -1;
+      chip.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    sortButtons.forEach(function (button) {
+      button.setAttribute("aria-pressed", button.getAttribute("data-sort") === sortBy ? "true" : "false");
+    });
+
+    try {
+      sessionStorage.setItem(STORE_KEY, JSON.stringify({ active: active, sortBy: sortBy }));
+    } catch (err) { /* private mode — filters just won't persist */ }
+  }
+
+  chips.forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      var group = chip.getAttribute("data-group");
+      if (group === "all") {
+        active = { band: [], kind: [], state: [], rating: [] };
+      } else {
+        var value = chip.getAttribute("data-value");
+        var list = active[group];
+        var at = list.indexOf(value);
+        if (at === -1) list.push(value); else list.splice(at, 1);
+      }
+      render();
+    });
+  });
+
+  sortButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      sortBy = button.getAttribute("data-sort");
+      render();
+    });
+  });
+
+  // Come back from a listing page and the view is how you left it.
+  try {
+    var saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || "null");
+    if (saved && saved.active) {
+      ["band", "kind", "state", "rating"].forEach(function (group) {
+        if (Array.isArray(saved.active[group])) active[group] = saved.active[group];
+      });
+      if (saved.sortBy) sortBy = saved.sortBy;
+    }
+  } catch (err) { /* ignore */ }
+
+  render();
+})();
+</script>

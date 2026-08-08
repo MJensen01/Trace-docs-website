@@ -1,25 +1,213 @@
 @import "tailwindcss";
 
+/* Templates live next to this file; be explicit so the scan never misses one. */
+@source "../**/*.njk";
+@source "../**/*.html";
+@source "../**/*.md";
+
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --color-terminal: #f59e0b;
-  --color-terminal-hover: #fbbf24;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+
+  /* Warm neutrals — the whole site sits on these. */
+  --color-sand-50: #faf8f4;
+  --color-sand-100: #f4efe7;
+  --color-sand-200: #e8e0d3;
+  --color-sand-300: #d7cbb8;
+  --color-sand-400: #b6a892;
+  --color-sand-500: #8e8271;
+  --color-sand-600: #6d6355;
+  --color-sand-700: #4f473c;
+  --color-sand-800: #332e27;
+  --color-sand-900: #23201a;
+  --color-sand-950: #17140f;
+
+  /* Clay accent for links + interactive bits. */
+  --color-clay-300: #eebe9d;
+  --color-clay-400: #e0a179;
+  --color-clay-500: #c8764a;
+  --color-clay-600: #a95c34;
+  --color-clay-700: #8a4a29;
+
+  /* Budget bands — mirrored in JS for the map markers. */
+  --color-band-in-budget: #059669;
+  --color-band-stretch: #d97706;
+  --color-band-over: #78716c;
+  --color-band-unknown: #64748b;
+
+  /* Route colours, shared with the Leaflet polylines. */
+  --color-route-work: #2563eb;
+  --color-route-home: #7c3aed;
 }
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
   ::selection {
-    background-color: var(--color-terminal);
-    color: #0f172a;
+    background-color: var(--color-clay-300);
+    color: var(--color-sand-900);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-clay-500);
+    outline-offset: 2px;
+    border-radius: 0.35rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
 @layer components {
-  /* Screenshot placeholder — dashed frame for image insertion points */
-  .screenshot-placeholder {
-    transition: border-color 0.2s ease;
+  /* Band accent — every card / pill reads its colour from this one var. */
+  .band-in-budget {
+    --band: var(--color-band-in-budget);
+    --band-soft: #ecfdf5;
+    --band-soft-dark: #052e21;
   }
-  .screenshot-placeholder:hover {
-    border-color: var(--color-terminal);
+  .band-stretch {
+    --band: var(--color-band-stretch);
+    --band-soft: #fffbeb;
+    --band-soft-dark: #35210a;
+  }
+  .band-over {
+    --band: var(--color-band-over);
+    --band-soft: #f5f5f4;
+    --band-soft-dark: #2a2724;
+  }
+  .band-unknown {
+    --band: var(--color-band-unknown);
+    --band-soft: #f1f5f9;
+    --band-soft-dark: #1e252e;
+  }
+
+  .band-bar {
+    background-color: var(--band, var(--color-sand-300));
+  }
+
+  .band-pill {
+    color: color-mix(in srgb, var(--band) 88%, black);
+    background-color: var(--band-soft, var(--color-sand-100));
+    border-color: color-mix(in srgb, var(--band) 28%, transparent);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .band-pill {
+      color: color-mix(in srgb, var(--band) 62%, white);
+      background-color: var(--band-soft-dark, var(--color-sand-800));
+      border-color: color-mix(in srgb, var(--band) 40%, transparent);
+    }
+  }
+
+  /* Thumb-friendly targets everywhere: 44px minimum. */
+  .tap {
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chip {
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding-inline: 0.9rem;
+    border-radius: 9999px;
+    border-width: 1px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  /* A selected chip inverts, so its band dot goes white to stay visible. */
+  .chip[aria-pressed="true"] .band-bar {
+    background-color: #fff;
+  }
+
+  /* Horizontal chip rail on small screens without a visible scrollbar. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Placeholder art for listings with no screenshot yet. */
+  .photo-placeholder {
+    background-image:
+      radial-gradient(
+        circle at 30% 20%,
+        color-mix(in srgb, var(--band, #8e8271) 16%, transparent),
+        transparent 60%
+      ),
+      linear-gradient(140deg, var(--color-sand-100), var(--color-sand-200));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .photo-placeholder {
+      background-image:
+        radial-gradient(
+          circle at 30% 20%,
+          color-mix(in srgb, var(--band, #8e8271) 22%, transparent),
+          transparent 60%
+        ),
+        linear-gradient(140deg, var(--color-sand-800), var(--color-sand-900));
+    }
+  }
+
+  /* Leaflet stays light in both themes — it is a paper map. */
+  .map-shell {
+    background-color: #eef2f0;
+    color: #1c1917;
+  }
+  .map-shell .leaflet-popup-content {
+    margin: 0.75rem 0.9rem;
+    font-family: var(--font-sans);
+  }
+  .map-shell .leaflet-popup-content-wrapper {
+    border-radius: 0.75rem;
+  }
+  .map-shell .leaflet-container {
+    font-family: var(--font-sans);
+  }
+
+  .anchor-pin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+    color: #fff;
   }
 }

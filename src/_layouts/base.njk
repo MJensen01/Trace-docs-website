@@ -1,79 +1,45 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ title | default("Trace — Offline-First Documentation for Engineers") }}</title>
-  <meta name="description" content="{{ description | default("An offline-first documentation tool built for engineers who need speed, portability, and zero dependencies. No logins. No subscriptions. No cloud.") }}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light dark">
+  <title>{% if title %}{{ title }} · {% endif %}Matt &amp; Evelyn&rsquo;s Home Finder</title>
+  <meta name="description" content="{{ description | default('A private list of rentals we are considering, with rent, commute times and maps.') }}">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A1%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="/css/output.css">
+  {% if useMap %}
+  <link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
+  <script src="/assets/vendor/leaflet/leaflet.js" defer></script>
+  {% endif %}
 </head>
-<body class="bg-slate-950 text-slate-300 font-sans antialiased">
-  {{ content | safe }}
+<body class="min-h-screen bg-sand-50 font-sans text-sand-800 antialiased dark:bg-sand-950 dark:text-sand-200">
 
-  <script>
-  (function () {
-    // --- OS Detection (zero CLS: all panels hidden by default, JS reveals one) ---
-    function detectOS() {
-      var ua = navigator.userAgent || "";
-      if (/Win/.test(ua)) return "windows";
-      if (/Mac/.test(ua)) return "macos";
-      if (/Linux/.test(ua)) return "linux";
-      return "windows"; // sensible default
-    }
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-clay-700 focus:shadow-lg dark:focus:bg-sand-800 dark:focus:text-clay-300">Skip to content</a>
 
-    function activateOS(os) {
-      // Tabs
-      document.querySelectorAll(".os-tab").forEach(function (tab) {
-        var isActive = tab.getAttribute("data-os") === os;
-        tab.setAttribute("aria-selected", isActive ? "true" : "false");
-        if (isActive) {
-          tab.classList.add("border-terminal", "text-white", "bg-terminal/10");
-          tab.classList.remove("border-slate-700", "text-slate-400");
-        } else {
-          tab.classList.remove("border-terminal", "text-white", "bg-terminal/10");
-          tab.classList.add("border-slate-700", "text-slate-400");
-        }
-      });
-      // Panels
-      document.querySelectorAll(".os-panel").forEach(function (panel) {
-        if (panel.getAttribute("data-os-panel") === os) {
-          panel.classList.remove("hidden");
-        } else {
-          panel.classList.add("hidden");
-        }
-      });
-    }
+  <header class="sticky top-0 z-40 border-b border-sand-200/80 bg-sand-50/90 backdrop-blur-sm dark:border-sand-800 dark:bg-sand-950/90">
+    <nav class="mx-auto flex max-w-6xl items-center gap-1 px-3 sm:px-5" aria-label="Main">
+      <a href="/" class="tap -ml-2 gap-2 rounded-xl px-2 font-serif text-base font-semibold tracking-tight text-sand-900 hover:text-clay-600 sm:text-lg dark:text-sand-50 dark:hover:text-clay-400">
+        <span aria-hidden="true" class="text-lg">&#127969;</span>
+        <span>Home Finder</span>
+      </a>
+      <a href="/map/" class="tap rounded-xl px-3 text-sm font-medium text-sand-600 hover:bg-sand-100 hover:text-clay-700 dark:text-sand-400 dark:hover:bg-sand-800 dark:hover:text-clay-300">Map</a>
+      <span class="ml-auto shrink-0 text-xs text-sand-500 dark:text-sand-400">
+        Updated <span class="sm:hidden">{{ homes.updatedShortLabel }}</span><span class="hidden sm:inline">{{ homes.updatedLabel }}</span>
+      </span>
+    </nav>
+  </header>
 
-    // Tab click handler
-    document.querySelectorAll(".os-tab").forEach(function (tab) {
-      tab.addEventListener("click", function () {
-        activateOS(this.getAttribute("data-os"));
-      });
-    });
+  <main id="main">
+    {{ content | safe }}
+  </main>
 
-    // Auto-detect on load
-    activateOS(detectOS());
+  <footer class="mx-auto max-w-6xl px-4 py-10 text-xs leading-relaxed text-sand-500 sm:px-6 dark:text-sand-400">
+    <p>Private list for Matt &amp; Evelyn. Data updated {{ homes.updatedLabel }} &middot; {{ homes.counts.total }} listings tracked.</p>
+    <p class="mt-1">Rents and availability change fast &mdash; always confirm with the leasing office before making plans.</p>
+  </footer>
 
-    // --- Copy Checksum ---
-    document.querySelectorAll("[data-copy-checksum]").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        var checksum = this.getAttribute("data-copy-checksum");
-        var button = this;
-        navigator.clipboard.writeText(checksum).then(function () {
-          var original = button.textContent;
-          button.textContent = "Copied!";
-          button.classList.add("text-terminal", "border-terminal/60");
-          setTimeout(function () {
-            button.textContent = original;
-            button.classList.remove("text-terminal", "border-terminal/60");
-          }, 2000);
-        });
-      });
-    });
-  })();
-  </script>
 </body>
 </html>

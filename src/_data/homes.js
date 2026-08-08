@@ -1,0 +1,297 @@
+/**
+ * homes.js — prepares the raw listing/route data for the templates.
+ *
+ * listings.json and routes.json stay untouched (they are written by the
+ * listing-search pipeline). Everything derived for display happens here so the
+ * Nunjucks templates stay simple.
+ */
+
+const fs = require("node:fs");
+const path = require("node:path");
+
+const raw = require("./listings.json");
+const routes = require("./routes.json");
+
+const SCREENSHOT_DIR = path.join(__dirname, "..", "assets", "listings");
+
+/** Files that actually exist on disk, keyed by listing id. */
+function screenshotIndex() {
+  let files = [];
+  try {
+    files = fs.readdirSync(SCREENSHOT_DIR);
+  } catch {
+    return {};
+  }
+  const index = {};
+  for (const file of files) {
+    const ext = path.extname(file).toLowerCase();
+    if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) continue;
+    index[path.basename(file, path.extname(file))] = `/assets/listings/${file}`;
+  }
+  return index;
+}
+
+/** Abbreviations that end in "." but do not end a sentence. */
+const ABBREVIATIONS = new Set([
+  "approx", "incl", "est", "min", "max", "mo", "yr", "sq", "ft", "st", "rd",
+  "ave", "dr", "blvd", "apt", "no", "vs", "etc", "e.g", "i.e", "ca", "w",
+]);
+
+/**
+ * Turn a prose blob of pros/cons into discrete bullets.
+ * Splits on "; " first, then on sentence boundaries.
+ */
+function toBullets(text) {
+  if (!text || typeof text !== "string") return [];
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+
+  const pieces = [];
+  for (const clause of trimmed.split(/;\s+/)) {
+    let buffer = "";
+    // Split after . ! ? when followed by whitespace + a new "sentence start".
+    const parts = clause.split(/(?<=[.!?])\s+(?=[A-Z0-9$"'(])/);
+    for (const part of parts) {
+      const candidate = buffer ? `${buffer} ${part}` : part;
+      const lastWord = (buffer ? part : candidate)
+        .replace(/[)"']+$/, "")
+        .split(/\s+/)
+        .pop()
+        .replace(/\.$/, "")
+        .toLowerCase();
+      // Keep abbreviations and single initials glued to the next fragment.
+      if (ABBREVIATIONS.has(lastWord) || /^[a-z]$/.test(lastWord)) {
+        buffer = candidate;
+        continue;
+      }
+      buffer = "";
+      pieces.push(candidate);
+    }
+    if (buffer) pieces.push(buffer);
+  }
+
+  return pieces
+    .map((piece) => piece.trim().replace(/[;,]$/, ""))
+    .filter((piece) => piece.length > 1)
+    // Read as bullets, not sentence fragments: drop the trailing full stop and
+    // give each one a capital so the semicolon clauses line up with the rest.
+    .map((piece) => piece.replace(/\.$/, ""))
+    .map((piece) => piece.charAt(0).toUpperCase() + piece.slice(1))
+    .filter((piece) => piece.length > 1);
+}
+
+function money(value) {
+  if (value === null || value === undefined || Number.isNaN(value)) return null;
+  return `$${Number(value).toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
+}
+
+function commuteLabel(commute) {
+  if (!commute || commute.min === null || commute.min === undefined) return null;
+  const mins = `${Math.round(commute.min)} min`;
+  if (commute.miles === null || commute.miles === undefined) return mins;
+  return `${mins} · ${Number(commute.miles).toFixed(1)} mi`;
+}
+
+function niceNumber(value) {
+  if (value === null || value === undefined) return null;
+  return Number(value).toLocaleString("en-US");
+}
+
+/** "1.5" -> "1.5", "1" -> "1" */
+function bathLabel(value) {
+  if (value === null || value === undefined) return null;
+  return String(Number(value));
+}
+
+function longDate(iso) {
+  if (!iso) return null;
+  const date = new Date(`${iso}T12:00:00Z`);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+function shortDate(iso) {
+  if (!iso) return null;
+  const date = new Date(`${iso}T12:00:00Z`);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+}
+
+const BANDS = {
+  "in-budget": { label: "In budget", key: "in-budget" },
+  stretch: { label: "Stretch", key: "stretch" },
+  over: { label: "Over budget", key: "over" },
+  unknown: { label: "Rent unknown", key: "unknown" },
+};
+
+const VERIFICATION = {
+  verified: { label: "Verified", tone: "good" },
+  unverified: { label: "Unverified", tone: "warn" },
+  "needs-call": { label: "Needs a call", tone: "warn" },
+  gone: { label: "No longer listed", tone: "bad" },
+};
+
+const TIERS = {
+  1: "Tier 1 · best fit",
+  2: "Tier 2 · good option",
+  3: "Tier 3 · worth a look",
+};
+
+const SLOW_COMMUTE_MIN = 30;
+
+const screenshots = screenshotIndex();
+const budget = raw.budget || {};
+
+const listings = raw.listings.map((listing, index) => {
+  const band = BANDS[listing.band] || BANDS.unknown;
+  const verification = VERIFICATION[listing.verification] || {
+    label: listing.verification || "Unknown",
+    tone: "warn",
+  };
+  const work = listing.commute_work || {};
+  const home = listing.commute_home || {};
+  const route = routes[listing.id] || null;
+  const hasRoute = Boolean(
+    route &&
+      ((route.work && route.work.geometry && route.work.geometry.length) ||
+        (route.home && route.home.geometry && route.home.geometry.length))
+  );
+
+  const overBy =
+    listing.rent && budget.max && listing.rent > budget.max
+      ? listing.rent - budget.max
+      : null;
+
+  const specs = [];
+  if (listing.beds !== null && listing.beds !== undefined) {
+    specs.push(`${listing.beds} bd`);
+  }
+  if (listing.baths !== null && listing.baths !== undefined) {
+    specs.push(`${bathLabel(listing.baths)} ba`);
+  }
+  if (listing.sqft) specs.push(`${niceNumber(listing.sqft)} sf`);
+
+  return {
+    ...listing,
+    index,
+    title: listing.name || listing.address || `${listing.town}, ${listing.state}`,
+    subtitle: listing.name ? listing.address : null,
+    place: `${listing.town}, ${listing.state}`,
+    img: screenshots[listing.id] || null,
+    rentLabel: money(listing.rent),
+    band,
+    bandKey: band.key,
+    verificationInfo: verification,
+    isGone: listing.verification === "gone",
+    tierLabel: TIERS[listing.tier] || `Tier ${listing.tier}`,
+    overBy,
+    overByLabel: money(overBy),
+    specs,
+    bedsLabel:
+      listing.beds === null || listing.beds === undefined
+        ? null
+        : listing.beds === 0
+          ? "Studio"
+          : String(listing.beds),
+    bathsLabel: bathLabel(listing.baths),
+    sqftLabel: listing.sqft ? `${niceNumber(listing.sqft)} sf` : null,
+    workLabel: commuteLabel(work),
+    homeLabel: commuteLabel(home),
+    workMin: work.min ?? null,
+    homeMin: home.min ?? null,
+    workSlow: typeof work.min === "number" && work.min > SLOW_COMMUTE_MIN,
+    homeSlow: typeof home.min === "number" && home.min > SLOW_COMMUTE_MIN,
+    prosList: toBullets(listing.pros),
+    consList: toBullets(listing.cons),
+    lastCheckedLabel: shortDate(listing.last_checked),
+    addedLabel: shortDate(listing.date_added),
+    lat: Array.isArray(listing.coords) ? listing.coords[1] : null,
+    lon: Array.isArray(listing.coords) ? listing.coords[0] : null,
+    route,
+    hasRoute,
+    url: listing.url_status === "dead" ? null : listing.url || null,
+    stars: Array.from({ length: 5 }, (_, i) => i < (listing.rating || 0)),
+  };
+});
+
+// Prev / next in source order, so the detail pages chain together.
+listings.forEach((listing, i) => {
+  listing.prev = i > 0 ? listings[i - 1] : listings[listings.length - 1];
+  listing.next = i < listings.length - 1 ? listings[i + 1] : listings[0];
+});
+
+const count = (predicate) => listings.filter(predicate).length;
+
+const counts = {
+  total: listings.length,
+  inBudget: count((l) => l.band.key === "in-budget"),
+  stretch: count((l) => l.band.key === "stretch"),
+  over: count((l) => l.band.key === "over"),
+  unknown: count((l) => l.band.key === "unknown"),
+  apartments: count((l) => l.kind === "apartment"),
+  townhouses: count((l) => l.kind === "townhouse"),
+  pa: count((l) => l.state === "PA"),
+  nj: count((l) => l.state === "NJ"),
+  topRated: count((l) => (l.rating || 0) >= 4),
+  gone: count((l) => l.isGone),
+  withPhoto: count((l) => Boolean(l.img)),
+};
+
+/** Slim payload for the /map/ page — keeps the inline JSON small. */
+const mapPoints = listings
+  .filter((l) => l.lat !== null && l.lon !== null)
+  .map((l) => ({
+    id: l.id,
+    title: l.title,
+    place: l.place,
+    lat: l.lat,
+    lon: l.lon,
+    band: l.bandKey,
+    bandLabel: l.band.label,
+    rent: l.rentLabel,
+    beds: l.bedsLabel,
+    baths: l.bathsLabel,
+    work: l.workLabel,
+    home: l.homeLabel,
+    workSlow: l.workSlow,
+    rating: l.rating || 0,
+    gone: l.isGone,
+  }));
+
+const anchors = {
+  work: {
+    label: raw.anchors?.work?.label || "Work",
+    short: "Fairless Hills",
+    lat: raw.anchors?.work?.coords?.[1] ?? null,
+    lon: raw.anchors?.work?.coords?.[0] ?? null,
+  },
+  home: {
+    label: raw.anchors?.home?.label || "Home",
+    short: "East Brunswick",
+    lat: raw.anchors?.home?.coords?.[1] ?? null,
+    lon: raw.anchors?.home?.coords?.[0] ?? null,
+  },
+};
+
+module.exports = {
+  version: raw.version,
+  updated: raw.updated,
+  updatedLabel: longDate(raw.updated),
+  updatedShortLabel: shortDate(raw.updated),
+  budget,
+  budgetMaxLabel: money(budget.max),
+  budgetStretchLabel: money(budget.stretch_max),
+  anchors,
+  counts,
+  listings,
+  mapPoints,
+};

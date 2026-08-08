@@ -2,3 +2,5 @@ node_modules/
 _site/
 src/css/output.css
 .cache/
+desktop.ini
+Thumbs.db
