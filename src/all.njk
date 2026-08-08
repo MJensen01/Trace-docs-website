@@ -70,6 +70,7 @@ permalink: /all/
       <tbody>
         {% for l in homes.listings %}
           <tr class="db-row band-{{ l.bandKey }} border-t border-sand-100 align-middle dark:border-sand-800{% if l.isGone %} opacity-55 saturate-50{% endif %}"
+              data-id="{{ l.id }}"
               data-index="{{ l.index }}"
               data-search="{{ l.searchText }}"
               data-rating="{{ l.rating | default(0) }}"
@@ -122,7 +123,7 @@ permalink: /all/
               {% if l.homeMins != null %}{{ l.homeMins }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
             </td>
 
-            <td class="whitespace-nowrap px-2.5 py-2 text-xs {% if l.isGone %}font-semibold text-rose-600 dark:text-rose-400{% elif l.verificationInfo.tone == 'good' %}text-emerald-700 dark:text-emerald-400{% else %}text-sand-500 dark:text-sand-400{% endif %}">
+            <td class="db-status whitespace-nowrap px-2.5 py-2 text-xs {% if l.isGone %}font-semibold text-rose-600 dark:text-rose-400{% elif l.verificationInfo.tone == 'good' %}text-emerald-700 dark:text-emerald-400{% else %}text-sand-500 dark:text-sand-400{% endif %}">
               {{ l.verificationInfo.label }}
             </td>
 
@@ -270,5 +271,25 @@ permalink: /all/
   }
 
   render();
+
+  // The database keeps every row, archived or not — it just says so. Silent
+  // when /api is unreachable.
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.HF) return;
+    HF.hidden().then(function (index) {
+      rows.forEach(function (row) {
+        var entry = index[row.getAttribute("data-id")];
+        if (!entry) return;
+        row.classList.add("opacity-55", "saturate-50");
+        var status = row.querySelector(".db-status");
+        if (!status || status.querySelector(".db-archived")) return;
+        var note = document.createElement("span");
+        note.className = "db-archived block text-[0.6875rem] font-semibold text-amber-700 dark:text-amber-400";
+        note.textContent = "archived by " + HF.whoLabel(entry.who) +
+          (HF.dateLabel(entry.ts) ? " · " + HF.dateLabel(entry.ts) : "");
+        status.appendChild(note);
+      });
+    });
+  });
 })();
 </script>

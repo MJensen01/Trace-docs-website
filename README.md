@@ -10,6 +10,27 @@ deployed to https://trace-docs.com by a Cloudflare Worker on push.
 | `/` | `src/index.njk` | Dashboard: filter chips, sort, card grid |
 | `/listing/<id>/` | `src/listing.njk` | One page per listing (Eleventy pagination), with a Leaflet map of both drives |
 | `/map/` | `src/map.njk` | Every listing plotted, coloured by budget band |
+| `/all/` | `src/all.njk` | The whole database in one sortable table |
+| `/add/` | `src/add.njk` | Form for dropping a new find into the queue |
+
+## The live layer
+
+`worker/index.js` puts a small PIN-gated API in front of the static build
+(`/api/health`, `/api/pending`, `/api/hidden` to read; `/api/submit`,
+`/api/resolve`, `/api/archive`, `/api/unarchive` to write). `src/assets/js/hf.js`
+is the browser client, loaded on every page; every call fails quietly, so the
+site reads exactly the same when the API is unreachable.
+
+* `/add/` geocodes with Nominatim and times both drives with OSRM in the
+  browser, then posts the listing plus its routes.
+* Pending submissions appear on the dashboard and the map until the pipeline
+  triages them; ones whose URL already exists in `listings.json` are skipped.
+* Archiving hides a listing from the dashboard and map and dims its row in the
+  database; the listing page carries the banner and the archive/unarchive form.
+
+The PIN lives in the `HF_PIN` secret (`wrangler secret put HF_PIN`). For local
+work put `HF_PIN=...` in a `.dev.vars` file (git-ignored) and run
+`npm run build && npx wrangler dev`.
 
 ## Data
 

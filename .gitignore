@@ -4,3 +4,5 @@ src/css/output.css
 .cache/
 desktop.ini
 Thumbs.db
+.dev.vars
+.wrangler/

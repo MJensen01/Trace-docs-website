@@ -4,6 +4,8 @@
 @source "../**/*.njk";
 @source "../**/*.html";
 @source "../**/*.md";
+/* The API client builds a little markup of its own (pending cards, PIN rows). */
+@source "../assets/js/*.js";
 
 @theme {
   --font-sans:
@@ -228,6 +230,27 @@
   }
   .map-shell .leaflet-container {
     font-family: var(--font-sans);
+  }
+
+  /* Submissions waiting for triage: teal + dashed, so they never read as one of
+     the budget bands on either the dashboard or the map. */
+  .pending-pin {
+    display: block;
+    border-radius: 9999px;
+    background-color: #0d9488;
+    border: 2px dashed #ffffff;
+    box-shadow: 0 0 0 2px rgb(13 148 136 / 0.45);
+  }
+
+  /* A wrong PIN nudges the field instead of interrupting with an alert. */
+  @keyframes hf-shake {
+    10%, 90% { transform: translateX(-1px); }
+    20%, 80% { transform: translateX(2px); }
+    30%, 50%, 70% { transform: translateX(-4px); }
+    40%, 60% { transform: translateX(4px); }
+  }
+  .hf-shake {
+    animation: hf-shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   }
 
   .anchor-pin {

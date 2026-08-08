@@ -67,6 +67,19 @@ eleventyComputed:
     </button>
   </div>
 
+  <!-- Filled in from /api/hidden when this one has been archived. -->
+  <div id="archived-banner" class="mt-3 hidden flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-2xl border border-amber-300/80 bg-amber-50 px-4 py-3 dark:border-amber-900/70 dark:bg-amber-950/40" role="status">
+    <div class="min-w-0">
+      <p class="text-sm text-amber-900 dark:text-amber-200">
+        <span class="font-semibold" id="archived-text">Archived</span>
+        &mdash; hidden from the dashboard and map.
+      </p>
+      <p id="archived-reason" class="mt-0.5 hidden text-xs text-amber-800/80 dark:text-amber-300/80"></p>
+    </div>
+    <button type="button" id="banner-unarchive"
+            class="tap shrink-0 rounded-xl border border-amber-400 bg-white px-4 text-sm font-semibold text-amber-800 hover:border-amber-500 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">Unarchive</button>
+  </div>
+
   <article class="band-{{ l.bandKey }} mt-2">
 
     <!-- Hero -->
@@ -273,6 +286,55 @@ eleventyComputed:
       </a>
     </nav>
 
+    <!-- Manage: quiet by design — the page is for reading. -->
+    <section id="manage" class="mt-8 border-t border-sand-200 pt-5 dark:border-sand-800" data-listing="{{ l.id }}">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-sand-400 dark:text-sand-500">Manage</h2>
+
+      <div id="manage-idle" class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+        <button type="button" id="manage-open"
+                class="tap -ml-2 rounded-xl px-2 text-sm font-medium text-sand-500 hover:text-clay-700 dark:text-sand-400 dark:hover:text-clay-300">
+          Archive this listing
+        </button>
+        <p id="manage-note" class="text-xs text-sand-400 dark:text-sand-500">
+          Takes it off the dashboard and the map. Nothing is deleted &mdash; you can bring it back here.
+        </p>
+      </div>
+
+      <form id="manage-form" class="mt-2 hidden max-w-md rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900" novalidate>
+        <div id="manage-reason-wrap">
+          <label for="manage-reason" class="block text-sm font-medium text-sand-700 dark:text-sand-200">
+            Why? <span class="font-normal text-sand-400 dark:text-sand-500">(optional)</span>
+          </label>
+          <input type="text" id="manage-reason" autocomplete="off" placeholder="Gone, too far, we saw it&hellip;"
+                 class="mt-1.5 h-11 w-full rounded-xl border border-sand-300 bg-white px-3.5 text-sm text-sand-800 placeholder:text-sand-400 focus:border-clay-400 dark:border-sand-700 dark:bg-sand-950 dark:text-sand-100 dark:placeholder:text-sand-500">
+        </div>
+
+        <div class="mt-3">
+          <p class="block text-sm font-medium text-sand-700 dark:text-sand-200">Who&rsquo;s doing this?</p>
+          <div class="mt-1.5 flex gap-2">
+            {% for person in [{ value: "matt", label: "Matt" }, { value: "evelyn", label: "Evelyn" }] %}
+              <button type="button" data-who="{{ person.value }}" aria-pressed="{{ 'true' if loop.first else 'false' }}"
+                      class="chip border-sand-300 bg-white text-sand-700 hover:border-clay-400 hover:text-clay-700 aria-pressed:border-clay-600 aria-pressed:bg-clay-600 aria-pressed:text-white dark:border-sand-700 dark:bg-sand-950 dark:text-sand-300 dark:hover:text-clay-300 dark:aria-pressed:border-clay-500 dark:aria-pressed:bg-clay-600 dark:aria-pressed:text-white">{{ person.label }}</button>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="mt-3 flex flex-wrap items-end gap-2">
+          <div>
+            <label for="manage-pin" class="block text-sm font-medium text-sand-700 dark:text-sand-200">PIN</label>
+            <input type="password" id="manage-pin" inputmode="numeric" autocomplete="off" placeholder="••••"
+                   class="mt-1.5 h-11 w-28 rounded-xl border border-sand-300 bg-white px-3.5 text-sm tracking-widest text-sand-800 placeholder:tracking-normal placeholder:text-sand-400 focus:border-clay-400 dark:border-sand-700 dark:bg-sand-950 dark:text-sand-100 dark:placeholder:text-sand-500">
+          </div>
+          <button type="submit" id="manage-confirm"
+                  class="tap rounded-xl bg-clay-600 px-5 text-sm font-semibold text-white hover:bg-clay-700 disabled:opacity-60">Archive</button>
+          <button type="button" id="manage-cancel"
+                  class="tap rounded-xl px-3 text-sm font-medium text-sand-500 hover:text-sand-700 dark:text-sand-400 dark:hover:text-sand-200">Cancel</button>
+        </div>
+
+        <p id="manage-msg" class="mt-2 hidden text-sm" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
   </article>
   </div>
 </div>
@@ -331,6 +393,136 @@ eleventyComputed:
   if (desktop.addEventListener) desktop.addEventListener("change", reset);
   else if (desktop.addListener) desktop.addListener(reset);
 })();
+</script>
+
+<script>
+// Archive / unarchive. One little form does both jobs; when /api is unreachable
+// the section simply never reports anything and the page reads as normal.
+document.addEventListener("DOMContentLoaded", function () {
+  var section = document.getElementById("manage");
+  if (!section || !window.HF) return;
+
+  var listingId = section.getAttribute("data-listing");
+  var banner = document.getElementById("archived-banner");
+  var bannerText = document.getElementById("archived-text");
+  var bannerReason = document.getElementById("archived-reason");
+  var bannerBtn = document.getElementById("banner-unarchive");
+  var idle = document.getElementById("manage-idle");
+  var openBtn = document.getElementById("manage-open");
+  var note = document.getElementById("manage-note");
+  var form = document.getElementById("manage-form");
+  var reasonWrap = document.getElementById("manage-reason-wrap");
+  var reason = document.getElementById("manage-reason");
+  var pin = document.getElementById("manage-pin");
+  var confirmBtn = document.getElementById("manage-confirm");
+  var cancelBtn = document.getElementById("manage-cancel");
+  var msg = document.getElementById("manage-msg");
+  var whoButtons = Array.prototype.slice.call(form.querySelectorAll("[data-who]"));
+
+  var who = HF.getWho();
+  var archived = null; // { who, ts, reason } once we know
+  var busy = false;
+
+  function paintWho() {
+    whoButtons.forEach(function (button) {
+      button.setAttribute("aria-pressed", button.getAttribute("data-who") === who ? "true" : "false");
+    });
+  }
+  whoButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      who = button.getAttribute("data-who");
+      paintWho();
+    });
+  });
+  paintWho();
+
+  function paint() {
+    var isArchived = Boolean(archived);
+    banner.classList.toggle("hidden", !isArchived);
+    banner.classList.toggle("flex", isArchived);
+    if (isArchived) {
+      bannerText.textContent =
+        "Archived by " + HF.whoLabel(archived.who) +
+        (HF.dateLabel(archived.ts) ? " on " + HF.dateLabel(archived.ts) : "");
+      bannerReason.textContent = archived.reason || "";
+      bannerReason.classList.toggle("hidden", !archived.reason);
+    }
+    openBtn.textContent = isArchived ? "Unarchive this listing" : "Archive this listing";
+    note.textContent = isArchived
+      ? "Puts it back on the dashboard and the map."
+      : "Takes it off the dashboard and the map. Nothing is deleted — you can bring it back here.";
+    confirmBtn.textContent = isArchived ? "Unarchive" : "Archive";
+    reasonWrap.classList.toggle("hidden", isArchived);
+  }
+
+  function openForm() {
+    // Inline style, not a `hidden` class: the row already carries a display
+    // utility and Tailwind's own ordering would decide which of them wins.
+    idle.style.display = "none";
+    form.classList.remove("hidden");
+    msg.classList.add("hidden");
+    pin.value = HF.getPin();
+    pin.focus({ preventScroll: true });
+    form.scrollIntoView({ block: "center" });
+  }
+
+  function closeForm() {
+    form.classList.add("hidden");
+    idle.style.display = "";
+    msg.classList.add("hidden");
+  }
+
+  function say(text, tone) {
+    msg.textContent = text;
+    msg.className =
+      "mt-2 text-sm " +
+      (tone === "bad" ? "font-medium text-rose-600 dark:text-rose-400" : "text-sand-500 dark:text-sand-400");
+  }
+
+  openBtn.addEventListener("click", openForm);
+  bannerBtn.addEventListener("click", openForm);
+  cancelBtn.addEventListener("click", closeForm);
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (busy) return;
+    if (!pin.value) {
+      say("The PIN is missing.", "bad");
+      HF.shake(pin);
+      return;
+    }
+
+    busy = true;
+    confirmBtn.disabled = true;
+    say(archived ? "Unarchiving…" : "Archiving…");
+
+    var path = archived ? "/api/unarchive" : "/api/archive";
+    var payload = { listing_id: listingId, pin: pin.value, who: who };
+    if (!archived) payload.reason = reason.value.trim() || null;
+
+    HF.post(path, payload).then(function (res) {
+      busy = false;
+      confirmBtn.disabled = false;
+      if (res.ok) {
+        HF.setPin(pin.value);
+        HF.setWho(who);
+        archived = archived
+          ? null
+          : { who: who, ts: new Date().toISOString(), reason: payload.reason };
+        paint();
+        closeForm();
+        return;
+      }
+      say(HF.message(res), "bad");
+      if (res.status === 403) HF.shake(pin);
+    });
+  });
+
+  HF.hidden().then(function (index) {
+    archived = index[listingId] || null;
+    paint();
+  });
+});
 </script>
 
 {% if l.hasRoute %}

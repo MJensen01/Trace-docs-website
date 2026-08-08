@@ -307,6 +307,36 @@ const mapPoints = listings
     gone: l.isGone,
   }));
 
+/**
+ * Comparable form of a listing URL — no scheme, no www, no query, no trailing
+ * slash. Mirrors HF.normUrl() in assets/js/hf.js: the pending strip compares
+ * these to hide a submission that is already published here.
+ */
+function urlKey(value) {
+  if (!value || typeof value !== "string") return null;
+  return (
+    value
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .replace(/^www\./, "")
+      .split("#")[0]
+      .split("?")[0]
+      .replace(/\/+$/, "") || null
+  );
+}
+
+const knownUrls = [];
+for (const listing of raw.listings) {
+  const candidates = [listing.url, listing.v1_url].concat(
+    Array.isArray(listing.v1_urls) ? listing.v1_urls : []
+  );
+  for (const candidate of candidates) {
+    const key = urlKey(candidate);
+    if (key && !knownUrls.includes(key)) knownUrls.push(key);
+  }
+}
+
 const anchors = {
   work: {
     label: raw.anchors?.work?.label || "Work",
@@ -335,4 +365,5 @@ module.exports = {
   listings,
   browse,
   mapPoints,
+  knownUrls,
 };

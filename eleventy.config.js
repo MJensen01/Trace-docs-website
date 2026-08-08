@@ -12,6 +12,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/css/output.css");
   // Explicit globs so Google Drive's desktop.ini files stay out of the build.
   eleventyConfig.addPassthroughCopy({
+    "src/assets/js/*.js": "assets/js",
     "src/assets/listings/*.{jpg,jpeg,png,webp}": "assets/listings",
     "src/assets/vendor/leaflet/*.{js,css}": "assets/vendor/leaflet",
     "src/assets/vendor/leaflet/images/*.png": "assets/vendor/leaflet/images",

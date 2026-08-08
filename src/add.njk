@@ -1,0 +1,387 @@
+---
+layout: base.njk
+title: Add a listing
+description: Drop a place you found into the queue — it lands on the map straight away.
+permalink: /add/
+---
+
+<div class="mx-auto max-w-2xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
+
+  <header>
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-clay-600 dark:text-clay-400">Found something?</p>
+    <h1 class="mt-1.5 font-serif text-3xl font-semibold leading-tight tracking-tight text-sand-900 dark:text-sand-50">
+      Add a listing
+    </h1>
+    <p class="mt-2 text-sm leading-relaxed text-sand-600 dark:text-sand-400">
+      Paste the link and roughly where it is. We&rsquo;ll work out the two drive times right here in
+      the browser, and it shows up on the map straight away &mdash; the full write-up happens later.
+    </p>
+  </header>
+
+  <!-- Success panel; swapped in for the form once the API says 201. -->
+  <section id="add-done" class="mt-6 hidden rounded-2xl border border-emerald-200 bg-emerald-50/60 p-5 dark:border-emerald-900/70 dark:bg-emerald-950/30" role="status" aria-live="polite">
+    <h2 class="font-serif text-xl font-semibold text-emerald-800 dark:text-emerald-300">Added &mdash; nice find.</h2>
+    <p class="mt-1.5 text-sm leading-relaxed text-sand-700 dark:text-sand-200">
+      On the map already &mdash; full triage happens automatically soon.
+    </p>
+    <p id="add-done-detail" class="mt-1 text-xs text-sand-500 dark:text-sand-400"></p>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <a href="/map/" class="tap rounded-xl bg-clay-600 px-5 text-sm font-semibold text-white hover:bg-clay-700">View on map</a>
+      <button type="button" id="add-again" class="tap rounded-xl border border-sand-300 bg-white px-5 text-sm font-semibold text-sand-700 hover:border-clay-400 hover:text-clay-700 dark:border-sand-700 dark:bg-sand-900 dark:text-sand-200 dark:hover:text-clay-300">Add another</button>
+    </div>
+  </section>
+
+  <form id="add-form" class="mt-6 space-y-5" novalidate>
+
+    {% set labelClass = "block text-sm font-medium text-sand-700 dark:text-sand-200" %}
+    {% set inputClass = "mt-1.5 h-11 w-full rounded-xl border border-sand-300 bg-white px-3.5 text-sm text-sand-800 placeholder:text-sand-400 focus:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-sand-100 dark:placeholder:text-sand-500" %}
+    {% set hintClass = "mt-1 text-xs text-sand-500 dark:text-sand-400" %}
+
+    <div>
+      <label for="f-url" class="{{ labelClass }}">Listing URL</label>
+      <input type="url" id="f-url" name="url" inputmode="url" autocomplete="off" spellcheck="false"
+             placeholder="https://&hellip;" class="{{ inputClass }}">
+      <p id="f-url-dupe" class="mt-1 hidden text-xs font-medium text-amber-600 dark:text-amber-400">
+        Heads up &mdash; we already track this one.
+      </p>
+    </div>
+
+    <div>
+      <label for="f-name" class="{{ labelClass }}">Name <span class="font-normal text-sand-400 dark:text-sand-500">(optional)</span></label>
+      <input type="text" id="f-name" name="name" autocomplete="off" placeholder="Levittown Trace Apartments" class="{{ inputClass }}">
+    </div>
+
+    <div>
+      <label for="f-address" class="{{ labelClass }}">Street address</label>
+      <input type="text" id="f-address" name="address" autocomplete="off" placeholder="3000 Ford Rd" class="{{ inputClass }}">
+      <p class="{{ hintClass }}">Used to place the pin and time both drives. Close enough is fine.</p>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-[1fr_7rem]">
+      <div>
+        <label for="f-town" class="{{ labelClass }}">Town</label>
+        <input type="text" id="f-town" name="town" autocomplete="off" placeholder="Levittown" class="{{ inputClass }}">
+      </div>
+      <div>
+        <label for="f-state" class="{{ labelClass }}">State</label>
+        <select id="f-state" name="state" class="{{ inputClass }}">
+          <option value="PA">PA</option>
+          <option value="NJ">NJ</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label for="f-rent" class="{{ labelClass }}">Rent <span class="font-normal text-sand-400 dark:text-sand-500">(per month)</span></label>
+        <input type="number" id="f-rent" name="rent" inputmode="numeric" min="0" step="25" placeholder="1550" class="{{ inputClass }}">
+        <p class="{{ hintClass }}">Budget is {{ homes.budgetMaxLabel }}, stretching to {{ homes.budgetStretchLabel }}.</p>
+      </div>
+      <div>
+        <label for="f-beds" class="{{ labelClass }}">Beds</label>
+        <input type="number" id="f-beds" name="beds" inputmode="numeric" min="0" max="9" step="1" placeholder="2" class="{{ inputClass }}">
+      </div>
+    </div>
+
+    <div>
+      <label for="f-notes" class="{{ labelClass }}">Notes <span class="font-normal text-sand-400 dark:text-sand-500">(optional)</span></label>
+      <textarea id="f-notes" name="notes" rows="3" placeholder="Why it caught your eye, anything to check&hellip;"
+                class="mt-1.5 w-full rounded-xl border border-sand-300 bg-white px-3.5 py-2.5 text-sm leading-relaxed text-sand-800 placeholder:text-sand-400 focus:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-sand-100 dark:placeholder:text-sand-500"></textarea>
+    </div>
+
+    <fieldset>
+      <legend class="{{ labelClass }}">Who&rsquo;s adding?</legend>
+      <div class="mt-2 flex gap-2">
+        {% for person in [{ value: "matt", label: "Matt" }, { value: "evelyn", label: "Evelyn" }] %}
+          <button type="button" data-who="{{ person.value }}" aria-pressed="{{ 'true' if loop.first else 'false' }}"
+                  class="chip border-sand-300 bg-white text-sand-700 hover:border-clay-400 hover:text-clay-700 aria-pressed:border-clay-600 aria-pressed:bg-clay-600 aria-pressed:text-white dark:border-sand-700 dark:bg-sand-900 dark:text-sand-300 dark:hover:text-clay-300 dark:aria-pressed:border-clay-500 dark:aria-pressed:bg-clay-600 dark:aria-pressed:text-white">{{ person.label }}</button>
+        {% endfor %}
+      </div>
+    </fieldset>
+
+    <div>
+      <label for="f-pin" class="{{ labelClass }}">PIN</label>
+      <input type="password" id="f-pin" name="pin" inputmode="numeric" autocomplete="off" placeholder="••••"
+             class="mt-1.5 h-11 w-32 rounded-xl border border-sand-300 bg-white px-3.5 text-sm tracking-widest text-sand-800 placeholder:tracking-normal placeholder:text-sand-400 focus:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-sand-100 dark:placeholder:text-sand-500">
+      <p class="{{ hintClass }}">The one we share. Remembered on this device after it works once.</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3 border-t border-sand-200 pt-5 dark:border-sand-800">
+      <button type="submit" id="add-submit"
+              class="tap rounded-xl bg-clay-600 px-6 text-sm font-semibold text-white hover:bg-clay-700 disabled:cursor-not-allowed disabled:opacity-60">
+        Add it
+      </button>
+      <p id="add-status" class="text-sm text-sand-500 dark:text-sand-400" role="status" aria-live="polite"></p>
+    </div>
+
+  </form>
+
+  <p class="mt-8 text-xs leading-relaxed text-sand-500 dark:text-sand-400">
+    Geocoding by OpenStreetMap&rsquo;s Nominatim, drive times by OSRM &mdash; both free-flow estimates,
+    both looked up from your browser. If either is having a bad day the listing still saves, just
+    without a pin.
+  </p>
+
+</div>
+
+<script id="add-config" type="application/json">{{ { anchors: homes.anchors, knownUrls: homes.knownUrls } | jsonScript | safe }}</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var form = document.getElementById("add-form");
+  var configEl = document.getElementById("add-config");
+  if (!form || !configEl || !window.HF) return;
+
+  var config;
+  try { config = JSON.parse(configEl.textContent); } catch (err) { config = {}; }
+
+  var statusEl = document.getElementById("add-status");
+  var submitBtn = document.getElementById("add-submit");
+  var donePanel = document.getElementById("add-done");
+  var doneDetail = document.getElementById("add-done-detail");
+  var againBtn = document.getElementById("add-again");
+  var pinEl = document.getElementById("f-pin");
+  var urlEl = document.getElementById("f-url");
+  var dupeEl = document.getElementById("f-url-dupe");
+  var whoButtons = Array.prototype.slice.call(form.querySelectorAll("[data-who]"));
+  var busy = false;
+
+  var known = config.knownUrls || [];
+  var who = HF.getWho();
+
+  // ---- remembered bits -----------------------------------------------------
+
+  pinEl.value = HF.getPin();
+
+  function paintWho() {
+    whoButtons.forEach(function (button) {
+      button.setAttribute("aria-pressed", button.getAttribute("data-who") === who ? "true" : "false");
+    });
+  }
+  whoButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      who = button.getAttribute("data-who");
+      paintWho();
+    });
+  });
+  paintWho();
+
+  // A gentle nudge, never a block: the pipeline may well want the second link.
+  urlEl.addEventListener("input", function () {
+    var key = HF.normUrl(urlEl.value);
+    dupeEl.classList.toggle("hidden", !key || known.indexOf(key) === -1);
+  });
+
+  // ---- helpers -------------------------------------------------------------
+
+  function say(text, tone) {
+    statusEl.textContent = text || "";
+    statusEl.className =
+      "text-sm " +
+      (tone === "bad"
+        ? "font-medium text-rose-600 dark:text-rose-400"
+        : "text-sand-500 dark:text-sand-400");
+  }
+
+  function value(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+  }
+
+  function numberValue(id) {
+    var raw = value(id);
+    if (raw === "") return null;
+    var parsed = Number(raw);
+    return isFinite(parsed) ? parsed : null;
+  }
+
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise(function (resolve) { setTimeout(function () { resolve(null); }, ms); })
+    ]);
+  }
+
+  /** Nominatim, one result, US only. Resolves [lat, lon] or null. */
+  function geocode(query) {
+    if (!query) return Promise.resolve(null);
+    var url =
+      "https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=us&q=" +
+      encodeURIComponent(query);
+    return withTimeout(
+      fetch(url, { headers: { accept: "application/json" } })
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (rows) {
+          if (!rows || !rows.length) return null;
+          var lat = Number(rows[0].lat);
+          var lon = Number(rows[0].lon);
+          return isFinite(lat) && isFinite(lon) ? [lat, lon] : null;
+        })
+        .catch(function () { return null; }),
+      12000
+    );
+  }
+
+  /** The Worker caps a route at 1000 points; keep the ends, thin the middle. */
+  function thin(points) {
+    var LIMIT = 1000;
+    if (points.length <= LIMIT) return points;
+    var step = points.length / (LIMIT - 1);
+    var out = [];
+    for (var i = 0; i < LIMIT - 1; i++) out.push(points[Math.floor(i * step)]);
+    out.push(points[points.length - 1]);
+    return out;
+  }
+
+  /** OSRM driving route. Resolves { min, miles, geometry } or null. */
+  function route(from, to) {
+    if (!from || !to || to.lat === null || to.lon === null) return Promise.resolve(null);
+    var url =
+      "https://router.project-osrm.org/route/v1/driving/" +
+      from[1] + "," + from[0] + ";" + to.lon + "," + to.lat +
+      "?overview=simplified&geometries=geojson";
+    return withTimeout(
+      fetch(url)
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .then(function (data) {
+          var leg = data && data.routes && data.routes[0];
+          if (!leg) return null;
+          var coords = (leg.geometry && leg.geometry.coordinates) || [];
+          var geometry = thin(
+            coords
+              .filter(function (pair) { return isFinite(pair[0]) && isFinite(pair[1]); })
+              // GeoJSON is lon,lat — everything downstream of here is lat,lon.
+              .map(function (pair) { return [pair[1], pair[0]]; })
+          );
+          return {
+            min: Math.round(leg.duration / 60),
+            miles: Math.round((leg.distance / 1609.34) * 10) / 10,
+            geometry: geometry.length > 1 ? geometry : null
+          };
+        })
+        .catch(function () { return null; }),
+      15000
+    );
+  }
+
+  function setBusy(state) {
+    busy = state;
+    submitBtn.disabled = state;
+    submitBtn.textContent = state ? "Adding…" : "Add it";
+  }
+
+  function showDone(payload) {
+    var bits = [];
+    if (payload.commute_work && payload.commute_work.min !== null) {
+      bits.push(payload.commute_work.min + " min to work");
+    }
+    if (payload.commute_home && payload.commute_home.min !== null) {
+      bits.push(payload.commute_home.min + " min to family");
+    }
+    if (!payload.coords) bits.push("no pin — we couldn’t place the address");
+    doneDetail.textContent = bits.join(" · ");
+    form.classList.add("hidden");
+    donePanel.classList.remove("hidden");
+    donePanel.scrollIntoView({ block: "nearest" });
+  }
+
+  againBtn.addEventListener("click", function () {
+    // Keep who and the PIN; everything else starts clean.
+    ["f-url", "f-name", "f-address", "f-town", "f-rent", "f-beds", "f-notes"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    dupeEl.classList.add("hidden");
+    say("");
+    donePanel.classList.add("hidden");
+    form.classList.remove("hidden");
+    document.getElementById("f-url").focus();
+  });
+
+  // ---- submit --------------------------------------------------------------
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (busy) return;
+
+    var payload = {
+      url: value("f-url") || null,
+      name: value("f-name") || null,
+      address: value("f-address") || null,
+      town: value("f-town") || null,
+      state: value("f-state"),
+      rent: numberValue("f-rent"),
+      beds: numberValue("f-beds"),
+      notes: value("f-notes") || null,
+      who: who
+    };
+
+    if (!payload.url && !payload.address) {
+      say("Give me at least a listing URL or a street address.", "bad");
+      urlEl.focus();
+      return;
+    }
+    if (!pinEl.value) {
+      say("The PIN is missing.", "bad");
+      HF.shake(pinEl);
+      return;
+    }
+
+    setBusy(true);
+
+    var place = [payload.address, payload.town, payload.state].filter(Boolean).join(", ");
+    say(place ? "Finding the address…" : "Saving…");
+
+    geocode(place)
+      .then(function (coords) {
+        payload.coords = coords;
+        if (!coords) return null;
+        say("Timing both drives…");
+        return Promise.all([
+          route(coords, (config.anchors || {}).work),
+          route(coords, (config.anchors || {}).home)
+        ]);
+      })
+      .then(function (legs) {
+        if (legs) {
+          if (legs[0]) {
+            payload.route_work = legs[0];
+            payload.commute_work = { min: legs[0].min, miles: legs[0].miles };
+          }
+          if (legs[1]) {
+            payload.route_home = legs[1];
+            payload.commute_home = { min: legs[1].min, miles: legs[1].miles };
+          }
+        }
+        say("Saving…");
+        payload.pin = pinEl.value;
+        return HF.post("/api/submit", payload);
+      })
+      .then(function (res) {
+        setBusy(false);
+        if (res.ok) {
+          HF.setPin(pinEl.value);
+          HF.setWho(who);
+          say("");
+          showDone(payload);
+          return;
+        }
+        if (res.status === 403) {
+          say("Wrong PIN", "bad");
+          HF.shake(pinEl);
+          return;
+        }
+        if (res.status === 503) {
+          say("The PIN isn’t set up on the server yet — nothing can be saved until someone runs “wrangler secret put HF_PIN”.", "bad");
+          return;
+        }
+        // Everything else: say what happened, leave every field where it is.
+        say(HF.message(res) + " Nothing was lost — try again.", "bad");
+      })
+      .catch(function () {
+        setBusy(false);
+        say("Something went wrong on the way out. Nothing was lost — try again.", "bad");
+      });
+  });
+});
+</script>

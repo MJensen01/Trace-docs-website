@@ -36,6 +36,10 @@ permalink: /map/
         {{ item.label }} <span class="tabular-nums text-sand-400 dark:text-sand-500">({{ item.count }})</span>
       </li>
     {% endfor %}
+    <li id="legend-pending" class="hidden items-center gap-1.5">
+      <span class="pending-pin h-3.5 w-3.5" aria-hidden="true"></span>
+      Pending <span class="tabular-nums text-sand-400 dark:text-sand-500">(<span id="legend-pending-count">0</span>)</span>
+    </li>
     <li class="flex items-center gap-1.5">
       <span class="flex h-4 w-4 items-center justify-center rounded-full bg-route-work text-[9px] text-white" aria-hidden="true">&#128188;</span>
       Work &mdash; {{ homes.anchors.work.short }}
@@ -49,7 +53,7 @@ permalink: /map/
   <p class="mt-2 pb-4 text-xs text-sand-500 dark:text-sand-400">Drive times are free-flow estimates (no traffic).</p>
 </div>
 
-<script id="all-map-data" type="application/json">{{ { points: homes.mapPoints, anchors: homes.anchors } | jsonScript | safe }}</script>
+<script id="all-map-data" type="application/json">{{ { points: homes.mapPoints, anchors: homes.anchors, knownUrls: homes.knownUrls } | jsonScript | safe }}</script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -95,6 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  var markersById = {};
+
   (data.points || []).forEach(function (point) {
     if (point.lat === null || point.lon === null) return;
 
@@ -124,6 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
       '<a href="/listing/' + encodeURIComponent(point.id) + '/" style="font-weight:600;color:#a95c34">See full details &rarr;</a>';
 
     marker.bindPopup(html, { minWidth: 190 });
+    markersById[point.id] = marker;
     bounds.push([point.lat, point.lon]);
   });
 
@@ -149,5 +156,89 @@ document.addEventListener("DOMContentLoaded", function () {
   } else {
     map.setView([40.3, -74.65], 10);
   }
+
+  // ---------------------------------------------------------------------------
+  // Live layer: archived listings come off the map, submissions waiting for
+  // triage go on it in teal. Both fail quietly when /api is unreachable.
+  // ---------------------------------------------------------------------------
+  if (!window.HF) return;
+
+  HF.hidden().then(function (index) {
+    Object.keys(index).forEach(function (id) {
+      if (markersById[id]) {
+        map.removeLayer(markersById[id]);
+        delete markersById[id];
+      }
+    });
+  });
+
+  var known = data.knownUrls || [];
+  var legendEl = document.getElementById("legend-pending");
+  var legendCountEl = document.getElementById("legend-pending-count");
+  var shown = 0;
+
+  function paintLegend() {
+    if (!legendEl) return;
+    legendEl.classList.toggle("hidden", shown === 0);
+    legendEl.classList.toggle("flex", shown > 0);
+    if (legendCountEl) legendCountEl.textContent = String(shown);
+  }
+
+  function pendingPopup(item, marker) {
+    var node = document.createElement("div");
+    var place = [item.town, item.state].filter(Boolean).join(", ");
+    var title = item.name || item.address || place || "New listing";
+    var sub = [item.name ? item.address : null, place].filter(Boolean).join(" · ");
+
+    node.innerHTML =
+      '<p style="font-weight:600;font-size:0.95rem;margin:0 0 2px">' + escapeHtml(title) + "</p>" +
+      (sub ? '<p style="margin:0 0 6px;color:#78716c;font-size:0.75rem">' + escapeHtml(sub) + "</p>" : "") +
+      '<p style="margin:0 0 6px;font-size:0.75rem;color:#0f766e;font-weight:600">&#9203; Pending triage &middot; added by ' +
+        escapeHtml(HF.whoLabel(item.who)) + (HF.dateLabel(item.ts) ? " &middot; " + escapeHtml(HF.dateLabel(item.ts)) : "") + "</p>" +
+      '<p style="margin:0 0 6px;font-size:0.9rem"><strong>' +
+        (typeof item.rent === "number" ? "$" + item.rent.toLocaleString("en-US") : "Rent TBD") + "</strong>" +
+        (typeof item.beds === "number" ? ' <span style="color:#78716c">&middot; ' + item.beds + " bd</span>" : "") + "</p>" +
+      '<p style="margin:0 0 2px;font-size:0.78rem"><span style="color:' + WORK_COLOR + '">&#9679;</span> Work: ' +
+        (HF.minsLabel(item.commute_work) || "unknown") + "</p>" +
+      '<p style="margin:0 0 8px;font-size:0.78rem"><span style="color:' + HOME_COLOR + '">&#9679;</span> Family: ' +
+        (HF.minsLabel(item.commute_home) || "unknown") + "</p>" +
+      (item.url
+        ? '<a href="' + escapeHtml(item.url) + '" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#a95c34">Open the listing &rarr;</a>'
+        : "");
+
+    node.appendChild(
+      HF.removeControl(item, function () {
+        map.removeLayer(marker);
+        shown--;
+        paintLegend();
+      })
+    );
+    return node;
+  }
+
+  HF.pending().then(function (items) {
+    items.forEach(function (item) {
+      if (!Array.isArray(item.coords)) return;
+      var key = HF.normUrl(item.url);
+      if (key && known.indexOf(key) !== -1) return;
+
+      var marker = L.marker(item.coords, {
+        icon: L.divIcon({
+          className: "",
+          html: '<span class="pending-pin" style="width:18px;height:18px"></span>',
+          iconSize: [18, 18],
+          iconAnchor: [9, 9],
+          popupAnchor: [0, -10]
+        }),
+        title: item.name || item.address || "Pending listing",
+        alt: "Pending: " + (item.name || item.address || "new listing"),
+        zIndexOffset: 500
+      }).addTo(map);
+
+      marker.bindPopup(pendingPopup(item, marker), { minWidth: 200 });
+      shown++;
+    });
+    paintLegend();
+  });
 });
 </script>
