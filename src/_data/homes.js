@@ -103,6 +103,12 @@ function bathLabel(value) {
   return String(Number(value));
 }
 
+/** Bare whole minutes, for the compact table + sidebar rows. */
+function minutes(commute) {
+  if (!commute || commute.min === null || commute.min === undefined) return null;
+  return Math.round(commute.min);
+}
+
 function longDate(iso) {
   if (!iso) return null;
   const date = new Date(`${iso}T12:00:00Z`);
@@ -126,11 +132,12 @@ function shortDate(iso) {
   });
 }
 
+// `rank` is the order the /all/ table sorts bands in — best fit first.
 const BANDS = {
-  "in-budget": { label: "In budget", key: "in-budget" },
-  stretch: { label: "Stretch", key: "stretch" },
-  over: { label: "Over budget", key: "over" },
-  unknown: { label: "Rent unknown", key: "unknown" },
+  "in-budget": { label: "In budget", key: "in-budget", rank: 0 },
+  stretch: { label: "Stretch", key: "stretch", rank: 1 },
+  over: { label: "Over budget", key: "over", rank: 2 },
+  unknown: { label: "Rent unknown", key: "unknown", rank: 3 },
 };
 
 const VERIFICATION = {
@@ -190,6 +197,7 @@ const listings = raw.listings.map((listing, index) => {
     rentLabel: money(listing.rent),
     band,
     bandKey: band.key,
+    bandRank: band.rank,
     verificationInfo: verification,
     isGone: listing.verification === "gone",
     tierLabel: TIERS[listing.tier] || `Tier ${listing.tier}`,
@@ -208,6 +216,18 @@ const listings = raw.listings.map((listing, index) => {
     homeLabel: commuteLabel(home),
     workMin: work.min ?? null,
     homeMin: home.min ?? null,
+    workMins: minutes(work),
+    homeMins: minutes(home),
+    // Short forms for the /all/ table, where every column has to stay narrow.
+    kindShort: listing.kind === "townhouse" ? "Town" : "Apt",
+    bedsBathsLabel:
+      listing.beds === null || listing.beds === undefined
+        ? null
+        : `${listing.beds}/${bathLabel(listing.baths) || "?"}`,
+    searchText: [listing.name, listing.address, listing.town, listing.state]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase(),
     workSlow: typeof work.min === "number" && work.min > SLOW_COMMUTE_MIN,
     homeSlow: typeof home.min === "number" && home.min > SLOW_COMMUTE_MIN,
     prosList: toBullets(listing.pros),
@@ -228,6 +248,26 @@ listings.forEach((listing, i) => {
   listing.prev = i > 0 ? listings[i - 1] : listings[listings.length - 1];
   listing.next = i < listings.length - 1 ? listings[i + 1] : listings[0];
 });
+
+/**
+ * The listing browser (sidebar on desktop, drawer on mobile) shows every
+ * listing in source order, so it reads the same way as the prev / next links.
+ * The only exception is the handful that are gone: those sink to the bottom,
+ * dimmed, exactly like the dashboard does.
+ */
+const browse = listings
+  .slice()
+  .sort((a, b) =>
+    a.isGone === b.isGone ? a.index - b.index : a.isGone ? 1 : -1
+  )
+  .map((l) => ({
+    id: l.id,
+    title: l.title,
+    rentLabel: l.rentLabel,
+    bandKey: l.bandKey,
+    workMins: l.workMins,
+    isGone: l.isGone,
+  }));
 
 const count = (predicate) => listings.filter(predicate).length;
 
@@ -293,5 +333,6 @@ module.exports = {
   anchors,
   counts,
   listings,
+  browse,
   mapPoints,
 };

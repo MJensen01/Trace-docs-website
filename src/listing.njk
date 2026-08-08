@@ -11,11 +11,61 @@ eleventyComputed:
   description: "{{ l.title }} in {{ l.place }}."
 ---
 
-<div class="mx-auto max-w-3xl px-4 pb-16 pt-5 sm:px-6">
+<div class="mx-auto flex w-full max-w-6xl gap-6 px-4 pb-16 pt-5 sm:px-6 lg:gap-8">
 
-  <a href="/" class="tap -ml-2 gap-1.5 rounded-xl px-2 text-sm font-medium text-sand-500 hover:text-clay-700 dark:text-sand-400 dark:hover:text-clay-300">
-    <span aria-hidden="true">&larr;</span> All listings
-  </a>
+  <!-- Listing browser: a sticky sidebar from lg up, a slide-in drawer below it. -->
+  <div id="browse-backdrop" class="fixed inset-0 z-40 hidden bg-sand-950/50 lg:hidden"></div>
+
+  <aside id="browse-panel" aria-label="All listings"
+         class="invisible fixed bottom-0 left-0 top-0 z-50 flex w-[85%] max-w-xs -translate-x-full flex-col border-r border-sand-200 bg-sand-50 shadow-2xl transition-transform duration-200 ease-out lg:visible lg:sticky lg:bottom-auto lg:top-14 lg:z-30 lg:max-h-[calc(100vh-4.5rem)] lg:w-64 lg:max-w-none lg:translate-x-0 lg:shrink-0 lg:self-start lg:rounded-2xl lg:border lg:shadow-sm dark:border-sand-800 dark:bg-sand-900">
+
+    <div class="flex items-center justify-between gap-2 border-b border-sand-200 px-3 py-1.5 dark:border-sand-800">
+      <p class="text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">All {{ homes.counts.total }} listings</p>
+      <button type="button" id="browse-close"
+              class="tap -mr-1.5 w-11 rounded-xl text-sand-500 hover:text-clay-700 lg:hidden dark:text-sand-400 dark:hover:text-clay-300">
+        <span class="sr-only">Close the listing browser</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-5 w-5" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="browse-scroll" class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-1.5">
+      <ul class="space-y-0.5">
+        {% for item in homes.browse %}
+          {% set here = item.id == l.id %}
+          <li>
+            <a href="/listing/{{ item.id }}/"
+               {% if here %}aria-current="page"{% endif %}
+               class="browse-row band-{{ item.bandKey }} flex min-h-11 items-center gap-2.5 rounded-xl px-2.5 py-1.5 {% if here %}bg-clay-600 text-white{% else %}text-sand-700 hover:bg-sand-100 dark:text-sand-200 dark:hover:bg-sand-800{% endif %}{% if item.isGone %} opacity-55 saturate-50{% endif %}">
+              <span class="band-bar h-7 w-1 shrink-0 rounded-full" aria-hidden="true"></span>
+              <span class="min-w-0 flex-1">
+                <span class="block truncate text-[0.8125rem] font-medium leading-snug">{{ item.title }}</span>
+                <span class="block truncate text-[0.6875rem] tabular-nums {% if here %}text-clay-100{% else %}text-sand-500 dark:text-sand-400{% endif %}">
+                  {{ item.rentLabel if item.rentLabel else "Rent TBD" }}{% if item.workMins %} &middot; {{ item.workMins }} min work{% endif %}
+                </span>
+              </span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </aside>
+
+  <div class="mx-auto w-full min-w-0 max-w-3xl">
+
+  <div class="flex items-center justify-between gap-2">
+    <a href="/" class="tap -ml-2 gap-1.5 rounded-xl px-2 text-sm font-medium text-sand-500 hover:text-clay-700 dark:text-sand-400 dark:hover:text-clay-300">
+      <span aria-hidden="true">&larr;</span> All listings
+    </a>
+    <button type="button" id="browse-open" aria-expanded="false" aria-controls="browse-panel"
+            class="tap gap-2 rounded-xl border border-sand-300 bg-white px-3 text-sm font-semibold text-sand-700 hover:border-clay-400 hover:text-clay-700 lg:hidden dark:border-sand-700 dark:bg-sand-900 dark:text-sand-200 dark:hover:text-clay-300">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-4 w-4" aria-hidden="true">
+        <path d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+      Browse listings
+    </button>
+  </div>
 
   <article class="band-{{ l.bandKey }} mt-2">
 
@@ -224,7 +274,64 @@ eleventyComputed:
     </nav>
 
   </article>
+  </div>
 </div>
+
+<script>
+(function () {
+  var panel = document.getElementById("browse-panel");
+  var scroller = document.getElementById("browse-scroll");
+  if (!panel || !scroller) return;
+
+  var backdrop = document.getElementById("browse-backdrop");
+  var openBtn = document.getElementById("browse-open");
+  var closeBtn = document.getElementById("browse-close");
+  var desktop = window.matchMedia("(min-width: 64rem)");
+
+  // Centre the listing you are on inside the panel's own scroller, without
+  // nudging the page itself.
+  var current = scroller.querySelector('[aria-current="page"]');
+  if (current) {
+    scroller.scrollTop =
+      current.getBoundingClientRect().top -
+      scroller.getBoundingClientRect().top +
+      scroller.scrollTop -
+      (scroller.clientHeight - current.offsetHeight) / 2;
+  }
+
+  function setOpen(open) {
+    panel.classList.toggle("-translate-x-full", !open);
+    panel.classList.toggle("invisible", !open);
+    if (backdrop) backdrop.classList.toggle("hidden", !open);
+    document.body.classList.toggle("overflow-hidden", open);
+    if (openBtn) openBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open && closeBtn) closeBtn.focus();
+    else if (!open && openBtn) openBtn.focus();
+  }
+
+  if (openBtn) openBtn.addEventListener("click", function () { setOpen(true); });
+  if (closeBtn) closeBtn.addEventListener("click", function () { setOpen(false); });
+  if (backdrop) backdrop.addEventListener("click", function () { setOpen(false); });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && !panel.classList.contains("invisible") && !desktop.matches) {
+      setOpen(false);
+    }
+  });
+
+  // Rotate to a wide screen mid-browse and the drawer state must not linger.
+  function reset() {
+    if (desktop.matches) {
+      panel.classList.add("-translate-x-full", "invisible");
+      if (backdrop) backdrop.classList.add("hidden");
+      document.body.classList.remove("overflow-hidden");
+      if (openBtn) openBtn.setAttribute("aria-expanded", "false");
+    }
+  }
+  if (desktop.addEventListener) desktop.addEventListener("change", reset);
+  else if (desktop.addListener) desktop.addListener(reset);
+})();
+</script>
 
 {% if l.hasRoute %}
 <script>

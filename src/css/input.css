@@ -151,6 +151,37 @@
     background-color: #fff;
   }
 
+  /* The listing-browser row you are already on inverts, so its bar goes white. */
+  .browse-row[aria-current="page"] .band-bar {
+    background-color: #fff;
+  }
+
+  /* The database table is wider than a phone, so it scrolls inside its own box.
+     Chrome still lets an oversized <table> push the document's scroll width out,
+     which puts a dead horizontal scrollbar on the page; painting containment
+     keeps the overflow where it belongs. */
+  .table-scroll {
+    overflow-x: auto;
+    contain: paint;
+  }
+
+  /* Database rows carry a whisper of their band colour. */
+  .db-row {
+    background-color: color-mix(in srgb, var(--band) 7%, transparent);
+  }
+  .db-row:hover {
+    background-color: color-mix(in srgb, var(--band) 15%, transparent);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .db-row {
+      background-color: color-mix(in srgb, var(--band) 11%, transparent);
+    }
+    .db-row:hover {
+      background-color: color-mix(in srgb, var(--band) 20%, transparent);
+    }
+  }
+
   /* Horizontal chip rail on small screens without a visible scrollbar. */
   .no-scrollbar {
     scrollbar-width: none;

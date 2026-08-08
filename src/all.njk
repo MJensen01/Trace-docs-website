@@ -1,0 +1,274 @@
+---
+layout: base.njk
+title: Database
+description: Every listing in one sortable, searchable table.
+permalink: /all/
+---
+
+{% set columns = [
+  { key: "rating", label: "★", sr: "Rating", type: "num" },
+  { key: "name", label: "Listing", type: "text" },
+  { key: "town", label: "Town", type: "text" },
+  { key: "state", label: "ST", type: "text" },
+  { key: "type", label: "Type", type: "text" },
+  { key: "band", label: "Band", type: "num" },
+  { key: "rent", label: "Rent", type: "num", right: true },
+  { key: "beds", label: "Bd/Ba", type: "num" },
+  { key: "sqft", label: "SqFt", type: "num", right: true },
+  { key: "work", label: "Work min", type: "num", right: true },
+  { key: "home", label: "Home min", type: "num", right: true },
+  { key: "status", label: "Status", type: "text" },
+  { key: "checked", label: "Checked", type: "text" }
+] %}
+
+<div class="mx-auto max-w-6xl px-4 pb-16 pt-5 sm:px-6">
+
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h1 class="font-serif text-2xl font-semibold leading-tight tracking-tight text-sand-900 sm:text-3xl dark:text-sand-50">The whole database</h1>
+      <p class="mt-1 text-sm text-sand-600 dark:text-sand-400">
+        Every listing, every field. Tap a column heading to sort it.
+      </p>
+    </div>
+    <a href="/" class="tap rounded-full border border-sand-300 bg-white px-4 text-sm font-semibold text-clay-700 hover:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-clay-300">
+      <span aria-hidden="true" class="mr-1.5">&larr;</span> Back to the list
+    </a>
+  </div>
+
+  <div class="mt-4">
+    <label for="db-search" class="sr-only">Search by name, address or town</label>
+    <input type="search" id="db-search" autocomplete="off" spellcheck="false"
+           placeholder="Search name, address or town&hellip;"
+           class="h-11 w-full rounded-xl border border-sand-300 bg-white px-4 text-sm text-sand-800 placeholder:text-sand-400 focus:border-clay-400 sm:max-w-sm dark:border-sand-700 dark:bg-sand-900 dark:text-sand-100 dark:placeholder:text-sand-500">
+  </div>
+
+  <p id="db-count" class="mt-3 text-sm text-sand-500 dark:text-sand-400" role="status" aria-live="polite"
+     data-total="{{ homes.counts.total }}" data-budget="{{ homes.counts.inBudget }}">
+    {{ homes.counts.total }} listings &middot; {{ homes.counts.inBudget }} in budget
+  </p>
+
+  <div id="db-wrap" class="table-scroll mt-3 rounded-2xl border border-sand-200 bg-white dark:border-sand-800 dark:bg-sand-900">
+    <table id="db-table" class="w-full min-w-[58rem] border-collapse text-left text-sm">
+      <thead>
+        <tr class="border-b border-sand-200 bg-sand-100 dark:border-sand-800 dark:bg-sand-800">
+          {% for col in columns %}
+            <th scope="col" aria-sort="none" class="p-0 font-semibold{% if col.right %} text-right{% endif %}">
+              <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 {% if col.right %}justify-end{% endif %} dark:text-sand-300 dark:hover:text-clay-300"
+                      data-key="{{ col.key }}" data-type="{{ col.type }}">
+                {% if col.sr %}<span class="sr-only">{{ col.sr }}</span>{% endif %}
+                <span aria-hidden="{{ 'true' if col.sr else 'false' }}">{{ col.label }}</span>
+                <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+              </button>
+            </th>
+          {% endfor %}
+          <th scope="col" class="px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 dark:text-sand-300">
+            <span class="sr-only">Original listing</span>
+            <span aria-hidden="true">Link</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in homes.listings %}
+          <tr class="db-row band-{{ l.bandKey }} border-t border-sand-100 align-middle dark:border-sand-800{% if l.isGone %} opacity-55 saturate-50{% endif %}"
+              data-index="{{ l.index }}"
+              data-search="{{ l.searchText }}"
+              data-rating="{{ l.rating | default(0) }}"
+              data-name="{{ l.title | lower }}"
+              data-town="{{ l.town | lower }}"
+              data-state="{{ l.state }}"
+              data-type="{{ l.kindShort }}"
+              data-band="{{ l.bandRank }}"
+              data-rent="{{ l.rent if l.rent else '' }}"
+              data-beds="{{ l.beds if l.beds != null else '' }}"
+              data-sqft="{{ l.sqft if l.sqft else '' }}"
+              data-work="{{ l.workMins if l.workMins != null else '' }}"
+              data-home="{{ l.homeMins if l.homeMins != null else '' }}"
+              data-status="{{ l.verificationInfo.label }}"
+              data-checked="{{ l.last_checked if l.last_checked else '' }}">
+
+            <td class="whitespace-nowrap px-2.5 py-2 tabular-nums">
+              <span class="font-semibold text-sand-800 dark:text-sand-100">{{ l.rating | default(0) }}</span><span class="text-amber-500" aria-hidden="true">&#9733;</span>
+            </td>
+
+            <td class="max-w-[16rem] px-2.5 py-2">
+              <a href="/listing/{{ l.id }}/" class="block truncate font-medium text-sand-800 hover:text-clay-700 dark:text-sand-100 dark:hover:text-clay-300{% if l.isGone %} line-through{% endif %}">{{ l.title }}</a>
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2 text-sand-600 dark:text-sand-300">{{ l.town }}</td>
+            <td class="whitespace-nowrap px-2.5 py-2 text-sand-600 dark:text-sand-300">{{ l.state }}</td>
+            <td class="whitespace-nowrap px-2.5 py-2 text-sand-600 dark:text-sand-300">{{ l.kindShort }}</td>
+
+            <td class="whitespace-nowrap px-2.5 py-2">
+              <span class="band-pill inline-flex items-center rounded-full border px-2 py-0.5 text-[0.6875rem] font-semibold">{{ l.band.label }}</span>
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2 text-right font-semibold tabular-nums text-sand-800 dark:text-sand-100">
+              {% if l.rentLabel %}{{ l.rentLabel }}{% else %}<span class="font-normal text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2 tabular-nums text-sand-600 dark:text-sand-300">
+              {% if l.bedsBathsLabel %}{{ l.bedsBathsLabel }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2 text-right tabular-nums text-sand-600 dark:text-sand-300">
+              {% if l.sqft %}{{ l.sqft }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2 text-right tabular-nums {% if l.workSlow %}font-semibold text-rose-600 dark:text-rose-400{% else %}text-sand-600 dark:text-sand-300{% endif %}">
+              {% if l.workMins != null %}{{ l.workMins }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2 text-right tabular-nums text-sand-600 dark:text-sand-300">
+              {% if l.homeMins != null %}{{ l.homeMins }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2 text-xs {% if l.isGone %}font-semibold text-rose-600 dark:text-rose-400{% elif l.verificationInfo.tone == 'good' %}text-emerald-700 dark:text-emerald-400{% else %}text-sand-500 dark:text-sand-400{% endif %}">
+              {{ l.verificationInfo.label }}
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2 text-xs tabular-nums text-sand-500 dark:text-sand-400">
+              {% if l.lastCheckedLabel %}{{ l.lastCheckedLabel }}{% else %}&mdash;{% endif %}
+            </td>
+
+            <td class="whitespace-nowrap px-2.5 py-2">
+              {% if l.url %}
+                <a href="{{ l.url }}" target="_blank" rel="noopener noreferrer"
+                   class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-sand-400 hover:bg-sand-100 hover:text-clay-700 dark:hover:bg-sand-800 dark:hover:text-clay-300">
+                  <span class="sr-only">Open the original {{ l.title }} listing</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+                    <path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>
+                  </svg>
+                </a>
+              {% else %}
+                <span class="text-sand-300 dark:text-sand-600" aria-hidden="true">&mdash;</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <p id="db-empty" class="mt-4 hidden rounded-2xl border border-dashed border-sand-300 px-6 py-10 text-center text-sm text-sand-500 dark:border-sand-700 dark:text-sand-400">
+    Nothing matches that search.
+  </p>
+
+  <p class="mt-4 text-xs text-sand-500 dark:text-sand-400">
+    Rent is per month. Work and home minutes are free-flow drive estimates (no traffic); anything over 30 minutes to work is flagged in red.
+  </p>
+
+</div>
+
+<script>
+(function () {
+  var table = document.getElementById("db-table");
+  if (!table || !table.tBodies.length) return;
+
+  var body = table.tBodies[0];
+  var rows = Array.prototype.slice.call(body.rows);
+  var buttons = Array.prototype.slice.call(table.querySelectorAll(".db-sort"));
+  var searchEl = document.getElementById("db-search");
+  var countEl = document.getElementById("db-count");
+  var emptyEl = document.getElementById("db-empty");
+  var wrapEl = document.getElementById("db-wrap");
+
+  var total = rows.length;
+  var inBudget = countEl ? Number(countEl.getAttribute("data-budget")) : 0;
+
+  var sortKey = "rent";
+  var sortType = "num";
+  var sortDir = 1;
+
+  function text(row, key) {
+    var raw = row.getAttribute("data-" + key);
+    return raw === null ? "" : raw;
+  }
+
+  function num(row, key) {
+    var raw = text(row, key);
+    if (raw === "") return null;
+    var value = Number(raw);
+    return isNaN(value) ? null : value;
+  }
+
+  // Blanks (no rent, no square footage, never checked) always sink, whichever
+  // way the arrow is pointing.
+  function compare(a, b) {
+    var delta = 0;
+    if (sortType === "num") {
+      var an = num(a, sortKey);
+      var bn = num(b, sortKey);
+      if (an === null && bn === null) delta = 0;
+      else if (an === null) return 1;
+      else if (bn === null) return -1;
+      else delta = an - bn;
+    } else {
+      var as = text(a, sortKey);
+      var bs = text(b, sortKey);
+      if (!as && !bs) delta = 0;
+      else if (!as) return 1;
+      else if (!bs) return -1;
+      else delta = as < bs ? -1 : as > bs ? 1 : 0;
+    }
+    if (delta !== 0) return delta * sortDir;
+    return num(a, "index") - num(b, "index");
+  }
+
+  function render() {
+    var query = searchEl ? searchEl.value.trim().toLowerCase() : "";
+    var visible = 0;
+
+    rows.forEach(function (row) {
+      var show = !query || text(row, "search").indexOf(query) !== -1;
+      row.classList.toggle("hidden", !show);
+      if (show) visible++;
+    });
+
+    rows.slice().sort(compare).forEach(function (row) {
+      body.appendChild(row);
+    });
+
+    buttons.forEach(function (button) {
+      var on = button.getAttribute("data-key") === sortKey;
+      var arrow = button.querySelector(".db-arrow");
+      if (arrow) {
+        arrow.textContent = on ? (sortDir === 1 ? "↑" : "↓") : "↕";
+        arrow.classList.toggle("opacity-25", !on);
+      }
+      var head = button.parentNode;
+      if (head) head.setAttribute("aria-sort", on ? (sortDir === 1 ? "ascending" : "descending") : "none");
+    });
+
+    if (countEl) {
+      countEl.textContent = query
+        ? visible + " of " + total + " listings match “" + query + "”"
+        : total + " listings · " + inBudget + " in budget";
+    }
+    if (emptyEl) emptyEl.classList.toggle("hidden", visible !== 0);
+    if (wrapEl) wrapEl.classList.toggle("hidden", visible === 0);
+  }
+
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      var key = button.getAttribute("data-key");
+      if (key === sortKey) {
+        sortDir = -sortDir;
+      } else {
+        sortKey = key;
+        sortType = button.getAttribute("data-type") || "text";
+        // Ratings read best highest-first; everything else starts ascending.
+        sortDir = key === "rating" ? -1 : 1;
+      }
+      render();
+    });
+  });
+
+  if (searchEl) {
+    searchEl.addEventListener("input", render);
+    // Some browsers fire only "search" when the little clear x is tapped.
+    searchEl.addEventListener("search", render);
+  }
+
+  render();
+})();
+</script>
