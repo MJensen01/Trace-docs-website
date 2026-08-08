@@ -144,7 +144,7 @@
       "url": "https://canalhouseapts.com/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-canal-house-apartments.jpg",
       "coords": [
         -74.779474150014,
         40.216769889178
@@ -187,7 +187,7 @@
       "url": "https://www.zumper.com/apartment-buildings/p100471/foxwood-manor-levittown-pa",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-foxwood-manor-apartments.jpg",
       "coords": [
         -74.886045321905,
         40.137154283354
@@ -231,7 +231,7 @@
       "url": "https://ro9.godaddysites.com/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-royal-park-apartments.jpg",
       "coords": [
         -74.831240881696,
         40.134402579188
@@ -275,7 +275,7 @@
       "url": "https://www.forrent.com/pa/levittown/lavana-falls-apartments/t7dy1sc",
       "url_status": "blocked",
       "verification": "unverified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-lavana-falls-apartments.jpg",
       "coords": [
         -74.832466255704,
         40.132529761297
@@ -318,7 +318,7 @@
       "url": "https://www.forrent.com/pa/levittown/avalon-court-apartments/zjzlj3w",
       "url_status": "blocked",
       "verification": "unverified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-avalon-court-apartments.jpg",
       "coords": [
         -74.8713132,
         40.1328683
@@ -361,7 +361,7 @@
       "url": "https://www.rentsummittrace.com/floor-plans/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-summit-trace-apartments.jpg",
       "coords": [
         -74.925731470723,
         40.216742922866
@@ -447,7 +447,7 @@
       "url": "https://www.affiliatedmgmt.com/property/windsor-regency/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-windsor-regency.jpg",
       "coords": [
         -74.514980340159,
         40.28231275044
@@ -491,7 +491,7 @@
       "url": "https://www.forrent.com/nj/east-windsor/twin-rivers-apartments/v1vxece",
       "url_status": "blocked",
       "verification": "unverified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-twin-rivers-apartments.jpg",
       "coords": [
         -74.48887706899,
         40.266626546069
@@ -534,7 +534,7 @@
       "url": "https://www.quailridgenj.com/",
       "url_status": "direct",
       "verification": "needs-call",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-quail-ridge-apartments.jpg",
       "coords": [
         -74.560935146717,
         40.334766673984
@@ -664,7 +664,7 @@
       "url": "https://www.warnervillageapts.com/",
       "url_status": "direct",
       "verification": "needs-call",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-warner-village-apartments.jpg",
       "coords": [
         -74.7249307,
         40.2335104
@@ -708,7 +708,7 @@
       "url": "https://www.nottinghamapthomes.com/",
       "url_status": "direct",
       "verification": "needs-call",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-nottingham-apartments.jpg",
       "coords": [
         -74.7038183,
         40.2552939
@@ -752,7 +752,7 @@
       "url": "https://www.liveatredoak.com/",
       "url_status": "direct",
       "verification": "needs-call",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-red-oak-manor.jpg",
       "coords": [
         -74.7038183,
         40.2552939
@@ -796,7 +796,7 @@
       "url": "https://www.corsamanagement.com/properties/greenwood-village-apartments/",
       "url_status": "direct",
       "verification": "needs-call",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-greenwood-village.jpg",
       "coords": [
         -74.717926,
         40.2280501
@@ -840,7 +840,7 @@
       "url": "https://www.apartments.com/parkview-apartments-hamilton-nj/cql2yrd/",
       "url_status": "direct",
       "verification": "needs-call",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-parkview-apartments.jpg",
       "coords": [
         -74.7038183,
         40.2552939
@@ -884,7 +884,7 @@
       "url": "https://www.rentcafe.com/housing/nj/ewing/the-gardens-at-birmingham/default.aspx",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-the-gardens-at-birmingham.jpg",
       "coords": [
         -74.8085864,
         40.2678429
@@ -928,7 +928,7 @@
       "url": "https://www.zumper.com/apartment-buildings/p308876/woodbrook-house-ewing-township-nj",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-woodbrook-house.jpg",
       "coords": [
         -74.8049144,
         40.254109
@@ -972,7 +972,7 @@
       "url": "https://www.kriegmanandsmith.com/apartments/nj/ewing/parkside-manor/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-parkside-manor.jpg",
       "coords": [
         -74.7683808,
         40.2530049
@@ -1016,7 +1016,7 @@
       "url": "https://www.kriegmanandsmith.com/apartments/nj/ewing/highgate/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-highgate-apartments.jpg",
       "coords": [
         -74.7876081,
         40.2541183
@@ -1060,7 +1060,7 @@
       "url": "https://www.kriegmanandsmith.com/apartments/nj/ewing/versailles/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-versailles-apartments.jpg",
       "coords": [
         -74.8103621,
         40.2481308
@@ -1104,7 +1104,7 @@
       "url": "https://www.harborgroupmanagement.com/apartments/nj/ewing/scudder-falls/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-scudder-falls-east-harbor-group.jpg",
       "coords": [
         -74.8006895,
         40.2688105
@@ -1147,7 +1147,7 @@
       "url": "https://www.rentcafe.com/apartments/nj/lawrence/heritage-village-at-lawrence/default.aspx",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-heritage-village-at-lawrence.jpg",
       "coords": [
         -74.7123373,
         40.2877475
@@ -1191,7 +1191,7 @@
       "url": "https://bukietbuilding.com/apartment-living/white-pine/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/apa-lawrence-twp-market-rate-complexes-white-pine-sturwood.jpg",
       "coords": [
         -74.7123373,
         40.2877475
@@ -1451,7 +1451,7 @@
       "url": "https://www.compass.com/homedetails/237-Cleveland-St-Bristol-PA-19007/1492040364690087249_lid/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-237-cleveland-st-rowhome-condo.jpg",
       "coords": [
         -74.841847008664,
         40.109423027634
@@ -1538,7 +1538,7 @@
       "url": "https://www.rentcafe.com/apartments/pa/bristol/ip-15-01-815-winder-dr/default.aspx",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-815-winder-dr-studio-house.jpg",
       "coords": [
         -74.871854562895,
         40.105142859547
@@ -1625,7 +1625,7 @@
       "url": "https://www.apartments.com/1508-ravens-crest-dr-plainsboro-nj/bt2nbzc/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-1508-ravens-crest-dr-princeton-meadows-ground-floor-cond.jpg",
       "coords": [
         -74.551155770947,
         40.327153352699
@@ -1669,7 +1669,7 @@
       "url": "https://liveracquetclub.com/floor-plans/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-racquet-club-townhomes.jpg",
       "coords": [
         -74.887621420351,
         40.140720871278
@@ -1841,7 +1841,7 @@
       "url": "https://www.zumper.com/address/1105-aspen-dr-plainsboro-nj-08536-usa",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-1105-aspen-dr-townhouse-style-condo.jpg",
       "coords": [
         -74.556017996568,
         40.323500240897
@@ -1885,7 +1885,7 @@
       "url": "https://www.trulia.com/home/26-oakridge-dr-26-langhorne-pa-19047-2079902805",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-26-oakridge-dr-townhouse.jpg",
       "coords": [
         -74.925405763143,
         40.216223657465
@@ -1972,7 +1972,7 @@
       "url": "https://www.homes.com/property/43-vermont-st-lawrence-township-nj-08648/id-400017482546/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-43-vermont-st-2nd-flr-half-of-a-house.jpg",
       "coords": [
         -74.7123373,
         40.2877475
@@ -2060,7 +2060,7 @@
       "url": "https://www.kriegmanandsmith.com/apartments/nj/robbinsville/sharon-arms/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-55-sharon-rd.jpg",
       "coords": [
         -74.6085466,
         40.2179208
@@ -2191,7 +2191,7 @@
       "url": "https://www.compass.com/listing/4906-ravens-crest-drive-unit-4906-plainsboro-nj-08536/682845269477505929/",
       "url_status": "direct",
       "verification": "verified",
-      "screenshot": null,
+      "screenshot": "Images/listings/tow-4906-ravens-crest-dr-ground-floor-condo.jpg",
       "coords": [
         -74.552062996743,
         40.326321339303
@@ -2552,5 +2552,6 @@
       "geocode_method": "address",
       "last_checked": "2026-08-08"
     }
-  ]
+  ],
+  "site_base_url": "https://trace-docs.com"
 }
