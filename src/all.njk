@@ -91,7 +91,7 @@ permalink: /all/
               <span class="font-semibold text-sand-800 dark:text-sand-100">{{ l.rating | default(0) }}</span><span class="text-amber-500" aria-hidden="true">&#9733;</span>
             </td>
 
-            <td class="max-w-[16rem] px-2.5 py-2">
+            <td class="db-name max-w-[16rem] px-2.5 py-2">
               <a href="/listing/{{ l.id }}/" class="block truncate font-medium text-sand-800 hover:text-clay-700 dark:text-sand-100 dark:hover:text-clay-300{% if l.isGone %} line-through{% endif %}">{{ l.title }}</a>
             </td>
 
@@ -288,6 +288,18 @@ permalink: /all/
         note.textContent = "archived by " + HF.whoLabel(entry.who) +
           (HF.dateLabel(entry.ts) ? " · " + HF.dateLabel(entry.ts) : "");
         status.appendChild(note);
+      });
+    });
+
+    // Hearts ride along under the name — no extra column, the table is wide
+    // enough already.
+    HF.favorites().then(function (index) {
+      rows.forEach(function (row) {
+        var entry = index[row.getAttribute("data-id")];
+        if (!entry) return;
+        var cell = row.querySelector(".db-name");
+        if (!cell || cell.querySelector(".heart-chip")) return;
+        cell.insertAdjacentHTML("beforeend", '<span class="mt-0.5 block">' + HF.favBadges(entry) + "</span>");
       });
     });
   });

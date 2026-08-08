@@ -7,6 +7,7 @@
  * KV (HOMEFINDER_QUEUE) keys:
  *   pending:<id>  — a listing submitted through the site, awaiting triage
  *   hidden:<listing-id> — a published listing archived through the site
+ *   fav:<listing-id>:<who> — a heart from matt or evelyn
  *
  * Secrets: HF_PIN — shared PIN required for every write endpoint.
  */
@@ -100,6 +101,13 @@ export default {
         return ok({ ok: true, pin_configured: Boolean(env.HF_PIN) });
       }
       if (path === "/api/pending") return ok(await listByPrefix(env, "pending:"));
+      if (path === "/api/favorites") {
+        const rows = await listByPrefix(env, "fav:");
+        return ok(rows.map((r) => {
+          const [, listingId, who] = r.key.split(":");
+          return { listing_id: listingId, who, ts: r.ts };
+        }));
+      }
       if (path === "/api/hidden") {
         const rows = await listByPrefix(env, "hidden:");
         return ok(rows.map((r) => ({
@@ -162,6 +170,23 @@ export default {
         })
       );
       return ok({ ok: true });
+    }
+
+    if (path === "/api/favorite") {
+      const id = body.listing_id;
+      if (typeof id !== "string" || !/^[a-z0-9-]{1,80}$/.test(id))
+        return err("Bad listing_id");
+      const who = body.who === "evelyn" ? "evelyn" : "matt";
+      const key = `fav:${id}:${who}`;
+      if (body.on === false) {
+        await env.HOMEFINDER_QUEUE.delete(key);
+      } else {
+        await env.HOMEFINDER_QUEUE.put(
+          key,
+          JSON.stringify({ ts: new Date().toISOString() })
+        );
+      }
+      return ok({ ok: true, on: body.on !== false });
     }
 
     if (path === "/api/unarchive") {

@@ -107,6 +107,9 @@ eleventyComputed:
       </p>
 
       <div class="mt-3 flex flex-wrap items-center gap-1.5">
+        <!-- Hearts, filled in from /api/favorites. `contents` so the pills join
+             the same flex row rather than sitting in a box of their own. -->
+        <span id="fav-chips" class="contents"></span>
         <span class="band-pill inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold">{{ l.band.label }}</span>
         <span class="inline-flex items-center rounded-full border border-sand-200 bg-sand-100 px-2.5 py-1 text-xs font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">{{ l.tierLabel }}</span>
         <span class="inline-flex items-center rounded-full border border-sand-200 bg-sand-100 px-2.5 py-1 text-xs font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">{{ l.kind | capitalize }}</span>
@@ -144,7 +147,12 @@ eleventyComputed:
     </div>
 
     <!-- Actions -->
-    <div class="mt-4 flex flex-wrap gap-2">
+    <div class="mt-4 flex flex-wrap gap-2" data-listing="{{ l.id }}" id="fav-bar">
+      <button type="button" id="fav-toggle" aria-pressed="false"
+              class="heart-btn tap grow gap-2 rounded-xl px-5 text-sm font-semibold sm:grow-0">
+        <span id="fav-icon" class="text-base leading-none" aria-hidden="true">&#9825;</span>
+        <span id="fav-label">Favorite as Matt</span>
+      </button>
       {% if l.url %}
         <a href="{{ l.url }}" target="_blank" rel="noopener noreferrer"
            class="tap grow gap-2 rounded-xl bg-clay-600 px-5 text-sm font-semibold text-white hover:bg-clay-700 sm:grow-0">
@@ -160,6 +168,18 @@ eleventyComputed:
         </a>
       {% endif %}
     </div>
+
+    <!-- Only shown when we don't already remember the PIN (or it was wrong). -->
+    <form id="fav-pin-form" class="mt-2 hidden flex-wrap items-center gap-2" novalidate>
+      <label for="fav-pin" class="sr-only">PIN</label>
+      <input type="password" id="fav-pin" inputmode="numeric" autocomplete="off" placeholder="PIN"
+             class="h-11 w-24 rounded-xl border border-sand-300 bg-white px-3.5 text-sm tracking-widest text-sand-800 placeholder:tracking-normal placeholder:text-sand-400 focus:border-clay-400 dark:border-sand-700 dark:bg-sand-950 dark:text-sand-100 dark:placeholder:text-sand-500">
+      <button type="submit" class="tap rounded-xl bg-clay-600 px-4 text-sm font-semibold text-white hover:bg-clay-700">Save</button>
+      <button type="button" id="fav-pin-cancel"
+              class="tap rounded-xl px-3 text-sm font-medium text-sand-500 hover:text-sand-700 dark:text-sand-400 dark:hover:text-sand-200">Cancel</button>
+    </form>
+    <p id="fav-msg" class="mt-1.5 hidden text-xs font-medium" role="status" aria-live="polite"></p>
+
     {% if not l.url %}
       <p class="mt-2 text-xs text-sand-500 dark:text-sand-400">No direct link on file &mdash; this one came from a market survey rather than a single listing.</p>
     {% endif %}
@@ -520,6 +540,134 @@ document.addEventListener("DOMContentLoaded", function () {
 
   HF.hidden().then(function (index) {
     archived = index[listingId] || null;
+    paint();
+  });
+});
+</script>
+
+<script>
+// Hearts. The chips show both people; the button is whoever this browser is
+// (hf_who, Matt by default). Optimistic — the pill lands the moment you tap and
+// rolls back if the API says no.
+document.addEventListener("DOMContentLoaded", function () {
+  var bar = document.getElementById("fav-bar");
+  if (!bar || !window.HF) return;
+
+  var listingId = bar.getAttribute("data-listing");
+  var button = document.getElementById("fav-toggle");
+  var icon = document.getElementById("fav-icon");
+  var label = document.getElementById("fav-label");
+  var chips = document.getElementById("fav-chips");
+  var form = document.getElementById("fav-pin-form");
+  var pin = document.getElementById("fav-pin");
+  var cancel = document.getElementById("fav-pin-cancel");
+  var msg = document.getElementById("fav-msg");
+
+  var who = HF.getWho();
+  var mine = HF.whoLabel(who);
+  var entry = { matt: null, evelyn: null };
+  var index = null; // the shared cache, once it lands
+  var busy = false;
+  var touched = false; // tapped before /api/favorites answered — we know better
+
+  function say(text, tone) {
+    msg.textContent = text || "";
+    msg.className =
+      "mt-1.5 text-xs font-medium" +
+      (text ? "" : " hidden") +
+      (tone === "bad" ? " text-rose-600 dark:text-rose-400" : " text-sand-500 dark:text-sand-400");
+  }
+
+  function showPin(open) {
+    form.classList.toggle("hidden", !open);
+    form.classList.toggle("flex", open);
+    if (open) {
+      pin.value = HF.getPin();
+      pin.focus({ preventScroll: true });
+    }
+  }
+
+  function paint() {
+    var on = Boolean(entry[who]);
+    button.setAttribute("aria-pressed", on ? "true" : "false");
+    icon.innerHTML = on ? "&#10084;" : "&#9825;";
+    label.textContent = on ? mine + "’s favorite" : "Favorite as " + mine;
+    button.setAttribute(
+      "aria-label",
+      (on ? "Remove " : "Add ") + mine + "’s heart on this listing"
+    );
+    chips.innerHTML = HF.favBadges(entry, "full");
+  }
+
+  // One place that talks to the API, whether the PIN came from storage or the
+  // little inline box.
+  function commit(want, code, field) {
+    if (busy) return;
+    busy = true;
+    touched = true;
+    button.disabled = true;
+    entry[who] = want ? new Date().toISOString() : null; // optimistic
+    paint();
+    say(want ? "Saving…" : "Removing…");
+
+    HF.favSet(listingId, who, want, code).then(function (res) {
+      busy = false;
+      button.disabled = false;
+      if (res.ok) {
+        HF.setPin(code);
+        HF.favMark(index, listingId, who, want);
+        showPin(false);
+        say("");
+        return;
+      }
+      entry[who] = want ? null : new Date().toISOString(); // roll back
+      paint();
+      say(HF.message(res), "bad");
+      if (res.status === 403) {
+        showPin(true);
+        HF.shake(field || pin);
+      }
+    });
+  }
+
+  button.addEventListener("click", function () {
+    var want = !entry[who];
+    var stored = HF.getPin();
+    if (!stored) {
+      showPin(true);
+      say("PIN, please — then " + (want ? "save" : "remove") + " the heart.");
+      return;
+    }
+    commit(want, stored);
+  });
+
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
+    if (!pin.value) {
+      say("The PIN is missing.", "bad");
+      HF.shake(pin);
+      return;
+    }
+    commit(!entry[who], pin.value, pin);
+  });
+
+  cancel.addEventListener("click", function () {
+    showPin(false);
+    say("");
+  });
+
+  paint();
+
+  HF.favorites().then(function (loaded) {
+    index = loaded;
+    var found = loaded[listingId];
+    var ours = entry[who];
+    entry = found ? { matt: found.matt, evelyn: found.evelyn } : { matt: null, evelyn: null };
+    // The fetch went out before the tap did, so its answer is older than ours.
+    if (touched) {
+      entry[who] = ours;
+      HF.favMark(index, listingId, who, Boolean(ours));
+    }
     paint();
   });
 });

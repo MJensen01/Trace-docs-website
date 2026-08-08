@@ -100,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   var markersById = {};
+  var popupHtmlById = {};
 
   (data.points || []).forEach(function (point) {
     if (point.lat === null || point.lon === null) return;
@@ -131,6 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     marker.bindPopup(html, { minWidth: 190 });
     markersById[point.id] = marker;
+    popupHtmlById[point.id] = html;
     bounds.push([point.lat, point.lon]);
   });
 
@@ -169,6 +171,18 @@ document.addEventListener("DOMContentLoaded", function () {
         map.removeLayer(markersById[id]);
         delete markersById[id];
       }
+    });
+  });
+
+  // Hearts: a rose line at the top of the popup and a slightly fatter dot, so a
+  // favorite stands out without touching the band colour coding.
+  HF.favorites().then(function (index) {
+    Object.keys(index).forEach(function (id) {
+      var marker = markersById[id];
+      if (!marker) return;
+      marker.setRadius(11);
+      marker.setStyle({ weight: 3 });
+      marker.setPopupContent(HF.favPopupBadges(index[id]) + (popupHtmlById[id] || ""));
     });
   });
 

@@ -47,7 +47,8 @@ description: Every rental we are tracking, with rent, commute times and ratings.
           { group: "kind", value: "townhouse", label: "Townhouses" },
           { group: "state", value: "PA", label: "PA" },
           { group: "state", value: "NJ", label: "NJ" },
-          { group: "rating", value: "4", label: "★ 4+" }
+          { group: "rating", value: "4", label: "★ 4+" },
+          { group: "fav", value: "1", label: "Favorites", heart: true }
         ] %}
         {% for chip in chips %}
           <button type="button"
@@ -56,6 +57,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
                   data-value="{{ chip.value }}"
                   aria-pressed="{{ 'true' if chip.group == 'all' else 'false' }}">
             {% if chip.band %}<span class="band-bar h-2 w-2 shrink-0 rounded-full" aria-hidden="true"></span>{% endif %}
+            {% if chip.heart %}<span class="heart-glyph leading-none" aria-hidden="true">&#10084;</span>{% endif %}
             {{ chip.label }}
           </button>
         {% endfor %}
@@ -122,7 +124,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-1.5">
+          <div class="card-chips flex flex-wrap items-center gap-1.5">
             <span class="band-pill inline-flex items-center rounded-full border px-2 py-0.5 text-[0.6875rem] font-semibold">{{ l.band.label }}</span>
             {% if l.isGone %}
               <span class="inline-flex items-center rounded-full border border-rose-300 bg-rose-50 px-2 py-0.5 text-[0.6875rem] font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300">No longer listed</span>
@@ -188,8 +190,13 @@ description: Every rental we are tracking, with rent, commute times and ratings.
   var emptyEl = document.getElementById("empty-state");
   var STORE_KEY = "home-finder-view";
 
-  var active = { band: [], kind: [], state: [], rating: [] };
+  var GROUPS = ["band", "kind", "state", "rating", "fav"];
+  var active = { band: [], kind: [], state: [], rating: [], fav: [] };
   var sortBy = "rating";
+  // Hearts arrive after the page does. Until they land, the ❤ chip holds its
+  // fire — otherwise coming back to a remembered ❤ filter flashes "nothing
+  // matches" for as long as the API takes to answer.
+  var favsLoaded = false;
 
   function num(el, attr) {
     var raw = el.getAttribute(attr);
@@ -203,6 +210,9 @@ description: Every rental we are tracking, with rent, commute times and ratings.
     if (active.kind.length && active.kind.indexOf(card.getAttribute("data-kind")) === -1) return false;
     if (active.state.length && active.state.indexOf(card.getAttribute("data-state")) === -1) return false;
     if (active.rating.length && (num(card, "data-rating") || 0) < 4) return false;
+    // data-fav is stamped on once /api/favorites lands; if that call failed the
+    // chip ends up matching nothing, which is the honest answer.
+    if (active.fav.length && favsLoaded && card.getAttribute("data-fav") !== "1") return false;
     return true;
   }
 
@@ -230,7 +240,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
   }
 
   function anyFilterActive() {
-    return active.band.length + active.kind.length + active.state.length + active.rating.length > 0;
+    return GROUPS.some(function (group) { return active[group].length > 0; });
   }
 
   function render() {
@@ -279,7 +289,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
     chip.addEventListener("click", function () {
       var group = chip.getAttribute("data-group");
       if (group === "all") {
-        active = { band: [], kind: [], state: [], rating: [] };
+        active = { band: [], kind: [], state: [], rating: [], fav: [] };
       } else {
         var value = chip.getAttribute("data-value");
         var list = active[group];
@@ -301,7 +311,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
   try {
     var saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || "null");
     if (saved && saved.active) {
-      ["band", "kind", "state", "rating"].forEach(function (group) {
+      GROUPS.forEach(function (group) {
         if (Array.isArray(saved.active[group])) active[group] = saved.active[group];
       });
       if (saved.sortBy) sortBy = saved.sortBy;
@@ -405,6 +415,19 @@ description: Every rental we are tracking, with rent, commute times and ratings.
         removed = true;
       });
       if (removed) render();
+    });
+
+    // Hearts: a compact pill on the card and the flag the ❤ chip filters on.
+    HF.favorites().then(function (index) {
+      cards.forEach(function (card) {
+        var entry = index[card.getAttribute("data-id")];
+        if (!entry) return;
+        card.setAttribute("data-fav", "1");
+        var row = card.querySelector(".card-chips");
+        if (row) row.insertAdjacentHTML("afterbegin", HF.favBadges(entry));
+      });
+      favsLoaded = true;
+      render();
     });
   });
 })();

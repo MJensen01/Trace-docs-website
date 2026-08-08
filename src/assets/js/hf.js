@@ -222,6 +222,103 @@
     });
   }
 
+  // ---------------------------------------------------------------------------
+  // Favorites (hearts). Matt and Evelyn each get their own heart per listing,
+  // so a listing can be loved by one of them or both. The read is open, only
+  // the toggle needs the PIN.
+  // ---------------------------------------------------------------------------
+
+  var favPromise = null;
+
+  /**
+   * Hearts as { "<listing-id>": { matt: ts|null, evelyn: ts|null } }.
+   * Fetched once per page load and shared by every widget on it; resolves to
+   * {} whenever /api is unhappy, so callers never need a catch.
+   */
+  function favorites() {
+    if (!favPromise) {
+      favPromise = get("/api/favorites").then(function (res) {
+        var index = {};
+        if (!res.ok || !Array.isArray(res.body)) return index;
+        res.body.forEach(function (row) {
+          if (!row || !row.listing_id) return;
+          if (row.who !== "matt" && row.who !== "evelyn") return;
+          var entry = index[row.listing_id];
+          if (!entry) entry = index[row.listing_id] = { matt: null, evelyn: null };
+          entry[row.who] = row.ts || true;
+        });
+        return index;
+      });
+    }
+    return favPromise;
+  }
+
+  /** Keep the cached index honest after a successful toggle. */
+  function favMark(index, listingId, who, on) {
+    if (!index || !listingId) return;
+    var entry = index[listingId];
+    if (on) {
+      if (!entry) entry = index[listingId] = { matt: null, evelyn: null };
+      entry[who] = new Date().toISOString();
+    } else if (entry) {
+      entry[who] = null;
+      if (!entry.matt && !entry.evelyn) delete index[listingId];
+    }
+  }
+
+  /** [{ who, label, initial }] for one entry, Matt first. [] when nobody. */
+  function favPeople(entry) {
+    if (!entry) return [];
+    return ["matt", "evelyn"]
+      .filter(function (who) { return Boolean(entry[who]); })
+      .map(function (who) {
+        return { who: who, label: whoLabel(who), initial: who === "evelyn" ? "E" : "M" };
+      });
+  }
+
+  /**
+   * Badge markup for one entry. "compact" collapses to a single ❤ M+E pill for
+   * cards and table rows; "full" gives a pill per person for the listing page.
+   */
+  function favBadges(entry, style) {
+    var people = favPeople(entry);
+    if (!people.length) return "";
+    function pill(visible, spoken, extra) {
+      return '<span class="heart-chip' + (extra || "") + '">' +
+        '<span aria-hidden="true">&#10084; ' + visible + "</span>" +
+        '<span class="sr-only">Favorited by ' + spoken + "</span></span>";
+    }
+    if (style === "full") {
+      return people.map(function (person) {
+        return pill(escapeHtml(person.label), escapeHtml(person.label), " heart-chip-lg");
+      }).join("");
+    }
+    return pill(
+      people.map(function (person) { return person.initial; }).join("+"),
+      people.map(function (person) { return escapeHtml(person.label); }).join(" and ")
+    );
+  }
+
+  /** Same idea, inline-styled for a Leaflet popup (always a light surface). */
+  function favPopupBadges(entry) {
+    var people = favPeople(entry);
+    if (!people.length) return "";
+    return '<p style="margin:0 0 6px;font-size:0.75rem;font-weight:600;color:#a83f5b">' +
+      "&#10084; " +
+      people.map(function (person) { return escapeHtml(person.label); }).join(" &amp; ") +
+      "</p>";
+  }
+
+  /** Toggle one heart. Resolves the same { ok, status, body } as post(). */
+  function favSet(listingId, who, on, pin) {
+    return post("/api/favorite", {
+      listing_id: listingId,
+      who: who === "evelyn" ? "evelyn" : "matt",
+      on: Boolean(on),
+      pin: pin
+    });
+  }
+
   window.HF = {
     get: get,
     post: post,
@@ -238,6 +335,12 @@
     setWho: setWho,
     pending: pending,
     hidden: hidden,
+    favorites: favorites,
+    favMark: favMark,
+    favPeople: favPeople,
+    favBadges: favBadges,
+    favPopupBadges: favPopupBadges,
+    favSet: favSet,
     removeControl: removeControl
   };
 })();

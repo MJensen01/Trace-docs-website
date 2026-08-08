@@ -42,6 +42,16 @@
   /* Route colours, shared with the Leaflet polylines. */
   --color-route-work: #2563eb;
   --color-route-home: #7c3aed;
+
+  /* Hearts. A warm dusty rose that sits with the clay accent — deliberately
+     softer and pinker than the alarm red used for slow commutes / gone
+     listings, so a favourite never reads as a warning. */
+  --color-heart-50: #fdf2f4;
+  --color-heart-200: #f3cdd6;
+  --color-heart-400: #e08fa4;
+  --color-heart-500: #c25a72;
+  --color-heart-600: #a83f5b;
+  --color-heart-950: #3a1b23;
 }
 
 @layer base {
@@ -240,6 +250,90 @@
     background-color: #0d9488;
     border: 2px dashed #ffffff;
     box-shadow: 0 0 0 2px rgb(13 148 136 / 0.45);
+  }
+
+  /* Favourites. The pill is read-only decoration (cards, table, listing
+     header); the button is the one thing you tap. Both are built in JS as well
+     as in templates, so they live here rather than as utility soup. */
+  .heart-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-heart-200);
+    background-color: var(--color-heart-50);
+    color: var(--color-heart-600);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.35;
+    white-space: nowrap;
+  }
+
+  .heart-chip-lg {
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  .heart-btn {
+    border-width: 1px;
+    border-color: var(--color-heart-200);
+    background-color: #fff;
+    color: var(--color-heart-600);
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .heart-btn:hover {
+    border-color: var(--color-heart-400);
+    background-color: var(--color-heart-50);
+  }
+  .heart-btn[aria-pressed="true"] {
+    border-color: var(--color-heart-500);
+    background-color: var(--color-heart-500);
+    color: #fff;
+  }
+  .heart-btn[aria-pressed="true"]:hover {
+    border-color: var(--color-heart-600);
+    background-color: var(--color-heart-600);
+  }
+  .heart-btn[disabled] {
+    opacity: 0.6;
+  }
+
+  /* The dashboard's favourites filter chip keeps the shared chip styling; only
+     its glyph is rose, and it flips to white when the chip inverts. */
+  .heart-glyph {
+    color: var(--color-heart-500);
+  }
+  .chip[aria-pressed="true"] .heart-glyph {
+    color: #fff;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .heart-chip {
+      border-color: color-mix(in srgb, var(--color-heart-500) 45%, transparent);
+      background-color: var(--color-heart-950);
+      color: var(--color-heart-400);
+    }
+    .heart-btn {
+      border-color: color-mix(in srgb, var(--color-heart-500) 45%, transparent);
+      background-color: var(--color-sand-900);
+      color: var(--color-heart-400);
+    }
+    .heart-btn:hover {
+      border-color: var(--color-heart-500);
+      background-color: var(--color-heart-950);
+    }
+    .heart-btn[aria-pressed="true"] {
+      border-color: var(--color-heart-500);
+      background-color: var(--color-heart-500);
+      color: #fff;
+    }
+    .heart-glyph {
+      color: var(--color-heart-400);
+    }
   }
 
   /* A wrong PIN nudges the field instead of interrupting with an alert. */
