@@ -38,10 +38,13 @@ commit. Push deploys to production.
 
 ## Images
 
-- Dashboard thumbnail: `src/assets/listings/<id>.jpg`
-- Gallery: `src/assets/listings/<id>/01.jpg`, `02.jpg`, ... (listing pages show
-  a thumbnail strip automatically; first file is the hero, so order matters)
-- Keep photos ~768px wide; 8 per listing is the norm.
+Photos live in the `homefinder-photos` R2 bucket, NOT in git. Keys:
+`photos/<id>/01.jpg`..`NN.jpg` (gallery, hero first) and
+`photos/<id>/thumb.jpg` (dashboard thumbnail). The Worker serves them from
+`/photos/*`. The build trusts `src/_data/photos.json` (the manifest —
+maintained by ingest.js; never list a file there that isn't in R2). Keep
+photos ~768px wide; 8 per listing is the norm. Uploads: ingest.js does it via
+wrangler (this machine is authed) or the PIN-gated `POST /api/photo`.
 
 ## Running a sweep
 
@@ -58,6 +61,13 @@ Source-specific mechanics that outlive any one sweep:
 
 ## The live layer
 
-`worker/index.js` (KV: pending/hidden/favorite keys; PIN in the `HF_PIN`
-secret). Site pages call it via `src/assets/js/hf.js`, failing quietly offline.
-The `/add/` page + `/api/pending` queue feeds `npm run ingest -- --pending`.
+`worker/index.js` (KV: pending/hidden/favorite keys + `data:live`; R2 photos;
+PIN in the `HF_PIN` secret). Site pages call it via `src/assets/js/hf.js`,
+failing quietly offline. The `/add/` page + `/api/pending` queue feeds
+`npm run ingest -- --pending`.
+
+`GET /api/data` is the canonical listings feed: it serves the KV `data:live`
+payload if one has been pushed (PIN-gated `POST /api/data`, 7-day TTL), else
+the baked `/assets/data/listings.json` from the last deploy. The map reads it —
+so a sweep can go live on the map without a rebuild, and the next deploy
+naturally supersedes the override.

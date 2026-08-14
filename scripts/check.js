@@ -13,7 +13,6 @@ const path = require("node:path");
 
 const ROOT = path.join(__dirname, "..");
 const DATA = path.join(ROOT, "src", "_data");
-const SHOTS = path.join(ROOT, "src", "assets", "listings");
 
 const errors = [];
 const warnings = [];
@@ -102,16 +101,19 @@ for (const key of Object.keys(routes)) {
   if (!ids.has(key)) warn(`routes.json: orphan entry "${key}" (no such listing)`);
 }
 
-let galleryDirs = [];
-try {
-  galleryDirs = fs.readdirSync(SHOTS, { withFileTypes: true }).filter((e) => e.isDirectory());
-} catch { /* no screenshots dir */ }
-for (const dir of galleryDirs) {
-  if (!ids.has(dir.name)) { warn(`gallery folder "${dir.name}" has no listing`); continue; }
-  const files = fs.readdirSync(path.join(SHOTS, dir.name)).filter((f) => /\.(jpe?g|png|webp)$/i.test(f));
-  if (!files.length) warn(`gallery folder "${dir.name}" is empty`);
-  if (files.length && !fs.existsSync(path.join(SHOTS, `${dir.name}.jpg`))) {
-    warn(`${dir.name}: gallery exists but no dashboard thumbnail (${dir.name}.jpg)`);
+// Photos live in R2; photos.json is the manifest the build trusts.
+const manifest = JSON.parse(fs.readFileSync(path.join(DATA, "photos.json"), "utf8"));
+for (const [key, entry] of Object.entries(manifest)) {
+  if (!ids.has(key)) { warn(`photos.json: entry "${key}" has no listing`); continue; }
+  if (entry.gallery !== undefined) {
+    if (!Array.isArray(entry.gallery) || entry.gallery.some((f) => typeof f !== "string" || !/^[a-z0-9_-]+\.(jpe?g|png|webp)$/i.test(f))) {
+      err(`photos.json: "${key}".gallery must be an array of plain image filenames`);
+    } else if (!entry.gallery.length) {
+      warn(`photos.json: "${key}".gallery is empty`);
+    }
+  }
+  if (entry.gallery && entry.gallery.length && !entry.thumb) {
+    warn(`photos.json: "${key}" has a gallery but no thumb`);
   }
 }
 

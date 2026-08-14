@@ -11,19 +11,16 @@ const UNSAFE_IN_SCRIPT = {
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy("src/css/output.css");
   // Explicit globs so Google Drive's desktop.ini files stay out of the build.
+  // Listing photos are NOT copied here — they live in R2 and are served from
+  // /photos/ by the Worker (see worker/index.js and src/_data/photos.json).
   eleventyConfig.addPassthroughCopy({
     "src/assets/js/*.js": "assets/js",
-    "src/assets/listings/*.{jpg,jpeg,png,webp}": "assets/listings",
     "src/assets/vendor/leaflet/*.{js,css}": "assets/vendor/leaflet",
     "src/assets/vendor/leaflet/images/*.png": "assets/vendor/leaflet/images",
     "src/assets/icons/*.png": "assets/icons",
     "src/manifest.webmanifest": "manifest.webmanifest",
     "src/robots.txt": "robots.txt",
   });
-
-  // Gallery folders: src/assets/listings/<id>/NN.jpg — the string form keeps
-  // the directory structure, which the dir->dir mapping above would flatten.
-  eleventyConfig.addPassthroughCopy("src/assets/listings/*/*.{jpg,jpeg,png,webp}");
 
   eleventyConfig.ignores.add("**/desktop.ini");
 

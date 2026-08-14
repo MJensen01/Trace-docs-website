@@ -6,59 +6,30 @@
  * Nunjucks templates stay simple.
  */
 
-const fs = require("node:fs");
-const path = require("node:path");
-
 const raw = require("./listings.json");
 const routes = require("./routes.json");
 
-const SCREENSHOT_DIR = path.join(__dirname, "..", "assets", "listings");
-
-const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".webp"];
-
 /**
- * Per-listing photo galleries: src/assets/listings/<id>/NN.jpg, scraped from
- * the original listing by the search pipeline. Keyed by listing id, sorted by
- * filename so the scrape order (usually hero first) is kept.
+ * Listing images live in R2 (served from /photos/ by the Worker), not in git.
+ * photos.json is the manifest — per listing id: `thumb` (dashboard thumbnail
+ * exists) and `gallery` (ordered filenames, hero first). It is maintained by
+ * scripts/ingest.js.
  */
-function galleryIndex() {
-  let entries = [];
-  try {
-    entries = fs.readdirSync(SCREENSHOT_DIR, { withFileTypes: true });
-  } catch {
-    return {};
-  }
-  const index = {};
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    const files = fs
-      .readdirSync(path.join(SCREENSHOT_DIR, entry.name))
-      .filter((f) => IMAGE_EXTS.includes(path.extname(f).toLowerCase()))
-      .sort();
-    if (files.length) {
-      index[entry.name] = files.map(
-        (f) => `/assets/listings/${entry.name}/${f}`
-      );
-    }
-  }
-  return index;
+const photos = require("./photos.json");
+
+function thumbUrl(id) {
+  const entry = photos[id];
+  if (!entry) return null;
+  if (entry.thumb) return `/photos/${id}/thumb.jpg`;
+  if (entry.gallery && entry.gallery.length)
+    return `/photos/${id}/${entry.gallery[0]}`;
+  return null;
 }
 
-/** Files that actually exist on disk, keyed by listing id. */
-function screenshotIndex() {
-  let files = [];
-  try {
-    files = fs.readdirSync(SCREENSHOT_DIR);
-  } catch {
-    return {};
-  }
-  const index = {};
-  for (const file of files) {
-    const ext = path.extname(file).toLowerCase();
-    if (![".jpg", ".jpeg", ".png", ".webp"].includes(ext)) continue;
-    index[path.basename(file, path.extname(file))] = `/assets/listings/${file}`;
-  }
-  return index;
+function galleryUrls(id) {
+  const entry = photos[id];
+  if (!entry || !entry.gallery) return [];
+  return entry.gallery.map((file) => `/photos/${id}/${file}`);
 }
 
 /** Abbreviations that end in "." but do not end a sentence. */
@@ -188,8 +159,6 @@ const SLOW_COMMUTE_MIN = 30;
 /** "New" badge window: listings added within this many days of the data date. */
 const NEW_WINDOW_DAYS = 3;
 
-const screenshots = screenshotIndex();
-const galleries = galleryIndex();
 const budget = raw.budget || {};
 
 const updatedMs = Date.parse(`${raw.updated}T12:00:00Z`);
@@ -235,9 +204,9 @@ const listings = raw.listings.map((listing, index) => {
     title: listing.name || listing.address || `${listing.town}, ${listing.state}`,
     subtitle: listing.name ? listing.address : null,
     place: `${listing.town}, ${listing.state}`,
-    img: screenshots[listing.id] || (galleries[listing.id] || [])[0] || null,
-    gallery: galleries[listing.id] || [],
-    galleryCount: (galleries[listing.id] || []).length,
+    img: thumbUrl(listing.id),
+    gallery: galleryUrls(listing.id),
+    galleryCount: galleryUrls(listing.id).length,
     isNew: isNew(listing.date_added),
     rentLabel: money(listing.rent),
     band,
@@ -355,6 +324,49 @@ const mapPoints = listings
   }));
 
 /**
+ * Machine-readable feed of the dataset, baked to /assets/data/listings.json
+ * and served through GET /api/data (where a pushed-live payload can override
+ * it between deploys). Slim on purpose: no route geometry, no prev/next.
+ */
+function buildFeed(anchors) {
+  return {
+  version: raw.version,
+  updated: raw.updated,
+  budget,
+  anchors,
+  counts,
+  points: mapPoints,
+  listings: listings.map((l) => ({
+    id: l.id,
+    title: l.title,
+    subtitle: l.subtitle,
+    place: l.place,
+    town: l.town,
+    state: l.state,
+    kind: l.kind,
+    band: l.bandKey,
+    tier: l.tier,
+    rent: l.rent ?? null,
+    beds: l.beds ?? null,
+    baths: l.baths ?? null,
+    sqft: l.sqft ?? null,
+    rating: l.rating || 0,
+    workMins: l.workMins,
+    homeMins: l.homeMins,
+    lat: l.lat,
+    lon: l.lon,
+    url: l.url,
+    img: l.img,
+    gallery: l.gallery,
+    isNew: l.isNew,
+    isGone: l.isGone,
+    verification: l.verification,
+    date_added: l.date_added || null,
+  })),
+  };
+}
+
+/**
  * Comparable form of a listing URL — no scheme, no www, no query, no trailing
  * slash. Mirrors HF.normUrl() in assets/js/hf.js: the pending strip compares
  * these to hide a submission that is already published here.
@@ -413,4 +425,5 @@ module.exports = {
   browse,
   mapPoints,
   knownUrls,
+  feed: buildFeed(anchors),
 };

@@ -6,3 +6,5 @@ desktop.ini
 Thumbs.db
 .dev.vars
 .wrangler/
+# Listing photos live in R2 (photos.json is the manifest) — never commit them.
+src/assets/listings/

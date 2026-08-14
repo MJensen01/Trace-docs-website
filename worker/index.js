@@ -8,6 +8,11 @@
  *   pending:<id>  — a listing submitted through the site, awaiting triage
  *   hidden:<listing-id> — a published listing archived through the site
  *   fav:<listing-id>:<who> — a heart from matt or evelyn
+ *   data:live — a fresher listings payload than the baked build (see /api/data)
+ *
+ * R2 (PHOTOS): listing images under photos/<listing-id>/<file>.jpg —
+ * galleries as 01.jpg..NN.jpg, the dashboard thumbnail as thumb.jpg. Served
+ * from /photos/*; uploaded by scripts/ingest.js (wrangler) or POST /api/photo.
  *
  * Secrets: HF_PIN — shared PIN required for every write endpoint.
  */
@@ -89,10 +94,28 @@ function cleanSubmission(body) {
   };
 }
 
+const PHOTO_KEY_RE = /^photos\/[a-z0-9-]{1,80}\/[a-z0-9_-]{1,40}\.(jpg|jpeg|png|webp)$/;
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, "");
+
+    // Listing images live in R2, not in git. Immutable-cache them: a photo
+    // never changes under the same key (new photos get new names).
+    if (path.startsWith("/photos/") && request.method === "GET") {
+      const key = path.slice(1);
+      if (!PHOTO_KEY_RE.test(key)) return err("Not found", 404);
+      const object = await env.PHOTOS.get(key);
+      if (!object) return err("Not found", 404);
+      return new Response(object.body, {
+        headers: {
+          "content-type": object.httpMetadata?.contentType || "image/jpeg",
+          "cache-control": "public, max-age=31536000, immutable",
+          etag: object.httpEtag,
+        },
+      });
+    }
 
     if (!path.startsWith("/api")) return err("Not found", 404);
 
@@ -107,6 +130,23 @@ export default {
           const [, listingId, who] = r.key.split(":");
           return { listing_id: listingId, who, ts: r.ts };
         }));
+      }
+      if (path === "/api/data") {
+        // Listings for the map and any live view: a pushed-live payload wins
+        // over the baked build, so a sweep can go live without a deploy.
+        const live = await env.HOMEFINDER_QUEUE.get("data:live");
+        if (live) {
+          return new Response(live, {
+            headers: { ...JSON_HEADERS, "x-hf-source": "live" },
+          });
+        }
+        const baked = await env.ASSETS.fetch(
+          new URL("/assets/data/listings.json", url.origin)
+        );
+        return new Response(baked.body, {
+          status: baked.status,
+          headers: { ...JSON_HEADERS, "x-hf-source": "baked" },
+        });
       }
       if (path === "/api/hidden") {
         const rows = await listByPrefix(env, "hidden:");
@@ -187,6 +227,37 @@ export default {
         );
       }
       return ok({ ok: true, on: body.on !== false });
+    }
+
+    if (path === "/api/photo") {
+      // Remote ingest (e.g. a Cowork sweep without wrangler auth) uploads
+      // photos here; ~100 KB each, base64 in JSON.
+      const key = body.key;
+      if (typeof key !== "string" || !PHOTO_KEY_RE.test(key))
+        return err("Bad key — want photos/<listing-id>/<file>.jpg");
+      if (typeof body.data !== "string" || body.data.length > 2_800_000)
+        return err("Bad data — base64 image up to ~2 MB");
+      let bytes;
+      try {
+        bytes = Uint8Array.from(atob(body.data), (c) => c.charCodeAt(0));
+      } catch {
+        return err("data is not valid base64");
+      }
+      await env.PHOTOS.put(key, bytes, {
+        httpMetadata: { contentType: "image/jpeg" },
+      });
+      return ok({ ok: true, key, bytes: bytes.length }, 201);
+    }
+
+    if (path === "/api/data") {
+      // Push a fresher listings payload than the deployed build. Expires on
+      // its own; a fresh deploy simply out-dates it and ingest re-pushes.
+      if (!body.data || typeof body.data !== "object")
+        return err("Bad data — want the /api/data JSON shape");
+      await env.HOMEFINDER_QUEUE.put("data:live", JSON.stringify(body.data), {
+        expirationTtl: 60 * 60 * 24 * 7,
+      });
+      return ok({ ok: true });
     }
 
     if (path === "/api/unarchive") {

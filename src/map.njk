@@ -64,6 +64,22 @@ document.addEventListener("DOMContentLoaded", function () {
   var data;
   try { data = JSON.parse(payload.textContent); } catch (err) { return; }
 
+  // Prefer the live feed (GET /api/data), which can be fresher than this
+  // build; the inline payload above is the API-down fallback. Either way the
+  // map draws exactly once, when the fetch settles.
+  fetch("/api/data")
+    .then(function (res) { return res.ok ? res.json() : null; })
+    .catch(function () { return null; })
+    .then(function (fresh) {
+      if (fresh && Array.isArray(fresh.points)) {
+        data.points = fresh.points;
+        if (fresh.anchors) data.anchors = fresh.anchors;
+      }
+      draw();
+    });
+
+  function draw() {
+
   var BAND_COLORS = {
     "in-budget": "#059669",
     "stretch": "#d97706",
@@ -254,5 +270,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     paintLegend();
   });
+  }
 });
 </script>

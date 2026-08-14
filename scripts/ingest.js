@@ -26,17 +26,21 @@
  *   }
  *
  * The script fills in the rest: budget band from rent, OSRM drive times and
- * route geometry for both anchors, gallery folder + dashboard thumbnail,
- * listings.json / routes.json appends, and the `updated` stamp. Candidates
- * whose URL or id already exist are skipped, not overwritten.
+ * route geometry for both anchors, photo uploads to R2 (+ photos.json
+ * manifest + thumbnail), listings.json / routes.json appends, and the
+ * `updated` stamp. Candidates whose URL or id already exist are skipped, not
+ * overwritten. Photo uploads use wrangler when this machine is authed;
+ * otherwise pass --pin to fall back to the site's /api/photo endpoint.
  */
 
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
+const { execSync } = require("node:child_process");
 
 const ROOT = path.join(__dirname, "..");
 const DATA = path.join(ROOT, "src", "_data");
-const SHOTS = path.join(ROOT, "src", "assets", "listings");
+const BUCKET = "homefinder-photos";
 const SITE = "https://trace-docs.com";
 const OSRM = "https://router.project-osrm.org";
 const UA =
@@ -108,33 +112,64 @@ async function geocode(query) {
   return [Number(json[0].lon), Number(json[0].lat)];
 }
 
-async function downloadPhotos(id, urls, dry) {
+/**
+ * Photos live in R2 under photos/<id>/<file>, recorded in
+ * src/_data/photos.json. Upload path: wrangler when the machine is authed
+ * (npx wrangler r2 object put), else the PIN-gated /api/photo endpoint.
+ */
+function putR2(key, buf, pin) {
+  const tmp = path.join(os.tmpdir(), `hf-ingest-${process.pid}.jpg`);
+  try {
+    fs.writeFileSync(tmp, buf);
+    execSync(
+      `npx wrangler r2 object put "${BUCKET}/${key}" --file "${tmp}" --content-type image/jpeg --remote`,
+      { cwd: ROOT, stdio: "pipe" }
+    );
+    return "wrangler";
+  } catch (err) {
+    if (!pin) throw new Error("wrangler upload failed and no --pin for /api/photo");
+    return fetch(`${SITE}/api/photo`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ pin, key, data: buf.toString("base64") }),
+    }).then((res) => {
+      if (!res.ok) throw new Error(`/api/photo ${res.status}`);
+      return "api";
+    });
+  } finally {
+    try { fs.unlinkSync(tmp); } catch { /* already gone */ }
+  }
+}
+
+async function uploadPhotos(id, urls, manifest, dry, pin) {
   if (!urls || !urls.length) return 0;
-  const dir = path.join(SHOTS, id);
-  let saved = 0;
-  if (!dry) fs.mkdirSync(dir, { recursive: true });
+  const files = [];
+  let firstBuf = null;
   for (const [i, url] of urls.slice(0, MAX_PHOTOS).entries()) {
-    const file = path.join(dir, `${String(i + 1).padStart(2, "0")}.jpg`);
-    if (fs.existsSync(file)) { saved++; continue; }
-    if (dry) { saved++; continue; }
+    const name = `${String(i + 1).padStart(2, "0")}.jpg`;
+    if (dry) { files.push(name); continue; }
     try {
       const res = await fetch(url, {
         headers: { "user-agent": UA, referer: "https://" + new URL(url).host + "/" },
       });
       const buf = Buffer.from(await res.arrayBuffer());
       if (!res.ok || buf.length < 2000) throw new Error(`status ${res.status}, ${buf.length}B`);
-      fs.writeFileSync(file, buf);
-      saved++;
+      await putR2(`photos/${id}/${name}`, buf, pin);
+      files.push(name);
+      if (!firstBuf) firstBuf = buf;
     } catch (err) {
       console.warn(`  photo ${i + 1} failed: ${err.message}`);
     }
     await sleep(700);
   }
-  // Dashboard thumbnail = first gallery image, copied beside the folder.
-  const thumb = path.join(SHOTS, `${id}.jpg`);
-  const first = path.join(dir, "01.jpg");
-  if (!dry && !fs.existsSync(thumb) && fs.existsSync(first)) fs.copyFileSync(first, thumb);
-  return saved;
+  if (files.length && !dry) {
+    // Dashboard thumbnail = the first gallery image under its own key.
+    try { await putR2(`photos/${id}/thumb.jpg`, firstBuf, pin); } catch (err) {
+      console.warn(`  thumb failed: ${err.message}`);
+    }
+    manifest[id] = { thumb: true, gallery: files };
+  }
+  return files.length;
 }
 
 /** Map a pending-queue item (worker/index.js shape) onto the candidate shape. */
@@ -180,6 +215,7 @@ async function main() {
 
   const listings = JSON.parse(fs.readFileSync(path.join(DATA, "listings.json"), "utf8"));
   const routes = JSON.parse(fs.readFileSync(path.join(DATA, "routes.json"), "utf8"));
+  const manifest = JSON.parse(fs.readFileSync(path.join(DATA, "photos.json"), "utf8"));
   const budget = listings.budget || { max: 1600, stretch_max: 1900 };
   const haveIds = new Set(listings.listings.map((l) => l.id));
   const haveUrls = new Set();
@@ -238,7 +274,7 @@ async function main() {
       continue;
     }
 
-    const photos = await downloadPhotos(id, c.photos, dry);
+    const photos = await uploadPhotos(id, c.photos, manifest, dry, pin);
 
     const entry = {
       id,
@@ -289,7 +325,8 @@ async function main() {
     listings.updated = today();
     fs.writeFileSync(path.join(DATA, "listings.json"), JSON.stringify(listings, null, 1) + "\n");
     fs.writeFileSync(path.join(DATA, "routes.json"), JSON.stringify(routes, null, 1) + "\n");
-    console.log(`\nwrote listings.json (${listings.listings.length} listings) and routes.json`);
+    fs.writeFileSync(path.join(DATA, "photos.json"), JSON.stringify(manifest, null, 1) + "\n");
+    console.log(`\nwrote listings.json (${listings.listings.length} listings), routes.json, photos.json`);
     console.log("next: npm run check && npm run build");
   }
 

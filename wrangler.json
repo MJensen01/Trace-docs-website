@@ -11,5 +11,11 @@
       "binding": "HOMEFINDER_QUEUE",
       "id": "fce73544e7dd4878b4c97122663f0c56"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "homefinder-photos"
+    }
   ]
 }

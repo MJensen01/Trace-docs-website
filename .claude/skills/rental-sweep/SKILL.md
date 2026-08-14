@@ -72,8 +72,11 @@ re-sweeping those is fine (new inventory appears), the URL dedupe protects you.
 For each finalist, fetch its detail page (in-page fetch is fine) and regex out
 `photos.zillowstatic.com/fp/<hash>-cc_ft_<width>.jpg`, dedupe by hash, keep the
 widest variant per hash, take up to 8 URLs in page order (hero first). Pass them
-as `photos` in the candidate JSON — ingest downloads them (768px variant) and
-builds the gallery + thumbnail. Other sites: any direct image URLs work.
+as `photos` in the candidate JSON — ingest downloads the 768px variants and
+uploads them to R2 (`photos/<id>/`), updating the `src/_data/photos.json`
+manifest. On a machine without wrangler auth (e.g. Cowork), add `--pin XXXX` so
+uploads go through `POST /api/photo` instead. Other sites: any direct image
+URLs work.
 
 ## Phase 4 — Ingest
 
