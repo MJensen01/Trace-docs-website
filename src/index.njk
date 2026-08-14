@@ -48,6 +48,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
           { group: "state", value: "PA", label: "PA" },
           { group: "state", value: "NJ", label: "NJ" },
           { group: "rating", value: "4", label: "★ 4+" },
+          { group: "new", value: "1", label: "New" },
           { group: "fav", value: "1", label: "Favorites", heart: true }
         ] %}
         {% for chip in chips %}
@@ -69,6 +70,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
       {% set sorts = [
         { value: "rating", label: "Rating" },
         { value: "rent", label: "Rent" },
+        { value: "home", label: "Home commute" },
         { value: "work", label: "Work commute" }
       ] %}
       {% for sort in sorts %}
@@ -94,13 +96,25 @@ description: Every rental we are tracking, with rent, commute times and ratings.
                data-rating="{{ l.rating | default(0) }}"
                data-rent="{{ l.rent if l.rent else '' }}"
                data-work="{{ l.workMin if l.workMin else '' }}"
+               data-home="{{ l.homeMin if l.homeMin else '' }}"
+               data-new="{{ 1 if l.isNew else 0 }}"
                data-gone="{{ 1 if l.isGone else 0 }}">
 
         <span class="band-bar absolute inset-x-0 top-0 h-1" aria-hidden="true"></span>
 
         {% if l.img %}
-          <img src="{{ l.img }}" alt="Screenshot of the {{ l.title }} listing" loading="lazy" decoding="async"
-               class="aspect-[16/9] w-full border-b border-sand-200 object-cover object-top dark:border-sand-800">
+          <div class="relative">
+            <img src="{{ l.img }}" alt="Screenshot of the {{ l.title }} listing" loading="lazy" decoding="async"
+                 class="aspect-[16/9] w-full border-b border-sand-200 object-cover object-top dark:border-sand-800">
+            {% if l.galleryCount > 1 %}
+              <span class="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-full bg-sand-950/70 px-2 py-0.5 text-[0.6875rem] font-semibold text-white backdrop-blur-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-3 w-3" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.5"/><path d="m21 15-4.5-4.5L9 18"/>
+                </svg>
+                {{ l.galleryCount }} photos
+              </span>
+            {% endif %}
+          </div>
         {% endif %}
 
         <div class="flex flex-1 flex-col gap-3 p-4 pt-4">
@@ -125,6 +139,9 @@ description: Every rental we are tracking, with rent, commute times and ratings.
           </div>
 
           <div class="card-chips flex flex-wrap items-center gap-1.5">
+            {% if l.isNew and not l.isGone %}
+              <span class="inline-flex items-center rounded-full border border-teal-500/40 bg-teal-100/70 px-2 py-0.5 text-[0.6875rem] font-semibold text-teal-800 dark:border-teal-500/45 dark:bg-teal-900/50 dark:text-teal-200">New</span>
+            {% endif %}
             <span class="band-pill inline-flex items-center rounded-full border px-2 py-0.5 text-[0.6875rem] font-semibold">{{ l.band.label }}</span>
             {% if l.isGone %}
               <span class="inline-flex items-center rounded-full border border-rose-300 bg-rose-50 px-2 py-0.5 text-[0.6875rem] font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300">No longer listed</span>
@@ -190,8 +207,8 @@ description: Every rental we are tracking, with rent, commute times and ratings.
   var emptyEl = document.getElementById("empty-state");
   var STORE_KEY = "home-finder-view";
 
-  var GROUPS = ["band", "kind", "state", "rating", "fav"];
-  var active = { band: [], kind: [], state: [], rating: [], fav: [] };
+  var GROUPS = ["band", "kind", "state", "rating", "new", "fav"];
+  var active = { band: [], kind: [], state: [], rating: [], new: [], fav: [] };
   var sortBy = "rating";
   // Hearts arrive after the page does. Until they land, the ❤ chip holds its
   // fire — otherwise coming back to a remembered ❤ filter flashes "nothing
@@ -210,6 +227,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
     if (active.kind.length && active.kind.indexOf(card.getAttribute("data-kind")) === -1) return false;
     if (active.state.length && active.state.indexOf(card.getAttribute("data-state")) === -1) return false;
     if (active.rating.length && (num(card, "data-rating") || 0) < 4) return false;
+    if (active.new.length && card.getAttribute("data-new") !== "1") return false;
     // data-fav is stamped on once /api/favorites lands; if that call failed the
     // chip ends up matching nothing, which is the honest answer.
     if (active.fav.length && favsLoaded && card.getAttribute("data-fav") !== "1") return false;
@@ -233,6 +251,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
 
     if (sortBy === "rent") return compareNumbers(a, b, "data-rent");
     if (sortBy === "work") return compareNumbers(a, b, "data-work");
+    if (sortBy === "home") return compareNumbers(a, b, "data-home");
 
     var ratingDelta = (num(b, "data-rating") || 0) - (num(a, "data-rating") || 0);
     if (ratingDelta !== 0) return ratingDelta;
@@ -289,7 +308,7 @@ description: Every rental we are tracking, with rent, commute times and ratings.
     chip.addEventListener("click", function () {
       var group = chip.getAttribute("data-group");
       if (group === "all") {
-        active = { band: [], kind: [], state: [], rating: [], fav: [] };
+        active = { band: [], kind: [], state: [], rating: [], new: [], fav: [] };
       } else {
         var value = chip.getAttribute("data-value");
         var list = active[group];

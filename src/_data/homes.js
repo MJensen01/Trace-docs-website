@@ -14,6 +14,36 @@ const routes = require("./routes.json");
 
 const SCREENSHOT_DIR = path.join(__dirname, "..", "assets", "listings");
 
+const IMAGE_EXTS = [".jpg", ".jpeg", ".png", ".webp"];
+
+/**
+ * Per-listing photo galleries: src/assets/listings/<id>/NN.jpg, scraped from
+ * the original listing by the search pipeline. Keyed by listing id, sorted by
+ * filename so the scrape order (usually hero first) is kept.
+ */
+function galleryIndex() {
+  let entries = [];
+  try {
+    entries = fs.readdirSync(SCREENSHOT_DIR, { withFileTypes: true });
+  } catch {
+    return {};
+  }
+  const index = {};
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const files = fs
+      .readdirSync(path.join(SCREENSHOT_DIR, entry.name))
+      .filter((f) => IMAGE_EXTS.includes(path.extname(f).toLowerCase()))
+      .sort();
+    if (files.length) {
+      index[entry.name] = files.map(
+        (f) => `/assets/listings/${entry.name}/${f}`
+      );
+    }
+  }
+  return index;
+}
+
 /** Files that actually exist on disk, keyed by listing id. */
 function screenshotIndex() {
   let files = [];
@@ -155,8 +185,20 @@ const TIERS = {
 
 const SLOW_COMMUTE_MIN = 30;
 
+/** "New" badge window: listings added within this many days of the data date. */
+const NEW_WINDOW_DAYS = 3;
+
 const screenshots = screenshotIndex();
+const galleries = galleryIndex();
 const budget = raw.budget || {};
+
+const updatedMs = Date.parse(`${raw.updated}T12:00:00Z`);
+function isNew(dateAdded) {
+  if (!dateAdded || Number.isNaN(updatedMs)) return false;
+  const added = Date.parse(`${dateAdded}T12:00:00Z`);
+  if (Number.isNaN(added)) return false;
+  return (updatedMs - added) / 86400000 <= NEW_WINDOW_DAYS;
+}
 
 const listings = raw.listings.map((listing, index) => {
   const band = BANDS[listing.band] || BANDS.unknown;
@@ -193,7 +235,10 @@ const listings = raw.listings.map((listing, index) => {
     title: listing.name || listing.address || `${listing.town}, ${listing.state}`,
     subtitle: listing.name ? listing.address : null,
     place: `${listing.town}, ${listing.state}`,
-    img: screenshots[listing.id] || null,
+    img: screenshots[listing.id] || (galleries[listing.id] || [])[0] || null,
+    gallery: galleries[listing.id] || [],
+    galleryCount: (galleries[listing.id] || []).length,
+    isNew: isNew(listing.date_added),
     rentLabel: money(listing.rent),
     band,
     bandKey: band.key,
@@ -266,6 +311,7 @@ const browse = listings
     rentLabel: l.rentLabel,
     bandKey: l.bandKey,
     workMins: l.workMins,
+    homeMins: l.homeMins,
     isGone: l.isGone,
   }));
 
@@ -284,6 +330,7 @@ const counts = {
   topRated: count((l) => (l.rating || 0) >= 4),
   gone: count((l) => l.isGone),
   withPhoto: count((l) => Boolean(l.img)),
+  fresh: count((l) => l.isNew && !l.isGone),
 };
 
 /** Slim payload for the /map/ page — keeps the inline JSON small. */

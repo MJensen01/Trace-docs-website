@@ -42,7 +42,7 @@ eleventyComputed:
               <span class="min-w-0 flex-1">
                 <span class="block truncate text-[0.8125rem] font-medium leading-snug">{{ item.title }}</span>
                 <span class="block truncate text-[0.6875rem] tabular-nums {% if here %}text-clay-100{% else %}text-sand-500 dark:text-sand-400{% endif %}">
-                  {{ item.rentLabel if item.rentLabel else "Rent TBD" }}{% if item.workMins %} &middot; {{ item.workMins }} min work{% endif %}
+                  {{ item.rentLabel if item.rentLabel else "Rent TBD" }}{% if item.homeMins %} &middot; {{ item.homeMins }}m home{% endif %}{% if item.workMins %} &middot; {{ item.workMins }}m work{% endif %}
                 </span>
               </span>
             </a>
@@ -84,7 +84,14 @@ eleventyComputed:
 
     <!-- Hero -->
     <div class="overflow-hidden rounded-2xl border border-sand-200 dark:border-sand-800">
-      {% if l.img %}
+      {% if l.gallery.length %}
+        <!-- Photo gallery scraped from the original listing. The main image
+             swaps when a thumbnail is tapped; opening it shows the full size. -->
+        <a id="gallery-link" href="{{ l.gallery[0] }}" target="_blank" rel="noopener noreferrer">
+          <img id="gallery-main" src="{{ l.gallery[0] }}" alt="Photo 1 of {{ l.gallery.length }} — {{ l.title }}"
+               class="max-h-[34rem] w-full bg-sand-100 object-contain dark:bg-sand-800">
+        </a>
+      {% elif l.img %}
         <!-- Screenshots vary in shape, so let the real one show rather than crop it. -->
         <img src="{{ l.img }}" alt="Screenshot of the {{ l.title }} listing"
              class="max-h-[34rem] w-full bg-sand-100 object-contain object-top dark:bg-sand-800">
@@ -97,6 +104,18 @@ eleventyComputed:
         </div>
       {% endif %}
     </div>
+
+    {% if l.gallery.length > 1 %}
+      <div id="gallery-thumbs" class="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-8" role="group" aria-label="Listing photos">
+        {% for photo in l.gallery %}
+          <button type="button" data-src="{{ photo }}" aria-pressed="{{ 'true' if loop.first else 'false' }}"
+                  class="gallery-thumb overflow-hidden rounded-lg border-2 aria-pressed:border-clay-600 {% if loop.first %}border-clay-600{% else %}border-transparent{% endif %}">
+            <img src="{{ photo }}" alt="Photo {{ loop.index }} of {{ l.gallery.length }}" loading="lazy"
+                 class="aspect-[4/3] w-full object-cover">
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
 
     <!-- Title + rent -->
     <header class="mt-5">
@@ -358,6 +377,32 @@ eleventyComputed:
   </article>
   </div>
 </div>
+
+<script>
+// Gallery: tapping a thumbnail swaps the main image; the link always opens
+// whatever is currently shown.
+(function () {
+  var thumbs = document.getElementById("gallery-thumbs");
+  var main = document.getElementById("gallery-main");
+  var link = document.getElementById("gallery-link");
+  if (!thumbs || !main || !link) return;
+  var buttons = Array.prototype.slice.call(thumbs.querySelectorAll(".gallery-thumb"));
+  buttons.forEach(function (button, i) {
+    button.addEventListener("click", function () {
+      var src = button.getAttribute("data-src");
+      main.src = src;
+      main.alt = main.alt.replace(/^Photo \d+/, "Photo " + (i + 1));
+      link.href = src;
+      buttons.forEach(function (other) {
+        var on = other === button;
+        other.setAttribute("aria-pressed", on ? "true" : "false");
+        other.classList.toggle("border-clay-600", on);
+        other.classList.toggle("border-transparent", !on);
+      });
+    });
+  });
+})();
+</script>
 
 <script>
 (function () {

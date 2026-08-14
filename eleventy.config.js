@@ -21,6 +21,10 @@ module.exports = function (eleventyConfig) {
     "src/robots.txt": "robots.txt",
   });
 
+  // Gallery folders: src/assets/listings/<id>/NN.jpg — the string form keeps
+  // the directory structure, which the dir->dir mapping above would flatten.
+  eleventyConfig.addPassthroughCopy("src/assets/listings/*/*.{jpg,jpeg,png,webp}");
+
   eleventyConfig.ignores.add("**/desktop.ini");
 
   /**
