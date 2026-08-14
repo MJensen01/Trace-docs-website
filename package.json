@@ -9,7 +9,9 @@
     "build": "npm run css:build && npm run 11ty:build",
     "css:dev": "npx @tailwindcss/cli -i src/css/input.css -o src/css/output.css --watch",
     "11ty:dev": "npx @11ty/eleventy --serve",
-    "dev": "npm run css:build && concurrently \"npm run css:dev\" \"npm run 11ty:dev\""
+    "dev": "npm run css:build && concurrently \"npm run css:dev\" \"npm run 11ty:dev\"",
+    "check": "node scripts/check.js",
+    "ingest": "node scripts/ingest.js"
   },
   "keywords": [],
   "author": "",
