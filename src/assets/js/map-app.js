@@ -80,6 +80,19 @@
       // flag keeps that second event from instantly closing the panel.
       var suppressMapClick = false;
 
+      // Drive lines for the selected listing. Geometries are fetched once from
+      // the baked routes file; until they land, selecting falls back to a
+      // plain fly-to.
+      var routesData = null;
+      var routeGroup = L.layerGroup().addTo(map);
+      fetch("/assets/data/routes.json")
+        .then(function (res) { return res.ok ? res.json() : null; })
+        .catch(function () { return null; })
+        .then(function (data) {
+          routesData = data;
+          if (selectedId) drawRoutes(byId[selectedId]);
+        });
+
       var active = { band: [], kind: [], state: [], rating: [], new: [], fav: [] };
       try {
         var saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || "null");
@@ -368,6 +381,7 @@
       function closePanel() {
         panel.classList.add("translate-x-full");
         panel.setAttribute("aria-hidden", "true");
+        routeGroup.clearLayers();
         var prev = selectedId;
         selectedId = null;
         if (prev && markers[prev]) markers[prev].setStyle(baseStyle(byId[prev]));
@@ -382,6 +396,66 @@
         map.panBy(target.subtract(want), { animate: true, duration: 0.45, easeLinearity: 0.3 });
       }
 
+      /**
+       * Both drives for the selected listing: coloured polylines with a
+       * drive-time chip pinned to each line's midpoint, then a zoom that fits
+       * the whole picture into the part of the map the panel doesn't cover.
+       */
+      function drawRoutes(l) {
+        routeGroup.clearLayers();
+        var entry = routesData && routesData[l.id];
+        if (!entry) return false;
+
+        var bounds = [[l.lat, l.lon]];
+        [["work", WORK_COLOR, "💼", l.workLabel], ["home", HOME_COLOR, "🏠", l.homeLabel]].forEach(function (row) {
+          var leg = entry[row[0]];
+          if (!leg || !Array.isArray(leg.geometry) || leg.geometry.length < 2) return;
+
+          L.polyline(leg.geometry, {
+            color: row[1],
+            weight: 5,
+            opacity: 0.85,
+            lineCap: "round",
+            lineJoin: "round",
+            interactive: false
+          }).addTo(routeGroup);
+          // A soft white casing underneath would be nicer still, but one line
+          // per drive keeps the canvas cheap.
+
+          var mid = leg.geometry[Math.floor(leg.geometry.length / 2)];
+          var label = row[3] || (leg.min ? leg.min + " min" : "");
+          if (mid && label) {
+            L.marker(mid, {
+              icon: L.divIcon({
+                className: "",
+                // Self-centres over the point whatever the label width; the
+                // extra 8px lifts the tail clear of the line.
+                html: '<div style="transform:translate(-50%,-100%) translateY(-8px);width:max-content">' +
+                  '<span class="route-chip" style="background:' + row[1] + '">' + row[2] + " " + esc(label) + "</span></div>",
+                iconSize: null,
+                iconAnchor: [0, 0]
+              }),
+              interactive: false,
+              keyboard: false,
+              zIndexOffset: 900
+            }).addTo(routeGroup);
+          }
+          leg.geometry.forEach(function (point) { bounds.push(point); });
+        });
+
+        if (bounds.length > 1) {
+          var pw = window.innerWidth >= 640 ? panel.offsetWidth : 0;
+          map.flyToBounds(bounds, {
+            // Generous top padding so a chip near the route's high point
+            // doesn't clip the map edge.
+            paddingTopLeft: L.point(40, 72),
+            paddingBottomRight: L.point(pw + 40, 40),
+            duration: 0.7
+          });
+        }
+        return true;
+      }
+
       function select(id) {
         var l = byId[id];
         if (!l) return;
@@ -391,15 +465,17 @@
         markers[id].setStyle(baseStyle(l));
         markers[id].bringToFront();
         openPanel(l);
-        var latlng = L.latLng(l.lat, l.lon);
-        if (map.getZoom() < 12) {
-          // Fly to a centre shifted right, so the marker lands in the middle
-          // of the part of the map the panel doesn't cover.
-          var pw = window.innerWidth >= 640 ? panel.offsetWidth : 0;
-          var centre = map.unproject(map.project(latlng, 13).add(L.point(pw / 2, 0)), 13);
-          map.flyTo(centre, 13, { duration: 0.6 });
-        } else {
-          panIntoView(latlng);
+        if (!drawRoutes(l)) {
+          // Routes not loaded (yet) — plain fly-to; drawRoutes re-runs when
+          // the geometries land.
+          var latlng = L.latLng(l.lat, l.lon);
+          if (map.getZoom() < 12) {
+            var pw = window.innerWidth >= 640 ? panel.offsetWidth : 0;
+            var centre = map.unproject(map.project(latlng, 13).add(L.point(pw / 2, 0)), 13);
+            map.flyTo(centre, 13, { duration: 0.6 });
+          } else {
+            panIntoView(latlng);
+          }
         }
         if (history.replaceState) history.replaceState(null, "", "#" + encodeURIComponent(id));
       }

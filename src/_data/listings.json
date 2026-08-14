@@ -1,13 +1,13 @@
 {
  "version": "1.2",
- "updated": "2026-08-13",
+ "updated": "2026-08-14",
  "anchors": {
   "work": {
-   "label": "AWS site, Fairless Hills, PA",
-   "query": "Fairless Hills, PA 19030",
+   "label": "Keystone Trade Center, Fairless Hills, PA",
+   "query": "100 River Rd, Fairless Hills, PA 19030",
    "coords": [
-    -74.8551644,
-    40.1795537
+    -74.7563037,
+    40.1741817
    ]
   },
   "home": {
@@ -38,8 +38,8 @@
    "baths": 1.0,
    "sqft": 760.0,
    "commute_work": {
-    "min": 10,
-    "miles": 5.1,
+    "min": 18,
+    "miles": 9.8,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -82,8 +82,8 @@
    "baths": 1.0,
    "sqft": 800.0,
    "commute_work": {
-    "min": 1,
-    "miles": 0.3,
+    "min": 13,
+    "miles": 6.3,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -126,8 +126,8 @@
    "baths": 1.5,
    "sqft": 1100.0,
    "commute_work": {
-    "min": 11,
-    "miles": 5.2,
+    "min": 7,
+    "miles": 3.4,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -169,8 +169,8 @@
    "baths": 1.0,
    "sqft": 650.0,
    "commute_work": {
-    "min": 9,
-    "miles": 4.3,
+    "min": 18,
+    "miles": 9.1,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -213,8 +213,8 @@
    "baths": 1.0,
    "sqft": 650.0,
    "commute_work": {
-    "min": 9,
-    "miles": 4.6,
+    "min": 13,
+    "miles": 6.4,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -257,8 +257,8 @@
    "baths": 1.0,
    "sqft": 685.0,
    "commute_work": {
-    "min": 10,
-    "miles": 4.9,
+    "min": 14,
+    "miles": 6.9,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -300,8 +300,8 @@
    "baths": 1.0,
    "sqft": 712.0,
    "commute_work": {
-    "min": 7,
-    "miles": 3.9,
+    "min": 16,
+    "miles": 8.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -343,8 +343,8 @@
    "baths": 1.0,
    "sqft": 900.0,
    "commute_work": {
-    "min": 14,
-    "miles": 6.5,
+    "min": 23,
+    "miles": 14.3,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -386,8 +386,8 @@
    "baths": null,
    "sqft": null,
    "commute_work": {
-    "min": 8,
-    "miles": 4.0,
+    "min": 16,
+    "miles": 9.3,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -429,8 +429,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 38,
-    "miles": 23.2,
+    "min": 33,
+    "miles": 20.8,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -473,8 +473,8 @@
    "baths": 1.0,
    "sqft": 560.0,
    "commute_work": {
-    "min": 39,
-    "miles": 23.7,
+    "min": 35,
+    "miles": 21.2,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -516,8 +516,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 37,
-    "miles": 22.0,
+    "min": 32,
+    "miles": 19.5,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -560,8 +560,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 37,
-    "miles": 23.7,
+    "min": 33,
+    "miles": 21.3,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -604,9 +604,9 @@
    "baths": null,
    "sqft": null,
    "commute_work": {
-    "min": 39,
-    "miles": 24.2,
-    "method": "osrm-freeflow/complex-name"
+    "min": 35,
+    "miles": 21.8,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 21,
@@ -646,9 +646,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 18,
-    "miles": 9.2,
-    "method": "osrm-freeflow/complex-name"
+    "min": 14,
+    "miles": 6.8,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 44,
@@ -690,9 +690,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 20,
-    "miles": 10.9,
-    "method": "osrm-freeflow/town-center"
+    "min": 16,
+    "miles": 8.5,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 41,
@@ -734,9 +734,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 20,
-    "miles": 10.9,
-    "method": "osrm-freeflow/town-center"
+    "min": 16,
+    "miles": 8.5,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 41,
@@ -778,9 +778,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 20,
-    "miles": 9.0,
-    "method": "osrm-freeflow/complex-name"
+    "min": 16,
+    "miles": 6.6,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 44,
@@ -822,9 +822,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 20,
-    "miles": 10.9,
-    "method": "osrm-freeflow/town-center"
+    "min": 16,
+    "miles": 8.5,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 41,
@@ -866,9 +866,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 19,
-    "miles": 9.6,
-    "method": "osrm-freeflow/complex-name"
+    "min": 16,
+    "miles": 8.2,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 49,
@@ -910,9 +910,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 18,
-    "miles": 8.7,
-    "method": "osrm-freeflow/complex-name"
+    "min": 15,
+    "miles": 7.5,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 49,
@@ -954,9 +954,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 16,
-    "miles": 8.0,
-    "method": "osrm-freeflow/complex-name"
+    "min": 13,
+    "miles": 6.5,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 46,
@@ -998,9 +998,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 18,
-    "miles": 8.5,
-    "method": "osrm-freeflow/complex-name"
+    "min": 14,
+    "miles": 7.1,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 48,
@@ -1042,9 +1042,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 16,
-    "miles": 8.1,
-    "method": "osrm-freeflow/complex-name"
+    "min": 13,
+    "miles": 6.9,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 50,
@@ -1086,9 +1086,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 19,
-    "miles": 9.5,
-    "method": "osrm-freeflow/town-center"
+    "min": 16,
+    "miles": 8.1,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 47,
@@ -1129,9 +1129,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 24,
-    "miles": 17.2,
-    "method": "osrm-freeflow/town-center"
+    "min": 20,
+    "miles": 10.4,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 42,
@@ -1173,9 +1173,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 24,
-    "miles": 17.2,
-    "method": "osrm-freeflow/town-center"
+    "min": 20,
+    "miles": 10.4,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 42,
@@ -1217,9 +1217,9 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 25,
-    "miles": 15.6,
-    "method": "osrm-freeflow/town-center"
+    "min": 21,
+    "miles": 13.2,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 33,
@@ -1261,9 +1261,9 @@
    "baths": null,
    "sqft": null,
    "commute_work": {
-    "min": 33,
-    "miles": 18.1,
-    "method": "osrm-freeflow/town-center"
+    "min": 29,
+    "miles": 15.6,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 34,
@@ -1303,8 +1303,8 @@
    "baths": 2.0,
    "sqft": 1824.0,
    "commute_work": {
-    "min": 15,
-    "miles": 6.8,
+    "min": 18,
+    "miles": 8.8,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1346,8 +1346,8 @@
    "baths": 1.0,
    "sqft": 720.0,
    "commute_work": {
-    "min": 14,
-    "miles": 6.4,
+    "min": 17,
+    "miles": 8.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1389,8 +1389,8 @@
    "baths": 1.5,
    "sqft": 1500.0,
    "commute_work": {
-    "min": 9,
-    "miles": 4.4,
+    "min": 17,
+    "miles": 9.1,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1433,8 +1433,8 @@
    "baths": 1.0,
    "sqft": 729.0,
    "commute_work": {
-    "min": 14,
-    "miles": 6.5,
+    "min": 17,
+    "miles": 8.2,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1477,8 +1477,8 @@
    "baths": 1.0,
    "sqft": 800.0,
    "commute_work": {
-    "min": 17,
-    "miles": 8.0,
+    "min": 13,
+    "miles": 6.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1520,8 +1520,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 13,
-    "miles": 6.2,
+    "min": 20,
+    "miles": 9.8,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1564,8 +1564,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 15,
-    "miles": 7.3,
+    "min": 12,
+    "miles": 6.1,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1607,8 +1607,8 @@
    "baths": 1.0,
    "sqft": 667.0,
    "commute_work": {
-    "min": 38,
-    "miles": 22.6,
+    "min": 34,
+    "miles": 20.1,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1651,8 +1651,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 7,
-    "miles": 3.8,
+    "min": 17,
+    "miles": 9.2,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1694,8 +1694,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 13,
-    "miles": 6.7,
+    "min": 18,
+    "miles": 9.5,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1737,8 +1737,8 @@
    "baths": 1.0,
    "sqft": 675.0,
    "commute_work": {
-    "min": 37,
-    "miles": 22.0,
+    "min": 33,
+    "miles": 19.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1780,8 +1780,8 @@
    "baths": 1.0,
    "sqft": 950.0,
    "commute_work": {
-    "min": 14,
-    "miles": 6.6,
+    "min": 17,
+    "miles": 8.3,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1823,8 +1823,8 @@
    "baths": 1.0,
    "sqft": 620.0,
    "commute_work": {
-    "min": 38,
-    "miles": 22.1,
+    "min": 34,
+    "miles": 19.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1867,8 +1867,8 @@
    "baths": 1.0,
    "sqft": 1000.0,
    "commute_work": {
-    "min": 14,
-    "miles": 6.5,
+    "min": 22,
+    "miles": 14.3,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1911,8 +1911,8 @@
    "baths": 1.0,
    "sqft": 822.0,
    "commute_work": {
-    "min": 39,
-    "miles": 24.4,
+    "min": 34,
+    "miles": 22.0,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -1954,9 +1954,9 @@
    "baths": 1.0,
    "sqft": 1564.0,
    "commute_work": {
-    "min": 24,
-    "miles": 17.2,
-    "method": "osrm-freeflow/town-center"
+    "min": 20,
+    "miles": 10.4,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 42,
@@ -1998,8 +1998,8 @@
    "baths": 1.0,
    "sqft": 775.0,
    "commute_work": {
-    "min": 38,
-    "miles": 22.2,
+    "min": 34,
+    "miles": 19.8,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2042,8 +2042,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 27,
-    "miles": 16.1,
+    "min": 22,
+    "miles": 13.7,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2086,8 +2086,8 @@
    "baths": 1.0,
    "sqft": 900.0,
    "commute_work": {
-    "min": 21,
-    "miles": 10.4,
+    "min": 17,
+    "miles": 8.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2130,8 +2130,8 @@
    "baths": 1.0,
    "sqft": 1100.0,
    "commute_work": {
-    "min": 13,
-    "miles": 5.8,
+    "min": 10,
+    "miles": 4.5,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2173,8 +2173,8 @@
    "baths": 1.0,
    "sqft": 667.0,
    "commute_work": {
-    "min": 38,
-    "miles": 22.2,
+    "min": 34,
+    "miles": 19.7,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2217,8 +2217,8 @@
    "baths": 1.0,
    "sqft": 976.0,
    "commute_work": {
-    "min": 36,
-    "miles": 22.7,
+    "min": 32,
+    "miles": 20.2,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2261,8 +2261,8 @@
    "baths": 1.0,
    "sqft": 1100.0,
    "commute_work": {
-    "min": 29,
-    "miles": 17.0,
+    "min": 25,
+    "miles": 14.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2305,8 +2305,8 @@
    "baths": 1.5,
    "sqft": 1120.0,
    "commute_work": {
-    "min": 24,
-    "miles": 12.0,
+    "min": 20,
+    "miles": 9.3,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2349,9 +2349,9 @@
    "baths": 2.0,
    "sqft": 1130.0,
    "commute_work": {
-    "min": 12,
-    "miles": 6.5,
-    "method": "osrm-freeflow/town-center"
+    "min": 15,
+    "miles": 7.2,
+    "method": "osrm-freeflow"
    },
    "commute_home": {
     "min": 50,
@@ -2393,8 +2393,8 @@
    "baths": 1.5,
    "sqft": 1131.0,
    "commute_work": {
-    "min": 36,
-    "miles": 22.7,
+    "min": 32,
+    "miles": 20.3,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2436,8 +2436,8 @@
    "baths": 2.0,
    "sqft": null,
    "commute_work": {
-    "min": 26,
-    "miles": 15.8,
+    "min": 22,
+    "miles": 13.4,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2480,8 +2480,8 @@
    "baths": 2.0,
    "sqft": 1040.0,
    "commute_work": {
-    "min": 39,
-    "miles": 24.0,
+    "min": 35,
+    "miles": 21.5,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2523,8 +2523,8 @@
    "baths": 2.5,
    "sqft": 1476.0,
    "commute_work": {
-    "min": 16,
-    "miles": 7.8,
+    "min": 25,
+    "miles": 15.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2566,8 +2566,8 @@
    "baths": 1.0,
    "sqft": 1424.0,
    "commute_work": {
-    "min": 51,
-    "miles": 32.3,
+    "min": 46,
+    "miles": 29.8,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2610,8 +2610,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 51,
-    "miles": 32.3,
+    "min": 47,
+    "miles": 29.9,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2654,8 +2654,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 50,
-    "miles": 31.9,
+    "min": 46,
+    "miles": 29.4,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2698,8 +2698,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 50,
-    "miles": 32.4,
+    "min": 46,
+    "miles": 30.0,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2742,8 +2742,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 50,
-    "miles": 33.0,
+    "min": 46,
+    "miles": 30.5,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2786,8 +2786,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 52,
-    "miles": 32.4,
+    "min": 47,
+    "miles": 29.9,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2830,8 +2830,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 49,
-    "miles": 31.5,
+    "min": 45,
+    "miles": 29.1,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2874,8 +2874,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 50,
-    "miles": 31.9,
+    "min": 46,
+    "miles": 29.5,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2918,8 +2918,8 @@
    "baths": 1.0,
    "sqft": null,
    "commute_work": {
-    "min": 49,
-    "miles": 29.8,
+    "min": 45,
+    "miles": 27.4,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -2962,8 +2962,8 @@
    "baths": 1.0,
    "sqft": 590.0,
    "commute_work": {
-    "min": 48,
-    "miles": 30.0,
+    "min": 43,
+    "miles": 27.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -3006,8 +3006,8 @@
    "baths": 1.0,
    "sqft": 630.0,
    "commute_work": {
-    "min": 47,
-    "miles": 30.0,
+    "min": 43,
+    "miles": 27.6,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -3050,8 +3050,8 @@
    "baths": 1.0,
    "sqft": 700.0,
    "commute_work": {
-    "min": 38,
-    "miles": 24.5,
+    "min": 34,
+    "miles": 22.0,
     "method": "osrm-freeflow"
    },
    "commute_home": {
@@ -3094,8 +3094,8 @@
    "baths": 1.0,
    "sqft": 770.0,
    "commute_work": {
-    "min": 40,
-    "miles": 25.6,
+    "min": 36,
+    "miles": 23.2,
     "method": "osrm-freeflow"
    },
    "commute_home": {

@@ -13,7 +13,8 @@ Read the criteria fresh each run — never hardcode them:
   `budget` (`max`, `stretch_max`).
 - **Keep rule (2026-08)**: drive to home **< 30 min** AND drive to work
   **< the current home→work baseline** (compute it via OSRM at the start of the
-  run; it was ~56 min). Rent ≤ `budget.stretch_max` unless told otherwise.
+  run; ~52 min as of 2026-08-14, work = Keystone Trade Center). Rent ≤
+  `budget.stretch_max` unless told otherwise.
 - The user may override any of this in the kickoff message — their message wins.
 
 ## Phase 0 — Orient

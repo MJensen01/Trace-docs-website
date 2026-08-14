@@ -17,8 +17,8 @@ npm run ingest -- --pending [--pin XXXX]      # ingest the live pending queue
 
 ## Search criteria (as of 2026-08-13)
 
-- Anchors live in `listings.json` → `anchors`: home = East Brunswick NJ, work = Fairless Hills PA.
-- Keep: **drive to home < 30 min** AND **drive to work < 56 min** (the current home→work baseline).
+- Anchors live in `listings.json` → `anchors`: home = East Brunswick NJ, work = Keystone Trade Center (Fairless Hills PA).
+- Keep: **drive to home < 30 min** AND **drive to work < the home→work baseline** (~52 min as of 2026-08-14 — recompute it via OSRM each run).
 - Budget: **$1,600 max, $1,900 stretch** (`listings.json` → `budget`; bands derive from it).
 
 ## Adding listings — use the ingest script, don't hand-edit

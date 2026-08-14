@@ -20,6 +20,9 @@ module.exports = function (eleventyConfig) {
     "src/assets/icons/*.png": "assets/icons",
     "src/manifest.webmanifest": "manifest.webmanifest",
     "src/robots.txt": "robots.txt",
+    // Route geometries for the homepage drive lines — fetched lazily by
+    // map-app.js, so they stay out of the inline page payload.
+    "src/_data/routes.json": "assets/data/routes.json",
   });
 
   eleventyConfig.ignores.add("**/desktop.ini");

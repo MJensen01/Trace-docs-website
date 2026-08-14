@@ -358,4 +358,31 @@
     box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
     color: #fff;
   }
+
+  /* Drive-time chip pinned to a route line on the map. The tail points down
+     at the midpoint of the line it labels. */
+  .route-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    white-space: nowrap;
+    border-radius: 9999px;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.4);
+  }
+  .route-chip::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -7px;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #fff;
+    border-bottom-width: 0;
+  }
 }

@@ -419,7 +419,7 @@ for (const listing of raw.listings) {
 const anchors = {
   work: {
     label: raw.anchors?.work?.label || "Work",
-    short: "Fairless Hills",
+    short: "Keystone Trade Center",
     lat: raw.anchors?.work?.coords?.[1] ?? null,
     lon: raw.anchors?.work?.coords?.[0] ?? null,
   },
