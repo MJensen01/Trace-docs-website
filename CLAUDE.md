@@ -141,17 +141,23 @@ config. Source-specific mechanics that outlive any one sweep:
 
 - **Zillow**: parse the `__NEXT_DATA__` script tag; town rentals at
   `/<town-slug>/rentals/`, studios at `/<town-slug>/studio-apartments/`. Never
-  hand-build `searchQueryState` filter URLs.
+  hand-build `searchQueryState` filter URLs. Watch for 55+/62+ senior buildings and
+  per-bed pricing at Rutgers-adjacent buildings passing filters they shouldn't.
 - **Sulekha** (best basement source for the Edison/Iselin area, no login, plain HTML):
-  `indianroommates.sulekha.com/rentals_basement-apartment_in_<town>-nj` and
-  `.../rentals_apartment_in_<town>-nj`. Sort-only pricing — filter locally.
-- **Craigslist**: `craigslist.org/search/city/<town>-nj?cat=apa&sort=date`, studios via
-  `hub=studio-apartment`; `max_price` does not reliably compose with `hub` — verify or
-  filter locally. Basements are text-only ("basement" in the title/body).
-- **Apartments.com**: `article[data-listingid]` cards; first render takes ~5 s. Path
-  segments `/<town>-nj/studios/`, `/cheap/`, `/under-1500/`.
-- **Facebook Marketplace**: needs the user logged in; cards are
-  `a[href*="/marketplace/item/"]`; filters are SPA state, not URL params.
+  the basement category ignores the town slug — one statewide fetch, not per town.
+  Price is `.pri-money`, photos are the `data-imgsrc` attribute, lat/lon is a hidden
+  pipe-delimited `hdnrentresppopup<id>` element.
+- **Craigslist**: browser only — a plain fetch gets an empty client-rendered shell.
+  Legacy `cnj.craigslist.org/search/apa` 301s to
+  `craigslist.org/search/city/<town>-nj?cat=apa&sort=date`. Cards are
+  `div.cl-search-result` (`a.posting-title`, `.priceinfo`, `.result-location`,
+  `.housing-meta`); `hub=` and `min/max_bedrooms=0` are silently dropped — filter
+  locally.
+- **Facebook**: needs the user logged in. Run global post search (`/search/posts/?q=`)
+  and in-group search on named public groups (no joining needed); classify from the
+  post body text only, never the title/bed count; watch for the lead-farm pattern (no
+  house number, sub-$400 deposit, non-NJ area code, "text a screenshot"); fbcdn photo
+  URLs expire in days — ingest same-day.
 - **OSRM public API**: `/table/v1/driving` for bulk drive-time filtering,
   `/route/v1/driving` for per-listing geometry (ingest.js does the latter).
 

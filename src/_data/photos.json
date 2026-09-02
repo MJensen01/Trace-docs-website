@@ -232,6 +232,17 @@
  "apa-woodbrook-house": {
   "thumb": true
  },
+ "bsm-161-howard-st-floor-1": {
+  "thumb": true,
+  "gallery": [
+   "01.jpg",
+   "02.jpg",
+   "03.jpg",
+   "04.jpg",
+   "05.jpg",
+   "06.jpg"
+  ]
+ },
  "tow-1105-aspen-dr-townhouse-style-condo": {
   "thumb": true
  },

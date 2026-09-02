@@ -46,10 +46,11 @@ never hardcode criteria here or in the candidates you write.** The repo contract
   roommate-board posts, anything where the kitchen or bathroom is shared with the
   owner's family.
 - **Skip** for-sale listings and $1 / "contact for price" bait (see triage, below).
-- Market reality: $1,400 is the bottom 10–20% of the studio market in this corridor
-  (Piscataway/New Brunswick studio averages run $1,600–$2,000). Basements in
-  Edison/Iselin average ~$1,250, so they are where the yield is. Expect thin results,
-  and expect to re-sweep often rather than to find a big batch once.
+- Market reality (as of the 2026-09-02 sweep — 11 keepers out of ~2,000 rows scanned
+  across all sources): **$1,400 is the studio floor** in this corridor; basements in
+  the **$1,000–1,250** range are the sweet spot; **anything ≤ $900 here is scam-by-default**
+  (see the Facebook lead-farm signature above). Expect thin results, and expect to
+  re-sweep often rather than to find a big batch once.
 
 For `--search couple`: same phases, criteria straight out of `searches/couple.json`
 (home ≤ 30 min, work = Keystone Trade Center ≤ the home→work OSRM baseline, ~52 min —
@@ -66,50 +67,91 @@ River, Old Bridge.
 
 Source playbook, ranked by yield for `solo`:
 
-1. **Sulekha** — the best basement source for this exact geography, no login, plain
-   server-rendered HTML, no anti-bot seen.
-   `indianroommates.sulekha.com/rentals_basement-apartment_in_<town>-nj` is
-   basement-only; `.../rentals_apartment_in_<town>-nj` carries studios/1BHKs. Statewide
-   rollup: `.../offered_rentals_basement-apartment_in_new-jersey-area`. Listing URLs are
-   `<slug>_rentals_<town>-nj_<numeric-id>` — the numeric id is a good dedupe key. Price
-   is sort-only (no max-price URL param confirmed for the basement category) — filter
-   locally. Many cards say "contact for price".
-2. **Craigslist** — highest raw volume.
-   `https://www.craigslist.org/search/city/<town>-nj?availabilityMode=0&cat=apa&sort=date`
-   (the legacy `cnj.craigslist.org/search/apa` 301s here). `hub=studio-apartment` is a
-   real honored studio filter. **`max_price` does not reliably compose with `hub`** —
-   tested and it returned mixed types with no ceiling applied; use one or the other and
-   filter locally. Basements are **not** a category: text-match "basement" / "in-law" /
-   "private entrance" in title+body. Cards are `li.cl-search-result`. Highest
-   scam density of any source — see the flags below.
+1. **Sulekha** — best basement source for this geography, no login, plain
+   server-rendered HTML, no anti-bot seen. `.../rentals_basement-apartment_in_<town>-nj`
+   and `.../rentals_apartment_in_<town>-nj` are the town paths, but **the basement
+   category ignores the town slug — every town URL returns the same statewide set** —
+   fetch it **once**, not per town (some slugs, e.g. `south-brunswick-nj`, 404 outright).
+   Price is `.pri-money`; "Contact for price" is common — flag/skip, don't guess. Photo
+   src is the `data-imgsrc` attribute, and the gallery only renders client-side, so
+   photos need the browser. **Lat/lon lives in a hidden `hdnrentresppopup<id>` element,
+   pipe-delimited** — parse it instead of geocoding the town. Listing URLs are
+   `<slug>_rentals_<town>-nj_<numeric-id>` — the numeric id is the dedupe key.
+2. **Craigslist** — highest raw volume, but **browser only** — a plain fetch returns an
+   empty client-rendered shell. The legacy `cnj.craigslist.org/search/apa?...` 301s to
+   `https://www.craigslist.org/search/city/<town>-nj?cat=apa&sort=date...` — hit that
+   target directly. Cards are `div.cl-search-result`; inside, `a.posting-title`
+   (title+link), `.priceinfo` (price), `.result-location` (neighborhood),
+   `.housing-meta` (beds/sqft). **`hub=studio-apartment` and `min/max_bedrooms=0` are
+   silently dropped** (same result count either way) — filter studios/1BR locally from
+   `.housing-meta`. `query=basement` filters, but mostly pulls Newark/Jersey
+   City/NYC-metro cross-posts here. `cat=sub` is dominated by NYC/Brooklyn noise.
+   Highest scam density of any source — see the flags below.
 3. **Zillow** — cleanest structured data. `zillow.com/<town-slug>/studio-apartments/`
-   for studios, `/<town-slug>/rentals/` for everything. Parse the `__NEXT_DATA__` script
-   tag: `props.pageProps.searchPageState.cat1.searchResults.listResults`
-   (`searchList.totalResultCount` for paging, 41 results/page, pages are `2_p/`, `3_p/`,
-   …). Fields: `zpid`/`buildingId`, `address`, `price`, `units[]` (`price`+`beds`),
-   `latLong`, `detailUrl`, `beds`, `baths`, `area`. No basement filter exists.
-4. **Apartments.com** — reliable studio/1BR inventory, weak on basements (it indexes
-   managed buildings). Paths: `/<town>-nj/studios/`, `/<town>-nj/studios/cheap/`,
-   `/<town>-nj/under-1500/` (a `/under-1400/` variant is unconfirmed — try it, else
-   filter from `/under-1500/`). Cards are `article[data-listingid]`; first render takes
-   ~5 s.
-5. **HotPads** — `hotpads.com/<town>-nj/studio-apartments-for-rent`. Map-first, so it's
-   the best source of lat/lon for studios, which is what the OSRM filter needs. Same
-   Zillow-family bot-defense risk.
-6. **Facebook Marketplace** — meaningful informal basement/studio volume, but fully
-   auth-gated: needs the user's logged-in browser. `facebook.com/marketplace/category/
-   propertyrentals/`, set the location filter in the UI first — rental type and price
-   are SPA state, not URL params. Cards are `a[href*="/marketplace/item/"]`. Address
-   and private-entrance status are description text only.
-7. **Rutgers off-campus board** — relevant for New Brunswick / Highland Park /
-   Piscataway. `ruoffcampus.rutgers.edu` (backend appears to be College Pads,
-   `rentcollegepads.com/off-campus-housing/rutgers/search`); `rutgers.uloop.com/housing`
-   is an adjacent board. Confirm which URL is canonical before automating.
+   for studios, `/<town-slug>/rentals/` for everything. Parse `__NEXT_DATA__` →
+   `props.pageProps.searchPageState.cat1.searchResults.listResults` (41/page, pages
+   `2_p/`, `3_p/`…). Fields: `zpid`, `address`, `price`, `units[]`, `latLong`,
+   `detailUrl`, `beds`, `baths`, `area`. No basement filter exists; never hand-build
+   `searchQueryState` URLs (silently 0 results or flips to for-sale). **Traps**: 55+/62+
+   senior buildings (e.g. AHEPA) clear every filter but Evelyn isn't eligible; buildings
+   near Rutgers often price **per bed**, so a cheap studio-shaped card can be one bed of
+   a shared suite — check `units[]` against the floorplan before trusting a low price.
+4. **Apartments.com** — reliable studio/1BR inventory. Cards are
+   `article[data-listingid]`; first render takes ~5 s. `/<town>-nj/studios/` and
+   `/<town>-nj/under-1500/` work. **`/<town>-nj/basement/` is a dead end** — confirmed
+   across 13 towns, it's an amenity filter, not basement-unit inventory (whole houses
+   at $2,800+, zero relevant cards). Radius expands aggressively — re-check every
+   card's coordinates, never trust the URL's town slug.
+5. **HotPads** — `hotpads.com/<town>-nj/studio-apartments-for-rent`. Best lat/lon +
+   photo source: the Zillow-family `__next_f` flight payload carries `geo.lat/lon` and
+   a `photos` block with no detail-page fetch needed. Shares inventory with Zillow —
+   dedupe by address across the two.
+6. **Facebook** — real informal basement/studio volume, needs the user's logged-in
+   browser, ~15–20 min per run. Two passes: **global post search**
+   (`facebook.com/search/posts/?q=<type> for rent <town> NJ` — each query's *entire*
+   result set is 5–7 posts, so more queries beats more scrolling) and **in-group
+   search** (`facebook.com/groups/<id>/search/?q=<term>` on named public groups — works
+   **without joining**). **Classify from the post body text only, never the title or
+   bed count** — FB's auto-generated title/bed-count is routinely wrong (a shared-house
+   room shows up titled "1 Bed 1 Bath - Apartment"). Keep-words: "private"/"separate
+   entrance", "walkout basement", "own kitchen", "kitchenette". Kill-words: "cuarto",
+   "habitación", "room for rent", "shared kitchen"/"shared bathroom", "take over the
+   second bedroom". **Lead-farm signature** (one is a soft flag, three is a scam — skip,
+   don't ingest): address with no house number ("Livingston Ave #1"); deposit far below
+   the NJ norm ($300–400 on an $800–1,200 unit vs. the usual 1–1.5 months); rent 40–60%
+   under market; "text me a screenshot of this post" / DM-only contact; phone area code
+   outside NJ (legit: 732/848/908/609/201/862/973). Photo URLs (fbcdn) are **signed and
+   expire within days** — ingest same-day. Post dates don't render in the search
+   results (scrambled/empty anchor) — open `facebook.com/photo/?fbid=<first photo id>`
+   for author + date. **URL dedupe**: the normalizer keeps `fbid`/`story_fbid`/`id`/
+   `set` query params (fixed 2026-09-02) so distinct posts don't collapse together.
+7. **Rutgers off-campus board** — `offcampushousing.rutgers.edu/listing` (public, no
+   NetID; dismiss the disclaimer modal). Whole result set is a JS global,
+   `window.listingData`, keyed by id — one navigate + one JS read gets every row with
+   exact address and `[lon,lat]`. Low yield: most rows are per-bed/per-room
+   (`rent_style: "person"`, or a `floorplans[].title` of "Room For Rent!" under
+   `category_title: "House"`) — check those before trusting a low `min_rent`. ~30 s to
+   check; keep it in the loop, don't expect hits.
+8. **Facebook Marketplace** — manual, low yield. Auth-gated
+   (`facebook.com/marketplace/<location-id>/propertyrentals/?maxPrice=...`); the whole
+   category for this radius is ~24 listings and confirming self-containment means
+   opening each one — a spot-check, not a scripted pass.
+
+## Not yet swept — try next
+
+- **NJ Housing Resource Center** (`myhousingsearch.com`) — free, state-run registry;
+  attracts small landlords who skip Zillow/Apartments.com fees. Parameterized search
+  exists (`SearchHousingSubmit.html`, price/radius/bedroom params) but isn't wired in.
+- **newjerseyindian.com** classifieds (basement/roommate section) — same Edison/Iselin
+  Desi-landlord audience as Sulekha, likely overlapping, unconfirmed.
+- **Zumper** (`zumper.com/apartments-for-rent/<town>-nj`) — Zillow-adjacent inventory
+  with its own alerts; not yet scraped for this project.
+- **Alerts pipeline** — native saved-search alerts plus Google Alerts on boolean
+  queries, landing in one Gmail label to feed the pending queue between sweeps.
+  Sketched, not built — the only fix for Craigslist/Sulekha having no native alerts.
 
 Hard-won browser rules (all sources):
 
-- Do NOT hand-build Zillow `searchQueryState` filter URLs — they silently return 0
-  results or flip to for-sale. Harvest unfiltered and filter locally.
 - Prices like "$2,548+" contain commas — extract with a `\$[\d,]+` regex, never split
   on commas.
 - Pace requests ~2 s apart; keep any single browser-JS call under ~30 s (longer calls
@@ -147,7 +189,12 @@ uploads go through `POST /api/photo`.
 ## Phase 4 — Candidates and ingest
 
 One candidates file, an array of objects (full field docs in the header of
-`scripts/ingest.js`). A `solo` candidate:
+`scripts/ingest.js`). Ingest requires `name` **or** `address` — a candidate with no
+street address (common on Facebook and some Sulekha/Craigslist posts) must still carry
+a `name`, or it's rejected. When coords come from a town centroid rather than a real
+address, say so in `notes` (e.g. "location approximate — no street address given").
+
+A `solo` candidate:
 
 ```jsonc
 {
