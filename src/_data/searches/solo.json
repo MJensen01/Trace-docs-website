@@ -429,6 +429,173 @@
    "v1_url": null,
    "last_checked": "2026-09-02",
    "source": "Apartments.com"
+  },
+  {
+   "id": "bsm-clean-basement-apartment",
+   "kind": "basement",
+   "name": "Clean Basement Apartment",
+   "address": "Pine Meadow Court",
+   "town": "North Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1100,
+   "band": "in-budget",
+   "beds": 1,
+   "baths": 1,
+   "sqft": 1000,
+   "commutes": {
+    "niece": {
+     "min": 8,
+     "miles": 3.5,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 14,
+     "miles": 7.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 12,
+     "miles": 4.8,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "Well within all three commute caps (niece 8m, work 13m, home 12m); own kitchen, living room and full bathroom; separate/private entrance mentioned; posted 1 day ago (fresh) with 8 photos advertised on-site (only 1 was recoverable without a browser)",
+   "cons": "No mention of Certificate of Occupancy or second egress; sqft (1000) seems large for a basement studio-style unit, worth confirming layout on a call",
+   "url": "https://indianroommates.sulekha.com/clean-basement-apartment_rentals_north-brunswick-nj_2044301",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.4831,
+    40.4346
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 8m · work 13m · home 12m (OSRM free-flow driving). Listing text: 'Very clean and quite neighborhood, one bedroom, one living room, kitchen with electric stove, microwave and fridge, plenty space, full bathroom, separate entrance.' Available from 01 Sep 2026. Source page advertises 8 photos but the search-results/detail HTML only exposes 1 real photo URL without executing Sulekha's photo-lightbox AJAX call (get-ad-photosv3.aspx) in a browser — ask for more photos when calling.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "private_entrance": true,
+   "legal_unit": null,
+   "source": "Sulekha"
+  },
+  {
+   "id": "one-706-north-oaks-blvd",
+   "kind": "1br",
+   "name": null,
+   "address": "706 North Oaks Blvd",
+   "town": "North Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1000,
+   "band": "in-budget",
+   "beds": 1,
+   "baths": 1,
+   "sqft": 932,
+   "commutes": {
+    "niece": {
+     "min": 6,
+     "miles": 2.7,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 12,
+     "miles": 6.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 14,
+     "miles": 7.3,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "Self-contained 1BR/1BA condo, in-unit washer/dryer, water & sewer included, assigned parking, close to bus/train, no broker fee; excellent commute (niece 7m, work 12m, home 15m)",
+   "cons": "One-time $350 admin fee to the condo association on top of $995.50 security deposit; tenant pays gas & electric; this exact address has been reposted at least 3 times since 8/19 (may indicate slow turnover or repeated relisting) — confirm it's still available",
+   "url": "https://www.craigslist.org/view/d/north-brunswick-706-north-oaks-blvd/t1h3hZHr23CXq1MFg18dds",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.4823,
+    40.4538
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 7m · work 12m · home 15m (OSRM free-flow driving from 706 North Oaks Blvd near Livingston Ave). Listing text: '706 North Oaks Blvd, North Brunswick, NJ 08902 - 1 Bdr, Lvr, kitchen, DR, 1bath specious condominium for the rent, unit ready to move in, washing & dryer in the unit, water & sewer included, during the Summer available pool, assigned parking, closed to bus, train Station, no pets, no smoking in the unit, no brokers fee, rent $995/month; Security Deposit $995.50; one time $350 admin fee to the condo Assoc.' Displayed listing price is $1,000 (rounded); body text quotes $995. Available now.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "utilities_included": false,
+   "furnished": false,
+   "lease_flex": null,
+   "deposit": "$995.50 + $350 one-time condo association admin fee",
+   "source": "Craigslist"
+  },
+  {
+   "id": "one-hermann-rd-1br-2nd-floor-of-3-family",
+   "kind": "1br",
+   "name": "Hermann Rd 1BR (2nd floor of 3-family)",
+   "address": null,
+   "town": "North Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1250,
+   "band": "stretch",
+   "beds": 1,
+   "baths": 1,
+   "sqft": null,
+   "commutes": {
+    "niece": {
+     "min": 2,
+     "miles": 0.6,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 10,
+     "miles": 4.9,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 11,
+     "miles": 4.4,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "Private entrance and dedicated off-street parking spot, water & sewer included, freshly painted/renovated with new carpet, walking distance to Cook/Douglass campus and North Brunswick shopping; closest listing to the niece anchor found this sweep (niece 2m, work 9m, home 11m)",
+   "cons": "Only one photo published and no exact street number (map pin is approximate, plotted near Hermann Rd/Georges Rd); tenant pays gas & electric; posted 8/8 — nearly a month old, confirm it hasn't been rented",
+   "url": "https://www.craigslist.org/view/d/bedroom-parking-great-location-hermann/jWRQKpLzKrsa8bgf3W82WG",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.455376,
+    40.466801
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 2m · work 9m · home 11m (OSRM free-flow driving). location approximate — listing gives only 'Hermann Rd.' in the title, no full street address; plotted from the listing's own map pin. Landlord ad: 'FRESHLY PAINTED, RENOVATED, NEW CARPET. 1 Bedroom apartment on the Second floor of a 3 Family House. 1 bedroom, Living Room and Office, Full Bath, Large Eat-In-Kitchen. APARTMENT FOR ONE PERSON ONLY. Each apartment has a private entrance and parking spot for one car. NO PETS, Water and Sewer included, Tenant Pays Gas and Electric. 1.5 Month Security. CREDIT CHECKED and REFERENCES. Near Cook and Douglas Campus, Hospitals, Route 1 and 130, Georges Rd., North Brunswick Shopping, Laundromats and Restaurants. 1 year lease.'",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "utilities_included": false,
+   "furnished": false,
+   "private_entrance": true,
+   "lease_flex": "1 year lease",
+   "deposit": "1.5 months security",
+   "source": "Craigslist"
   }
  ]
 }
