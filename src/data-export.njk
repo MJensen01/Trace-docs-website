@@ -1,5 +1,9 @@
 ---
-permalink: /assets/data/listings.json
+pagination:
+  data: homes.searches
+  size: 1
+  alias: search
+permalink: "/assets/data/{{ search.key }}.json"
 eleventyExcludeFromCollections: true
 ---
-{{ homes.feed | dump | safe }}
+{{ search.feed | dump | safe }}

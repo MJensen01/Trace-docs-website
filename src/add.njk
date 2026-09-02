@@ -1,8 +1,13 @@
 ---
 layout: base.njk
-title: Add a listing
+pagination:
+  data: homes.searches
+  size: 1
+  alias: search
+permalink: "{{ search.basePath }}add/"
+eleventyComputed:
+  title: "Add a listing"
 description: Drop a place you found into the queue — it lands on the map straight away.
-permalink: /add/
 ---
 
 <div class="mx-auto max-w-2xl px-4 pb-16 pt-6 sm:px-6 sm:pt-10">
@@ -13,8 +18,9 @@ permalink: /add/
       Add a listing
     </h1>
     <p class="mt-2 text-sm leading-relaxed text-sand-600 dark:text-sand-400">
-      Paste the link and roughly where it is. We&rsquo;ll work out the two drive times right here in
-      the browser, and it shows up on the map straight away &mdash; the full write-up happens later.
+      Paste the link and roughly where it is for {{ search.label }}. We&rsquo;ll work out the drive times
+      right here in the browser, and it shows up on the map straight away &mdash; the full write-up
+      happens later.
     </p>
   </header>
 
@@ -26,7 +32,7 @@ permalink: /add/
     </p>
     <p id="add-done-detail" class="mt-1 text-xs text-sand-500 dark:text-sand-400"></p>
     <div class="mt-4 flex flex-wrap gap-2">
-      <a href="/map/" class="tap rounded-xl bg-clay-600 px-5 text-sm font-semibold text-white hover:bg-clay-700">View on map</a>
+      <a href="{{ search.basePath }}" class="tap rounded-xl bg-clay-600 px-5 text-sm font-semibold text-white hover:bg-clay-700">View on map</a>
       <button type="button" id="add-again" class="tap rounded-xl border border-sand-300 bg-white px-5 text-sm font-semibold text-sand-700 hover:border-clay-400 hover:text-clay-700 dark:border-sand-700 dark:bg-sand-900 dark:text-sand-200 dark:hover:text-clay-300">Add another</button>
     </div>
   </section>
@@ -54,7 +60,7 @@ permalink: /add/
     <div>
       <label for="f-address" class="{{ labelClass }}">Street address</label>
       <input type="text" id="f-address" name="address" autocomplete="off" placeholder="3000 Ford Rd" class="{{ inputClass }}">
-      <p class="{{ hintClass }}">Used to place the pin and time both drives. Close enough is fine.</p>
+      <p class="{{ hintClass }}">Used to place the pin and time the drives. Close enough is fine.</p>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-[1fr_7rem]">
@@ -65,21 +71,33 @@ permalink: /add/
       <div>
         <label for="f-state" class="{{ labelClass }}">State</label>
         <select id="f-state" name="state" class="{{ inputClass }}">
-          <option value="PA">PA</option>
-          <option value="NJ">NJ</option>
+          {% for st in search.states %}
+          <option value="{{ st }}">{{ st }}</option>
+          {% endfor %}
         </select>
       </div>
+    </div>
+
+    <div>
+      <label for="f-kind" class="{{ labelClass }}">Kind</label>
+      <select id="f-kind" name="kind" class="{{ inputClass }}">
+        {% for kind in search.kinds %}
+        <option value="{{ kind.key }}">{{ kind.label }}</option>
+        {% endfor %}
+      </select>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
       <div>
         <label for="f-rent" class="{{ labelClass }}">Rent <span class="font-normal text-sand-400 dark:text-sand-500">(per month)</span></label>
         <input type="number" id="f-rent" name="rent" inputmode="numeric" min="0" step="25" placeholder="1550" class="{{ inputClass }}">
-        <p class="{{ hintClass }}">Budget is {{ homes.budgetMaxLabel }}, stretching to {{ homes.budgetStretchLabel }}.</p>
+        <p class="{{ hintClass }}">{{ search.bands["in-budget"].label }} under {{ search.budgetMaxLabel }}, {{ search.bands.stretch.label | lower }} to {{ search.budgetStretchLabel }}.</p>
       </div>
       <div>
         <label for="f-beds" class="{{ labelClass }}">Beds</label>
-        <input type="number" id="f-beds" name="beds" inputmode="numeric" min="0" max="9" step="1" placeholder="2" class="{{ inputClass }}">
+        <input type="number" id="f-beds" name="beds" inputmode="numeric" min="0" max="9" step="1"
+               placeholder="{{ '0' if search.kindByKey.studio else '2' }}" class="{{ inputClass }}">
+        {% if search.kindByKey.studio %}<p class="{{ hintClass }}">0 = studio</p>{% endif %}
       </div>
     </div>
 
@@ -88,6 +106,36 @@ permalink: /add/
       <textarea id="f-notes" name="notes" rows="3" placeholder="Why it caught your eye, anything to check&hellip;"
                 class="mt-1.5 w-full rounded-xl border border-sand-300 bg-white px-3.5 py-2.5 text-sm leading-relaxed text-sand-800 placeholder:text-sand-400 focus:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-sand-100 dark:placeholder:text-sand-500"></textarea>
     </div>
+
+    {% set formFacts = search.facts | selectattr("form") | list %}
+    {% if formFacts.length %}
+    <div class="space-y-5 border-t border-sand-200 pt-5 dark:border-sand-800">
+      <p class="{{ labelClass }}">A bit more, if you know it</p>
+      {% for fact in formFacts %}
+      <div>
+        <label for="f-fact-{{ fact.key }}" class="{{ labelClass }}">{{ fact.label }}</label>
+        {% if fact.type == "bool" %}
+        <select id="f-fact-{{ fact.key }}" class="{{ inputClass }}">
+          <option value="">Unknown</option>
+          <option value="true">Yes</option>
+          <option value="false">No</option>
+        </select>
+        {% elif fact.type == "enum" %}
+        <select id="f-fact-{{ fact.key }}" class="{{ inputClass }}">
+          <option value="">&mdash;</option>
+          {% for opt in fact.options %}
+          <option value="{{ opt }}">{{ opt }}</option>
+          {% endfor %}
+        </select>
+        {% elif fact.type == "number" %}
+        <input type="number" id="f-fact-{{ fact.key }}" inputmode="numeric" class="{{ inputClass }}">
+        {% else %}
+        <input type="text" id="f-fact-{{ fact.key }}" autocomplete="off" class="{{ inputClass }}">
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
 
     <fieldset>
       <legend class="{{ labelClass }}">Who&rsquo;s adding?</legend>
@@ -124,7 +172,7 @@ permalink: /add/
 
 </div>
 
-<script id="add-config" type="application/json">{{ { anchors: homes.anchors, knownUrls: homes.knownUrls } | jsonScript | safe }}</script>
+<script id="add-config" type="application/json">{{ { search: search.key, anchors: search.anchors, kinds: search.kinds, facts: search.facts, states: search.states, knownUrls: search.knownUrls } | jsonScript | safe }}</script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -147,6 +195,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var busy = false;
 
   var known = config.knownUrls || [];
+  var anchors = config.anchors || [];
+  var facts = (config.facts || []).filter(function (fact) { return fact.form; });
   var who = HF.getWho();
 
   // ---- remembered bits -----------------------------------------------------
@@ -233,12 +283,12 @@ document.addEventListener("DOMContentLoaded", function () {
     return out;
   }
 
-  /** OSRM driving route. Resolves { min, miles, geometry } or null. */
-  function route(from, to) {
-    if (!from || !to || to.lat === null || to.lon === null) return Promise.resolve(null);
+  /** OSRM driving route to one anchor. Resolves { min, miles, geometry } or null. */
+  function route(from, anchor) {
+    if (!from || !anchor || anchor.lat === null || anchor.lon === null) return Promise.resolve(null);
     var url =
       "https://router.project-osrm.org/route/v1/driving/" +
-      from[1] + "," + from[0] + ";" + to.lon + "," + to.lat +
+      from[1] + "," + from[0] + ";" + anchor.lon + "," + anchor.lat +
       "?overview=simplified&geometries=geojson";
     return withTimeout(
       fetch(url)
@@ -264,6 +314,49 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
+  /**
+   * Read the "a bit more, if you know it" fields into { key: value }. Unknown
+   * bools and blank text/enum/number fields are simply omitted — that is how
+   * "we don't know" survives (homes.js treats an absent key as unknown, and a
+   * present bool as tri-state true/false already covers the rest).
+   */
+  function collectExtras() {
+    var extras = {};
+    facts.forEach(function (fact) {
+      var el = document.getElementById("f-fact-" + fact.key);
+      if (!el) return;
+      var raw = el.value;
+      if (raw === "" || raw === undefined || raw === null) return;
+      if (fact.type === "bool") {
+        extras[fact.key] = raw === "true";
+      } else if (fact.type === "number") {
+        var num = Number(raw);
+        if (isFinite(num)) extras[fact.key] = num;
+      } else {
+        extras[fact.key] = raw;
+      }
+    });
+    return extras;
+  }
+
+  /**
+   * The Worker's cleanSubmission doesn't know about `kind`/`extras` yet (only
+   * a fixed field set survives today — see CLAUDE.md / worker/index.js), so
+   * fold them into a trailing notes line as a belt-and-suspenders fallback:
+   * "[kind: basement · utilities_included: yes · source: Sulekha]". Once the
+   * Worker learns `kind` + `extras` this becomes redundant but harmless.
+   */
+  function noteSuffix(kind, extras) {
+    var bits = [];
+    if (kind) bits.push("kind: " + kind);
+    Object.keys(extras).forEach(function (key) {
+      var v = extras[key];
+      var text = typeof v === "boolean" ? (v ? "yes" : "no") : String(v);
+      bits.push(key + ": " + text);
+    });
+    return bits.length ? "[" + bits.join(" · ") + "]" : "";
+  }
+
   function setBusy(state) {
     busy = state;
     submitBtn.disabled = state;
@@ -272,12 +365,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function showDone(payload) {
     var bits = [];
-    if (payload.commute_work && payload.commute_work.min !== null) {
-      bits.push(payload.commute_work.min + " min to work");
-    }
-    if (payload.commute_home && payload.commute_home.min !== null) {
-      bits.push(payload.commute_home.min + " min to family");
-    }
+    anchors.forEach(function (anchor) {
+      var c = payload.commutes && payload.commutes[anchor.key];
+      if (c && typeof c.min === "number") {
+        bits.push(c.min + " min to " + anchor.short);
+      }
+    });
     if (!payload.coords) bits.push("no pin — we couldn’t place the address");
     doneDetail.textContent = bits.join(" · ");
     form.classList.add("hidden");
@@ -289,6 +382,12 @@ document.addEventListener("DOMContentLoaded", function () {
     // Keep who and the PIN; everything else starts clean.
     ["f-url", "f-name", "f-address", "f-town", "f-rent", "f-beds", "f-notes"].forEach(function (id) {
       var el = document.getElementById(id);
+      if (el) el.value = "";
+    });
+    var kindEl = document.getElementById("f-kind");
+    if (kindEl) kindEl.selectedIndex = 0;
+    facts.forEach(function (fact) {
+      var el = document.getElementById("f-fact-" + fact.key);
       if (el) el.value = "";
     });
     dupeEl.classList.add("hidden");
@@ -310,11 +409,19 @@ document.addEventListener("DOMContentLoaded", function () {
       address: value("f-address") || null,
       town: value("f-town") || null,
       state: value("f-state"),
+      kind: value("f-kind") || null,
       rent: numberValue("f-rent"),
       beds: numberValue("f-beds"),
       notes: value("f-notes") || null,
-      who: who
+      who: who,
+      search: config.search,
+      commutes: {},
+      routes: {},
+      extras: collectExtras()
     };
+
+    var suffix = noteSuffix(payload.kind, payload.extras);
+    if (suffix) payload.notes = payload.notes ? payload.notes + "\n" + suffix : suffix;
 
     if (!payload.url && !payload.address) {
       say("Give me at least a listing URL or a street address.", "bad");
@@ -336,22 +443,17 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(function (coords) {
         payload.coords = coords;
         if (!coords) return null;
-        say("Timing both drives…");
-        return Promise.all([
-          route(coords, (config.anchors || {}).work),
-          route(coords, (config.anchors || {}).home)
-        ]);
+        say("Timing the drives…");
+        return Promise.all(anchors.map(function (anchor) { return route(coords, anchor); }));
       })
       .then(function (legs) {
         if (legs) {
-          if (legs[0]) {
-            payload.route_work = legs[0];
-            payload.commute_work = { min: legs[0].min, miles: legs[0].miles };
-          }
-          if (legs[1]) {
-            payload.route_home = legs[1];
-            payload.commute_home = { min: legs[1].min, miles: legs[1].miles };
-          }
+          anchors.forEach(function (anchor, i) {
+            var leg = legs[i];
+            if (!leg) return;
+            payload.routes[anchor.key] = leg;
+            payload.commutes[anchor.key] = { min: leg.min, miles: leg.miles };
+          });
         }
         say("Saving…");
         payload.pin = pinEl.value;

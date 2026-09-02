@@ -2,7 +2,7 @@
 layout: base.njk
 useMap: true
 pagination:
-  data: homes.listings
+  data: homes.listingPages
   size: 1
   alias: l
 permalink: "/listing/{{ l.id }}/"
@@ -20,7 +20,7 @@ eleventyComputed:
          class="invisible fixed bottom-0 left-0 top-0 z-50 flex w-[85%] max-w-xs -translate-x-full flex-col border-r border-sand-200 bg-sand-50 shadow-2xl transition-transform duration-200 ease-out lg:visible lg:sticky lg:bottom-auto lg:top-14 lg:z-30 lg:max-h-[calc(100vh-4.5rem)] lg:w-64 lg:max-w-none lg:translate-x-0 lg:shrink-0 lg:self-start lg:rounded-2xl lg:border lg:shadow-sm dark:border-sand-800 dark:bg-sand-900">
 
     <div class="flex items-center justify-between gap-2 border-b border-sand-200 px-3 py-1.5 dark:border-sand-800">
-      <p class="text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">All {{ homes.counts.total }} listings</p>
+      <p class="text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">All {{ l.search.counts.total }} listings</p>
       <button type="button" id="browse-close"
               class="tap -mr-1.5 w-11 rounded-xl text-sand-500 hover:text-clay-700 lg:hidden dark:text-sand-400 dark:hover:text-clay-300">
         <span class="sr-only">Close the listing browser</span>
@@ -32,7 +32,7 @@ eleventyComputed:
 
     <div id="browse-scroll" class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-1.5">
       <ul class="space-y-0.5">
-        {% for item in homes.browse %}
+        {% for item in l.search.browse %}
           {% set here = item.id == l.id %}
           <li>
             <a href="/listing/{{ item.id }}/"
@@ -42,7 +42,7 @@ eleventyComputed:
               <span class="min-w-0 flex-1">
                 <span class="block truncate text-[0.8125rem] font-medium leading-snug">{{ item.title }}</span>
                 <span class="block truncate text-[0.6875rem] tabular-nums {% if here %}text-clay-100{% else %}text-sand-500 dark:text-sand-400{% endif %}">
-                  {{ item.rentLabel if item.rentLabel else "Rent TBD" }}{% if item.homeMins %} &middot; {{ item.homeMins }}m home{% endif %}{% if item.workMins %} &middot; {{ item.workMins }}m work{% endif %}
+                  {{ item.rentLabel if item.rentLabel else "Rent TBD" }}{% for anchor in l.search.anchors %}{% if item.mins[anchor.key] %} &middot; {{ item.mins[anchor.key] }}m {{ anchor.short }}{% endif %}{% endfor %}
                 </span>
               </span>
             </a>
@@ -55,7 +55,7 @@ eleventyComputed:
   <div class="mx-auto w-full min-w-0 max-w-3xl">
 
   <div class="flex items-center justify-between gap-2">
-    <a href="/#{{ l.id }}" class="tap -ml-2 gap-1.5 rounded-xl px-2 text-sm font-medium text-sand-500 hover:text-clay-700 dark:text-sand-400 dark:hover:text-clay-300">
+    <a href="{{ l.search.basePath }}#{{ l.id }}" class="tap -ml-2 gap-1.5 rounded-xl px-2 text-sm font-medium text-sand-500 hover:text-clay-700 dark:text-sand-400 dark:hover:text-clay-300">
       <span aria-hidden="true">&larr;</span> Map
     </a>
     <button type="button" id="browse-open" aria-expanded="false" aria-controls="browse-panel"
@@ -131,7 +131,7 @@ eleventyComputed:
         <span id="fav-chips" class="contents"></span>
         <span class="band-pill inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold">{{ l.band.label }}</span>
         <span class="inline-flex items-center rounded-full border border-sand-200 bg-sand-100 px-2.5 py-1 text-xs font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">{{ l.tierLabel }}</span>
-        <span class="inline-flex items-center rounded-full border border-sand-200 bg-sand-100 px-2.5 py-1 text-xs font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">{{ l.kind | capitalize }}</span>
+        <span class="inline-flex items-center rounded-full border border-sand-200 bg-sand-100 px-2.5 py-1 text-xs font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">{{ l.kindLabel if l.kindLabel else "Rental" }}</span>
         {% if l.isGone %}
           <span class="inline-flex items-center rounded-full border border-rose-300 bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300">No longer listed</span>
         {% else %}
@@ -145,16 +145,17 @@ eleventyComputed:
         <p class="font-serif text-4xl font-semibold leading-none tabular-nums text-sand-900 dark:text-sand-50">
           {{ l.rentLabel if l.rentLabel else "Rent TBD" }}
         </p>
+        {#- `overBy` is always measured against the search's first threshold
+            (budget.max — "in budget" for the couple, "ideal" for Evelyn); the
+            band label says which band that lands it in, and the hard cap is the
+            stretch figure where the search has one. -#}
+        {% set hardCap = l.search.budgetStretchLabel if l.search.budgetStretchLabel else l.search.budgetMaxLabel %}
         <p class="mt-1.5 text-sm text-sand-500 dark:text-sand-400">
           {% if l.overByLabel %}
-            {% if l.bandKey == "stretch" %}
-              <span class="font-semibold text-amber-600 dark:text-amber-400">{{ l.overByLabel }} over budget</span>
-            {% else %}
-              <span class="font-semibold text-rose-600 dark:text-rose-400">{{ l.overByLabel }} over budget</span>
-            {% endif %}
-            <span class="text-sand-400 dark:text-sand-500">&middot; cap is {{ homes.budgetMaxLabel }}</span>
+            <span class="font-semibold {% if l.bandKey == 'stretch' %}text-amber-600 dark:text-amber-400{% else %}text-rose-600 dark:text-rose-400{% endif %}">{{ l.overByLabel }} over {{ l.search.budgetMaxLabel }}</span>
+            <span class="text-sand-400 dark:text-sand-500">&middot; {{ l.band.label }}, cap is {{ hardCap }}</span>
           {% elif l.rentLabel %}
-            per month &middot; under the {{ homes.budgetMaxLabel }} cap
+            per month &middot; under the {{ l.search.budgetMaxLabel }} cap
           {% else %}
             No rent published &mdash; call to ask
           {% endif %}
@@ -203,22 +204,17 @@ eleventyComputed:
       <p class="mt-2 text-xs text-sand-500 dark:text-sand-400">No direct link on file &mdash; this one came from a market survey rather than a single listing.</p>
     {% endif %}
 
-    <!-- Commutes -->
+    <!-- Commutes: one card per anchor, in the search's own anchor order. -->
     <div class="mt-6 grid gap-3 sm:grid-cols-2">
-      <div class="rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900">
-        <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">
-          <span class="h-2.5 w-2.5 rounded-full bg-route-work" aria-hidden="true"></span> Drive to work
-        </p>
-        <p class="mt-1.5 text-lg font-semibold tabular-nums {% if l.workSlow %}text-rose-600 dark:text-rose-400{% else %}text-sand-900 dark:text-sand-50{% endif %}">{{ l.workLabel if l.workLabel else "Unknown" }}</p>
-        <p class="mt-0.5 text-xs text-sand-500 dark:text-sand-400">{{ homes.anchors.work.label }}</p>
-      </div>
-      <div class="rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900">
-        <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">
-          <span class="h-2.5 w-2.5 rounded-full bg-route-home" aria-hidden="true"></span> Drive to family
-        </p>
-        <p class="mt-1.5 text-lg font-semibold tabular-nums text-sand-900 dark:text-sand-50">{{ l.homeLabel if l.homeLabel else "Unknown" }}</p>
-        <p class="mt-0.5 text-xs text-sand-500 dark:text-sand-400">{{ homes.anchors.home.label }}</p>
-      </div>
+      {% for drive in l.commuteList %}
+        <div class="rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900">
+          <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">
+            <span class="h-2.5 w-2.5 rounded-full" style="background-color: {{ drive.anchor.color }}" aria-hidden="true"></span> Drive to {{ drive.anchor.short }}
+          </p>
+          <p class="mt-1.5 text-lg font-semibold tabular-nums {% if drive.slow %}text-rose-600 dark:text-rose-400{% else %}text-sand-900 dark:text-sand-50{% endif %}">{{ drive.label if drive.label else "Unknown" }}</p>
+          <p class="mt-0.5 text-xs text-sand-500 dark:text-sand-400">{{ drive.anchor.label }}</p>
+        </div>
+      {% endfor %}
     </div>
 
     <!-- Facts -->
@@ -245,7 +241,30 @@ eleventyComputed:
         <dt class="text-xs font-medium text-sand-500 dark:text-sand-400">Added</dt>
         <dd class="mt-0.5 text-sm font-medium text-sand-800 dark:text-sand-100">{{ l.addedLabel if l.addedLabel else "—" }}</dd>
       </div>
+      {#- The search's own declared fields, in config order. Only the ones this
+          listing actually answers show up. -#}
+      {% for extra in l.extraList %}
+        <div class="bg-white px-4 py-3 dark:bg-sand-900">
+          <dt class="text-xs font-medium text-sand-500 dark:text-sand-400">{{ extra.label }}</dt>
+          <dd class="mt-0.5 text-sm font-medium text-sand-800 dark:text-sand-100">{{ extra.valueLabel }}</dd>
+        </div>
+      {% endfor %}
     </dl>
+
+    {% if l.checklist.length %}
+      <section class="mt-6 rounded-2xl border border-amber-200/70 bg-amber-50/50 p-4 dark:border-amber-900/60 dark:bg-amber-950/25">
+        <h2 class="font-serif text-base font-semibold text-amber-800 dark:text-amber-300">Before you tour</h2>
+        <p class="mt-1 text-xs text-amber-800/80 dark:text-amber-300/80">Worth asking about any {{ l.kindLabel | lower if l.kindLabel else "place" }}.</p>
+        <ul class="mt-2 space-y-1.5">
+          {% for item in l.checklist %}
+            <li class="flex gap-2 text-sm leading-relaxed text-sand-700 dark:text-sand-200">
+              <span class="mt-[0.45em] h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" aria-hidden="true"></span>
+              <span>{{ item }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
 
     <!-- Pros & cons -->
     {% if l.prosList.length or l.consList.length %}
@@ -288,22 +307,20 @@ eleventyComputed:
 
     <!-- Map -->
     {% if l.hasRoute %}
-      {% set mapPayload = { listing: { lat: l.lat, lon: l.lon, title: l.title, band: l.bandKey, rent: l.rentLabel }, route: l.route, anchors: homes.anchors } %}
+      {% set mapPayload = { listing: { lat: l.lat, lon: l.lon, title: l.title, band: l.bandKey, rent: l.rentLabel }, route: l.route, anchors: l.search.anchors } %}
       <section id="map-section" class="mt-8 scroll-mt-20">
-        <h2 class="font-serif text-lg font-semibold text-sand-900 dark:text-sand-50">Where it is, and both drives</h2>
+        <h2 class="font-serif text-lg font-semibold text-sand-900 dark:text-sand-50">Where it is, and the drives</h2>
 
         <div class="mt-3 overflow-hidden rounded-2xl border border-sand-200 dark:border-sand-800">
-          <div id="listing-map" class="map-shell h-[22rem] w-full sm:h-[26rem]" role="img" aria-label="Map of {{ l.title }} with driving routes to work and family"></div>
+          <div id="listing-map" class="map-shell h-[22rem] w-full sm:h-[26rem]" role="img" aria-label="Map of {{ l.title }} with the driving route to each of our anchors"></div>
           <div class="map-shell border-t border-sand-200 px-4 py-3 dark:border-sand-800">
             <ul class="space-y-1.5 text-sm">
-              <li class="flex items-center gap-2.5">
-                <span class="h-1 w-6 shrink-0 rounded-full bg-route-work" aria-hidden="true"></span>
-                <span><strong class="font-semibold">Work &mdash; {{ homes.anchors.work.short }}:</strong> {{ l.workLabel if l.workLabel else "unknown" }}</span>
-              </li>
-              <li class="flex items-center gap-2.5">
-                <span class="h-1 w-6 shrink-0 rounded-full bg-route-home" aria-hidden="true"></span>
-                <span><strong class="font-semibold">Home &mdash; {{ homes.anchors.home.short }}:</strong> {{ l.homeLabel if l.homeLabel else "unknown" }}</span>
-              </li>
+              {% for drive in l.commuteList %}
+                <li class="flex items-center gap-2.5">
+                  <span class="h-1 w-6 shrink-0 rounded-full" style="background-color: {{ drive.anchor.color }}" aria-hidden="true"></span>
+                  <span><strong class="font-semibold">{{ drive.anchor.short }} &mdash; {{ drive.anchor.label }}:</strong> {{ drive.label if drive.label else "unknown" }}</span>
+                </li>
+              {% endfor %}
             </ul>
           </div>
         </div>
@@ -734,9 +751,6 @@ document.addEventListener("DOMContentLoaded", function () {
     "over": "#78716c",
     "unknown": "#64748b"
   };
-  var WORK_COLOR = "#2563eb";
-  var HOME_COLOR = "#7c3aed";
-
   L.Icon.Default.imagePath = "/assets/vendor/leaflet/images/";
 
   var map = L.map(host, { scrollWheelZoom: false });
@@ -770,26 +784,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  drawRoute(data.route && data.route.work, WORK_COLOR);
-  drawRoute(data.route && data.route.home, HOME_COLOR);
+  // One route + one pin per anchor, in the search's own order and colours.
+  (data.anchors || []).forEach(function (anchor) {
+    drawRoute(data.route && data.route[anchor.key], anchor.color);
 
-  if (data.anchors && data.anchors.work && data.anchors.work.lat !== null) {
-    L.marker([data.anchors.work.lat, data.anchors.work.lon], {
-      icon: anchorIcon(WORK_COLOR, "&#128188;"),
-      title: data.anchors.work.label,
-      alt: "Work: " + data.anchors.work.label
-    }).addTo(map).bindPopup("<strong>Work</strong><br>" + data.anchors.work.label);
-    bounds.push([data.anchors.work.lat, data.anchors.work.lon]);
-  }
-
-  if (data.anchors && data.anchors.home && data.anchors.home.lat !== null) {
-    L.marker([data.anchors.home.lat, data.anchors.home.lon], {
-      icon: anchorIcon(HOME_COLOR, "&#127968;"),
-      title: data.anchors.home.label,
-      alt: "Family: " + data.anchors.home.label
-    }).addTo(map).bindPopup("<strong>Family</strong><br>" + data.anchors.home.label);
-    bounds.push([data.anchors.home.lat, data.anchors.home.lon]);
-  }
+    if (anchor.lat === null || anchor.lat === undefined) return;
+    L.marker([anchor.lat, anchor.lon], {
+      icon: anchorIcon(anchor.color, anchor.glyph),
+      title: anchor.label,
+      alt: anchor.short + ": " + anchor.label
+    }).addTo(map).bindPopup("<strong>" + anchor.short + "</strong><br>" + anchor.label);
+    bounds.push([anchor.lat, anchor.lon]);
+  });
 
   if (data.listing && data.listing.lat !== null) {
     var here = [data.listing.lat, data.listing.lon];

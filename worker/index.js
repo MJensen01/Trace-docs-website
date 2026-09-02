@@ -5,10 +5,18 @@
  * that don't match a file (i.e. /api/*) reach this Worker.
  *
  * KV (HOMEFINDER_QUEUE) keys:
- *   pending:<id>  — a listing submitted through the site, awaiting triage
+ *   pending:<id>  — a listing submitted through the site, awaiting triage.
+ *     Value carries a `search` field (which search it was submitted against;
+ *     missing ⇒ "couple") — the key itself stays a random id. Also carries
+ *     `kind` (a short type key, e.g. "basement") and `extras` (an object of
+ *     free-form per-kind facts, e.g. { utilities_included: true }) when the
+ *     submission included them.
  *   hidden:<listing-id> — a published listing archived through the site
  *   fav:<listing-id>:<who> — a heart from matt or evelyn
- *   data:live — a fresher listings payload than the baked build (see /api/data)
+ *   data:live:<search> — a fresher listings payload than the baked build for
+ *     that search (see /api/data). `data:live` (no suffix) is the legacy,
+ *     couple-only key from before multi-search — read as a fallback, never
+ *     written anymore; drop after 2026-10.
  *
  * R2 (PHOTOS): listing images under photos/<listing-id>/<file>.jpg —
  * galleries as 01.jpg..NN.jpg, the dashboard thumbnail as thumb.jpg. Served
@@ -56,6 +64,24 @@ async function listByPrefix(env, prefix) {
 const MAX_PENDING = 100;
 const STR_LIMIT = 2000;
 
+// The Worker stays ignorant of the actual list of searches — it just needs a
+// safe key to namespace KV/pending by. Unknown/missing/malformed ⇒ "couple"
+// (the pre-multi-search default), which keeps every existing client working
+// unchanged.
+const SEARCH_RE = /^[a-z][a-z0-9-]{0,20}$/;
+const searchOf = (v) => (typeof v === "string" && SEARCH_RE.test(v) ? v : "couple");
+
+// Anchor/leg keys inside `commutes` / `routes` (e.g. "work", "home").
+const LEG_KEY_RE = /^[a-z][a-z0-9_-]{0,20}$/;
+const MAX_LEGS = 4;
+
+// Listing "kind" (e.g. "basement", "room") — a per-search config concern,
+// the Worker just needs a safe key. `extras` carries kind-specific facts.
+const KIND_RE = /^[a-z][a-z0-9-]{0,30}$/;
+const EXTRAS_KEY_RE = /^[a-z][a-z0-9_]{0,30}$/;
+const MAX_EXTRAS = 12;
+const EXTRAS_STR_LIMIT = 200;
+
 /** Keep only expected fields, truncate strings, no surprises into KV. */
 function cleanSubmission(body) {
   const pick = (v) =>
@@ -75,22 +101,86 @@ function cleanSubmission(body) {
     v && typeof v === "object"
       ? { min: num(v.min), miles: num(v.miles), geometry: geometry(v.geometry) }
       : null;
+  // Clean an incoming `commutes`/`routes` object: valid leg keys only,
+  // each value run through `leafCleaner`, capped at MAX_LEGS entries.
+  const legMap = (v, leafCleaner) => {
+    const out = {};
+    if (!v || typeof v !== "object" || Array.isArray(v)) return out;
+    for (const key of Object.keys(v)) {
+      if (!LEG_KEY_RE.test(key)) continue;
+      const cleaned = leafCleaner(v[key]);
+      if (cleaned) out[key] = cleaned;
+      if (Object.keys(out).length >= MAX_LEGS) break;
+    }
+    return out;
+  };
+
+  // Legacy shape (pre-multi-search clients): commute_work/commute_home and
+  // route_work/route_home. Fold these into commutes.work/.home and
+  // routes.work/.home so ~30 days of already-queued items and any client
+  // that hasn't been updated yet keep working.
+  const legacyCommutes = {};
+  const legacyCommuteWork = commute(body.commute_work);
+  if (legacyCommuteWork) legacyCommutes.work = legacyCommuteWork;
+  const legacyCommuteHome = commute(body.commute_home);
+  if (legacyCommuteHome) legacyCommutes.home = legacyCommuteHome;
+
+  const legacyRoutes = {};
+  const legacyRouteWork = routeLeg(body.route_work);
+  if (legacyRouteWork) legacyRoutes.work = legacyRouteWork;
+  const legacyRouteHome = routeLeg(body.route_home);
+  if (legacyRouteHome) legacyRoutes.home = legacyRouteHome;
+
+  // New shape wins on key collision; legacy only fills in gaps. Re-cap at
+  // MAX_LEGS after merging so a client can't combine both shapes to exceed it.
+  const capLegs = (obj) => {
+    const out = {};
+    for (const key of Object.keys(obj).slice(0, MAX_LEGS)) out[key] = obj[key];
+    return out;
+  };
+  const commutes = capLegs({ ...legacyCommutes, ...legMap(body.commutes, commute) });
+  const routes = capLegs({ ...legacyRoutes, ...legMap(body.routes, routeLeg) });
+
+  const kind = typeof body.kind === "string" && KIND_RE.test(body.kind) ? body.kind : null;
+
+  const extrasValue = (v) => {
+    if (typeof v === "boolean" || v === null) return { ok: true, value: v };
+    if (typeof v === "number" && isFinite(v)) return { ok: true, value: v };
+    if (typeof v === "string") {
+      const trimmed = v.trim().slice(0, EXTRAS_STR_LIMIT);
+      return trimmed ? { ok: true, value: trimmed } : { ok: false };
+    }
+    return { ok: false };
+  };
+  const extras = {};
+  if (body.extras && typeof body.extras === "object" && !Array.isArray(body.extras)) {
+    for (const key of Object.keys(body.extras)) {
+      if (!EXTRAS_KEY_RE.test(key)) continue;
+      const cleaned = extrasValue(body.extras[key]);
+      if (!cleaned.ok) continue;
+      extras[key] = cleaned.value;
+      if (Object.keys(extras).length >= MAX_EXTRAS) break;
+    }
+  }
 
   return {
     url: pick(body.url),
     name: pick(body.name),
     address: pick(body.address),
     town: pick(body.town),
-    state: body.state === "PA" || body.state === "NJ" ? body.state : pick(body.state),
+    // 2-letter state validation is a per-search config concern now, not the
+    // Worker's — just keep it a clean short string.
+    state: pick(body.state),
     rent: num(body.rent),
     beds: num(body.beds),
     notes: pick(body.notes),
     who: body.who === "evelyn" ? "evelyn" : "matt",
     coords: pair(body.coords), // [lat, lon] from client-side geocode
-    commute_work: commute(body.commute_work),
-    commute_home: commute(body.commute_home),
-    route_work: routeLeg(body.route_work),
-    route_home: routeLeg(body.route_home),
+    search: searchOf(body.search),
+    commutes,
+    routes,
+    kind,
+    extras,
   };
 }
 
@@ -123,7 +213,15 @@ export default {
       if (path === "/api/health") {
         return ok({ ok: true, pin_configured: Boolean(env.HF_PIN) });
       }
-      if (path === "/api/pending") return ok(await listByPrefix(env, "pending:"));
+      if (path === "/api/pending") {
+        const rows = await listByPrefix(env, "pending:");
+        // No ?search: everything, as before (ingest/debug). With ?search=<key>,
+        // only items stamped for that search — items with no `search` field
+        // (pre-multi-search submissions) count as "couple".
+        if (!url.searchParams.has("search")) return ok(rows);
+        const want = searchOf(url.searchParams.get("search"));
+        return ok(rows.filter((r) => searchOf(r.search) === want));
+      }
       if (path === "/api/favorites") {
         const rows = await listByPrefix(env, "fav:");
         return ok(rows.map((r) => {
@@ -134,14 +232,27 @@ export default {
       if (path === "/api/data") {
         // Listings for the map and any live view: a pushed-live payload wins
         // over the baked build, so a sweep can go live without a deploy.
-        const live = await env.HOMEFINDER_QUEUE.get("data:live");
+        // ?search=<key> selects which search's feed; missing/invalid ⇒ "couple".
+        const key = searchOf(url.searchParams.get("search"));
+        const live = await env.HOMEFINDER_QUEUE.get(`data:live:${key}`);
         if (live) {
           return new Response(live, {
             headers: { ...JSON_HEADERS, "x-hf-source": "live" },
           });
         }
+        if (key === "couple") {
+          // Legacy key from before per-search live payloads existed. Never
+          // written anymore (POST /api/data always writes data:live:<search>)
+          // — safe to delete this fallback once its 7-day TTL has long passed.
+          const legacyLive = await env.HOMEFINDER_QUEUE.get("data:live");
+          if (legacyLive) {
+            return new Response(legacyLive, {
+              headers: { ...JSON_HEADERS, "x-hf-source": "live" },
+            });
+          }
+        }
         const baked = await env.ASSETS.fetch(
-          new URL("/assets/data/listings.json", url.origin)
+          new URL(`/assets/data/${key}.json`, url.origin)
         );
         return new Response(baked.body, {
           status: baked.status,
@@ -250,11 +361,13 @@ export default {
     }
 
     if (path === "/api/data") {
-      // Push a fresher listings payload than the deployed build. Expires on
-      // its own; a fresh deploy simply out-dates it and ingest re-pushes.
+      // Push a fresher listings payload than the deployed build, for one
+      // search. Expires on its own; a fresh deploy simply out-dates it and
+      // ingest re-pushes.
       if (!body.data || typeof body.data !== "object")
         return err("Bad data — want the /api/data JSON shape");
-      await env.HOMEFINDER_QUEUE.put("data:live", JSON.stringify(body.data), {
+      const key = searchOf(body.search);
+      await env.HOMEFINDER_QUEUE.put(`data:live:${key}`, JSON.stringify(body.data), {
         expirationTtl: 60 * 60 * 24 * 7,
       });
       return ok({ ok: true });

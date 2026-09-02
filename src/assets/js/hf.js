@@ -200,9 +200,18 @@
   function getWho() { return readStore(WHO_KEY) === "evelyn" ? "evelyn" : "matt"; }
   function setWho(value) { writeStore(WHO_KEY, value === "evelyn" ? "evelyn" : "matt"); }
 
-  /** Pending submissions, newest first. [] whenever the API is unhappy. */
-  function pending() {
-    return get("/api/pending").then(function (res) {
+  /**
+   * Pending submissions, newest first. [] whenever the API is unhappy.
+   * Pass a search key (e.g. "solo") to scope the request to that search's
+   * queue via GET /api/pending?search=<key>; omit it (or pass a falsy /
+   * non-string value) to get every pending item, same as before.
+   */
+  function pending(searchKey) {
+    var path = "/api/pending";
+    if (typeof searchKey === "string" && searchKey) {
+      path += "?search=" + encodeURIComponent(searchKey);
+    }
+    return get(path).then(function (res) {
       if (!res.ok || !Array.isArray(res.body)) return [];
       return res.body.slice().sort(function (a, b) {
         return String(b.ts || "").localeCompare(String(a.ts || ""));

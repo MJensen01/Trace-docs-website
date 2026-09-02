@@ -39,10 +39,6 @@
   --color-band-over: #78716c;
   --color-band-unknown: #64748b;
 
-  /* Route colours, shared with the Leaflet polylines. */
-  --color-route-work: #2563eb;
-  --color-route-home: #7c3aed;
-
   /* Hearts. A warm dusty rose that sits with the clay accent — deliberately
      softer and pinker than the alarm red used for slow commutes / gone
      listings, so a favourite never reads as a warning. */

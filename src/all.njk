@@ -1,25 +1,14 @@
 ---
 layout: base.njk
-title: Database
+pagination:
+  data: homes.searches
+  size: 1
+  alias: search
+permalink: "{{ search.basePath }}all/"
+eleventyComputed:
+  title: "{{ search.label }} · Database"
 description: Every listing in one sortable, searchable table.
-permalink: /all/
 ---
-
-{% set columns = [
-  { key: "rating", label: "★", sr: "Rating", type: "num" },
-  { key: "name", label: "Listing", type: "text" },
-  { key: "town", label: "Town", type: "text" },
-  { key: "state", label: "ST", type: "text" },
-  { key: "type", label: "Type", type: "text" },
-  { key: "band", label: "Band", type: "num" },
-  { key: "rent", label: "Rent", type: "num", right: true },
-  { key: "beds", label: "Bd/Ba", type: "num" },
-  { key: "sqft", label: "SqFt", type: "num", right: true },
-  { key: "work", label: "Work min", type: "num", right: true },
-  { key: "home", label: "Home min", type: "num", right: true },
-  { key: "status", label: "Status", type: "text" },
-  { key: "checked", label: "Checked", type: "text" }
-] %}
 
 <div class="mx-auto max-w-6xl px-4 pb-16 pt-5 sm:px-6">
 
@@ -30,7 +19,7 @@ permalink: /all/
         Every listing, every field. Tap a column heading to sort it.
       </p>
     </div>
-    <a href="/" class="tap rounded-full border border-sand-300 bg-white px-4 text-sm font-semibold text-clay-700 hover:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-clay-300">
+    <a href="{{ search.basePath }}list/" class="tap rounded-full border border-sand-300 bg-white px-4 text-sm font-semibold text-clay-700 hover:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-clay-300">
       <span aria-hidden="true" class="mr-1.5">&larr;</span> Back to the list
     </a>
   </div>
@@ -43,24 +32,129 @@ permalink: /all/
   </div>
 
   <p id="db-count" class="mt-3 text-sm text-sand-500 dark:text-sand-400" role="status" aria-live="polite"
-     data-total="{{ homes.counts.total }}" data-budget="{{ homes.counts.inBudget }}">
-    {{ homes.counts.total }} listings &middot; {{ homes.counts.inBudget }} in budget
+     data-total="{{ search.counts.total }}" data-budget="{{ search.counts.inBudget }}"
+     data-budget-label="{{ search.bands['in-budget'].label | lower }}">
+    {{ search.counts.total }} listings &middot; {{ search.counts.inBudget }} {{ search.bands['in-budget'].label | lower }}
   </p>
 
   <div id="db-wrap" class="table-scroll mt-3 rounded-2xl border border-sand-200 bg-white dark:border-sand-800 dark:bg-sand-900">
     <table id="db-table" class="w-full min-w-[58rem] border-collapse text-left text-sm">
       <thead>
         <tr class="border-b border-sand-200 bg-sand-100 dark:border-sand-800 dark:bg-sand-800">
-          {% for col in columns %}
-            <th scope="col" aria-sort="none" class="p-0 font-semibold{% if col.right %} text-right{% endif %}">
-              <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 {% if col.right %}justify-end{% endif %} dark:text-sand-300 dark:hover:text-clay-300"
-                      data-key="{{ col.key }}" data-type="{{ col.type }}">
-                {% if col.sr %}<span class="sr-only">{{ col.sr }}</span>{% endif %}
-                <span aria-hidden="{{ 'true' if col.sr else 'false' }}">{{ col.label }}</span>
-                <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
-              </button>
-            </th>
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="rating" data-type="num">
+              <span class="sr-only">Rating</span>
+              <span aria-hidden="true">★</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="name" data-type="text">
+              <span aria-hidden="false">Listing</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="town" data-type="text">
+              <span aria-hidden="false">Town</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          {% if search.states.length > 1 %}
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="state" data-type="text">
+              <span aria-hidden="false">ST</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+          {% endif %}
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="type" data-type="text">
+              <span aria-hidden="false">Type</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="band" data-type="num">
+              <span aria-hidden="false">Band</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold text-right">
+            <button type="button" class="db-sort flex w-full items-center justify-end gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="rent" data-type="num">
+              <span aria-hidden="false">Rent</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="beds" data-type="num">
+              <span aria-hidden="false">Bd/Ba</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold text-right">
+            <button type="button" class="db-sort flex w-full items-center justify-end gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="sqft" data-type="num">
+              <span aria-hidden="false">SqFt</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          {% for anchor in search.anchors %}
+          <th scope="col" aria-sort="none" class="p-0 font-semibold text-right">
+            <button type="button" class="db-sort flex w-full items-center justify-end gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="c-{{ anchor.key }}" data-type="num">
+              <span aria-hidden="false">{{ anchor.short }} min</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
           {% endfor %}
+
+          {% for fact in search.facts %}
+            {% if fact.column %}
+              <th scope="col" aria-sort="none" class="p-0 font-semibold">
+                <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                        data-key="f-{{ fact.key }}" data-type="{{ 'num' if fact.type == 'bool' else 'text' }}">
+                  <span aria-hidden="false">{{ fact.label }}</span>
+                  <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+                </button>
+              </th>
+            {% endif %}
+          {% endfor %}
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="status" data-type="text">
+              <span aria-hidden="false">Status</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
+          <th scope="col" aria-sort="none" class="p-0 font-semibold">
+            <button type="button" class="db-sort flex w-full items-center gap-1 whitespace-nowrap px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 hover:text-clay-700 dark:text-sand-300 dark:hover:text-clay-300"
+                    data-key="checked" data-type="text">
+              <span aria-hidden="false">Checked</span>
+              <span class="db-arrow text-[0.7rem] leading-none opacity-25" aria-hidden="true">&#8597;</span>
+            </button>
+          </th>
+
           <th scope="col" class="px-2.5 py-2.5 text-xs font-semibold uppercase tracking-wider text-sand-600 dark:text-sand-300">
             <span class="sr-only">Original listing</span>
             <span aria-hidden="true">Link</span>
@@ -68,7 +162,7 @@ permalink: /all/
         </tr>
       </thead>
       <tbody>
-        {% for l in homes.listings %}
+        {% for l in search.listings %}
           <tr class="db-row band-{{ l.bandKey }} border-t border-sand-100 align-middle dark:border-sand-800{% if l.isGone %} opacity-55 saturate-50{% endif %}"
               data-id="{{ l.id }}"
               data-index="{{ l.index }}"
@@ -76,14 +170,14 @@ permalink: /all/
               data-rating="{{ l.rating | default(0) }}"
               data-name="{{ l.title | lower }}"
               data-town="{{ l.town | lower }}"
-              data-state="{{ l.state }}"
+              {% if search.states.length > 1 %}data-state="{{ l.state }}"{% endif %}
               data-type="{{ l.kindShort }}"
               data-band="{{ l.bandRank }}"
               data-rent="{{ l.rent if l.rent else '' }}"
               data-beds="{{ l.beds if l.beds != null else '' }}"
               data-sqft="{{ l.sqft if l.sqft else '' }}"
-              data-work="{{ l.workMins if l.workMins != null else '' }}"
-              data-home="{{ l.homeMins if l.homeMins != null else '' }}"
+              {% for c in l.commuteList %}data-c-{{ c.anchor.key }}="{{ c.mins if c.mins != null else '' }}" {% endfor %}
+              {% for fact in search.facts %}{% if fact.column %}{% set val = l.extras[fact.key] %}data-f-{{ fact.key }}="{% if fact.type == 'bool' %}{% if val == true %}1{% elif val == false %}0{% endif %}{% elif val != undefined %}{{ val | lower }}{% endif %}" {% endif %}{% endfor %}
               data-status="{{ l.verificationInfo.label }}"
               data-checked="{{ l.last_checked if l.last_checked else '' }}">
 
@@ -96,7 +190,9 @@ permalink: /all/
             </td>
 
             <td class="whitespace-nowrap px-2.5 py-2 text-sand-600 dark:text-sand-300">{{ l.town }}</td>
-            <td class="whitespace-nowrap px-2.5 py-2 text-sand-600 dark:text-sand-300">{{ l.state }}</td>
+            {% if search.states.length > 1 %}
+              <td class="whitespace-nowrap px-2.5 py-2 text-sand-600 dark:text-sand-300">{{ l.state }}</td>
+            {% endif %}
             <td class="whitespace-nowrap px-2.5 py-2 text-sand-600 dark:text-sand-300">{{ l.kindShort }}</td>
 
             <td class="whitespace-nowrap px-2.5 py-2">
@@ -115,13 +211,26 @@ permalink: /all/
               {% if l.sqft %}{{ l.sqft }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
             </td>
 
-            <td class="whitespace-nowrap px-2.5 py-2 text-right tabular-nums {% if l.workSlow %}font-semibold text-rose-600 dark:text-rose-400{% else %}text-sand-600 dark:text-sand-300{% endif %}">
-              {% if l.workMins != null %}{{ l.workMins }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
-            </td>
+            {% for c in l.commuteList %}
+              <td class="whitespace-nowrap px-2.5 py-2 text-right tabular-nums {% if c.slow %}font-semibold text-rose-600 dark:text-rose-400{% else %}text-sand-600 dark:text-sand-300{% endif %}">
+                {% if c.mins != null %}{{ c.mins }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
+              </td>
+            {% endfor %}
 
-            <td class="whitespace-nowrap px-2.5 py-2 text-right tabular-nums text-sand-600 dark:text-sand-300">
-              {% if l.homeMins != null %}{{ l.homeMins }}{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
-            </td>
+            {% for fact in search.facts %}
+              {% if fact.column %}
+                {% set val = l.extras[fact.key] %}
+                <td class="whitespace-nowrap px-2.5 py-2 text-sand-600 dark:text-sand-300">
+                  {% if fact.type == 'bool' %}
+                    {% if val == true %}<span aria-label="Yes">&#10003;</span>{% elif val == false %}<span aria-label="No">&#10007;</span>{% else %}<span class="text-sand-400 dark:text-sand-500">&mdash;</span>{% endif %}
+                  {% elif val != undefined %}
+                    {{ val }}
+                  {% else %}
+                    <span class="text-sand-400 dark:text-sand-500">&mdash;</span>
+                  {% endif %}
+                </td>
+              {% endif %}
+            {% endfor %}
 
             <td class="db-status whitespace-nowrap px-2.5 py-2 text-xs {% if l.isGone %}font-semibold text-rose-600 dark:text-rose-400{% elif l.verificationInfo.tone == 'good' %}text-emerald-700 dark:text-emerald-400{% else %}text-sand-500 dark:text-sand-400{% endif %}">
               {{ l.verificationInfo.label }}
@@ -155,7 +264,7 @@ permalink: /all/
   </p>
 
   <p class="mt-4 text-xs text-sand-500 dark:text-sand-400">
-    Rent is per month. Work and home minutes are free-flow drive estimates (no traffic); anything over 30 minutes to work is flagged in red.
+    Rent is per month. Minutes are free-flow drive estimates (no traffic); minutes over an anchor's cap are flagged in red.
   </p>
 
 </div>
@@ -175,6 +284,7 @@ permalink: /all/
 
   var total = rows.length;
   var inBudget = countEl ? Number(countEl.getAttribute("data-budget")) : 0;
+  var budgetLabel = countEl ? countEl.getAttribute("data-budget-label") || "in budget" : "in budget";
 
   var sortKey = "rent";
   var sortType = "num";
@@ -243,7 +353,7 @@ permalink: /all/
     if (countEl) {
       countEl.textContent = query
         ? visible + " of " + total + " listings match “" + query + "”"
-        : total + " listings · " + inBudget + " in budget";
+        : total + " listings · " + inBudget + " " + budgetLabel;
     }
     if (emptyEl) emptyEl.classList.toggle("hidden", visible !== 0);
     if (wrapEl) wrapEl.classList.toggle("hidden", visible === 0);

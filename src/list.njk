@@ -1,7 +1,12 @@
 ---
 layout: base.njk
-title: List
-permalink: /list/
+pagination:
+  data: homes.searches
+  size: 1
+  alias: search
+permalink: "{{ search.basePath }}list/"
+eleventyComputed:
+  title: "{{ search.label }} · List"
 description: Every rental we are tracking as cards, with rent, commute times and ratings.
 ---
 
@@ -10,20 +15,21 @@ description: Every rental we are tracking as cards, with rent, commute times and
   <section class="mb-7">
     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-clay-600 dark:text-clay-400">Our shortlist</p>
     <h1 class="mt-1.5 font-serif text-3xl font-semibold leading-tight tracking-tight text-sand-900 sm:text-4xl dark:text-sand-50">
-      Matt &amp; Evelyn&rsquo;s Home Finder
+      {{ search.label }}
     </h1>
     <p class="mt-2 max-w-2xl text-sm leading-relaxed text-sand-600 dark:text-sand-400">
-      {{ homes.counts.total }} places we&rsquo;re tracking near {{ homes.anchors.work.short }} and {{ homes.anchors.home.short }}.
-      Budget is {{ homes.budgetMaxLabel }}, stretching to {{ homes.budgetStretchLabel }}.
-      Last updated {{ homes.updatedLabel }}.
+      {% if search.blurb %}{{ search.blurb }} {% endif %}
+      {{ search.counts.total }} place{{ "s" if search.counts.total != 1 else "" }} we&rsquo;re tracking.
+      Budget is {{ search.budgetMaxLabel }}, stretching to {{ search.budgetStretchLabel }}.
+      Last updated {{ search.updatedLabel }}.
     </p>
 
     <dl class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
       {% set stats = [
-        { label: "In budget", value: homes.counts.inBudget, band: "in-budget" },
-        { label: "Stretch", value: homes.counts.stretch, band: "stretch" },
-        { label: "Over budget", value: homes.counts.over, band: "over" },
-        { label: "Rated 4★ or 5★", value: homes.counts.topRated, band: "unknown" }
+        { label: search.bands["in-budget"].label, value: search.counts.inBudget, band: "in-budget" },
+        { label: search.bands.stretch.label, value: search.counts.stretch, band: "stretch" },
+        { label: search.bands.over.label, value: search.counts.over, band: "over" },
+        { label: "Rated 4★ or 5★", value: search.counts.topRated, band: "unknown" }
       ] %}
       {% for stat in stats %}
         <div class="band-{{ stat.band }} rounded-2xl border border-sand-200 bg-white px-3.5 py-3 dark:border-sand-800 dark:bg-sand-900">
@@ -41,19 +47,7 @@ description: Every rental we are tracking as cards, with rent, commute times and
     <h2 class="sr-only">Filters</h2>
     <div class="-mx-4 overflow-x-auto px-4 pb-1 no-scrollbar sm:mx-0 sm:overflow-visible sm:px-0">
       <div class="flex w-max gap-2 sm:w-full sm:flex-wrap">
-        {% set chips = [
-          { group: "all", value: "", label: "All" },
-          { group: "band", value: "in-budget", label: "In budget", band: "in-budget" },
-          { group: "band", value: "stretch", label: "Stretch", band: "stretch" },
-          { group: "kind", value: "apartment", label: "Apartments" },
-          { group: "kind", value: "townhouse", label: "Townhouses" },
-          { group: "state", value: "PA", label: "PA" },
-          { group: "state", value: "NJ", label: "NJ" },
-          { group: "rating", value: "4", label: "★ 4+" },
-          { group: "new", value: "1", label: "New" },
-          { group: "fav", value: "1", label: "Favorites", heart: true }
-        ] %}
-        {% for chip in chips %}
+        {% for chip in search.filters %}
           <button type="button"
                   class="chip {% if chip.band %}band-{{ chip.band }}{% endif %} border-sand-300 bg-white text-sand-700 hover:border-clay-400 hover:text-clay-700 aria-pressed:border-clay-600 aria-pressed:bg-clay-600 aria-pressed:text-white dark:border-sand-700 dark:bg-sand-900 dark:text-sand-300 dark:hover:text-clay-300 dark:aria-pressed:border-clay-500 dark:aria-pressed:bg-clay-600 dark:aria-pressed:text-white"
                   data-group="{{ chip.group }}"
@@ -69,27 +63,27 @@ description: Every rental we are tracking as cards, with rent, commute times and
 
     <div class="mt-3 flex flex-wrap items-center gap-2">
       <span class="text-xs font-medium uppercase tracking-wider text-sand-500 dark:text-sand-400">Sort</span>
-      {% set sorts = [
-        { value: "rating", label: "Rating" },
-        { value: "rent", label: "Rent" },
-        { value: "home", label: "Home commute" },
-        { value: "work", label: "Work commute" }
-      ] %}
-      {% for sort in sorts %}
+      <button type="button"
+              class="chip border-transparent bg-sand-100 text-sand-700 hover:bg-sand-200 aria-pressed:bg-sand-800 aria-pressed:text-sand-50 dark:bg-sand-800 dark:text-sand-300 dark:hover:bg-sand-700 dark:aria-pressed:bg-sand-100 dark:aria-pressed:text-sand-900"
+              data-sort="rating" aria-pressed="true">Rating</button>
+      <button type="button"
+              class="chip border-transparent bg-sand-100 text-sand-700 hover:bg-sand-200 aria-pressed:bg-sand-800 aria-pressed:text-sand-50 dark:bg-sand-800 dark:text-sand-300 dark:hover:bg-sand-700 dark:aria-pressed:bg-sand-100 dark:aria-pressed:text-sand-900"
+              data-sort="rent" aria-pressed="false">Rent</button>
+      {% for anchor in search.anchors %}
         <button type="button"
                 class="chip border-transparent bg-sand-100 text-sand-700 hover:bg-sand-200 aria-pressed:bg-sand-800 aria-pressed:text-sand-50 dark:bg-sand-800 dark:text-sand-300 dark:hover:bg-sand-700 dark:aria-pressed:bg-sand-100 dark:aria-pressed:text-sand-900"
-                data-sort="{{ sort.value }}"
-                aria-pressed="{{ 'true' if loop.first else 'false' }}">{{ sort.label }}</button>
+                data-sort="c-{{ anchor.key }}"
+                aria-pressed="false">{{ anchor.short }} drive</button>
       {% endfor %}
     </div>
 
     <p id="result-count" class="mt-3 text-sm text-sand-500 dark:text-sand-400" role="status" aria-live="polite">
-      Showing all {{ homes.counts.total }} listings
+      Showing all {{ search.counts.total }} listings
     </p>
   </section>
 
   <div id="grid" class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,19rem),1fr))] gap-4">
-    {% for l in homes.listings %}
+    {% for l in search.listings %}
       <article class="listing-card band-{{ l.bandKey }} group relative flex flex-col overflow-hidden rounded-2xl border border-sand-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-sand-300 hover:shadow-md dark:border-sand-800 dark:bg-sand-900 dark:hover:border-sand-700{% if l.isGone %} opacity-55 saturate-50{% endif %}"
                data-id="{{ l.id }}"
                data-band="{{ l.bandKey }}"
@@ -97,8 +91,8 @@ description: Every rental we are tracking as cards, with rent, commute times and
                data-state="{{ l.state }}"
                data-rating="{{ l.rating | default(0) }}"
                data-rent="{{ l.rent if l.rent else '' }}"
-               data-work="{{ l.workMin if l.workMin else '' }}"
-               data-home="{{ l.homeMin if l.homeMin else '' }}"
+               {% for c in l.commuteList %}data-c-{{ c.anchor.key }}="{{ c.mins if c.mins != null else '' }}" {% endfor %}
+               {% for extra in l.extraList %}{% if extra.type == 'bool' and extra.value == true %}data-fact-{{ extra.key }}="1" {% endif %}{% endfor %}
                data-new="{{ 1 if l.isNew else 0 }}"
                data-gone="{{ 1 if l.isGone else 0 }}">
 
@@ -152,28 +146,33 @@ description: Every rental we are tracking as cards, with rent, commute times and
             {% elif l.verification == "unverified" %}
               <span class="inline-flex items-center rounded-full border border-sand-300 bg-sand-100 px-2 py-0.5 text-[0.6875rem] font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">Unverified</span>
             {% endif %}
-            <span class="text-[0.6875rem] text-sand-400 dark:text-sand-500">{{ l.kind | capitalize }}</span>
+            {% for extra in l.extraList %}
+              {% if extra.type == 'bool' and extra.value == true %}
+                {% set fact = null %}
+                {% for f in search.facts %}{% if f.key == extra.key %}{% set fact = f %}{% endif %}{% endfor %}
+                {% if fact and fact.chip %}
+                  <span class="inline-flex items-center rounded-full border border-sand-300 bg-sand-100 px-2 py-0.5 text-[0.6875rem] font-medium text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300">{{ fact.chip }}</span>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            <span class="text-[0.6875rem] text-sand-400 dark:text-sand-500">{{ l.kindLabel }}</span>
           </div>
 
           <p class="text-sm text-sand-600 dark:text-sand-300">
             {% if l.specs.length %}{{ l.specs | join(" &middot; ") | safe }}{% else %}<span class="text-sand-400 dark:text-sand-500">Size not listed</span>{% endif %}
           </p>
 
-          <dl class="mt-auto grid grid-cols-2 gap-x-3 gap-y-1 border-t border-sand-100 pt-3 text-xs dark:border-sand-800">
-            <div>
-              <dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">
-                <span class="h-2 w-2 rounded-full bg-route-work" aria-hidden="true"></span> Work
-              </dt>
-              <dd class="mt-0.5 tabular-nums {% if l.workSlow %}font-semibold text-rose-600 dark:text-rose-400{% else %}text-sand-700 dark:text-sand-200{% endif %}">
-                {{ l.workLabel if l.workLabel else "—" }}
-              </dd>
-            </div>
-            <div>
-              <dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">
-                <span class="h-2 w-2 rounded-full bg-route-home" aria-hidden="true"></span> Home
-              </dt>
-              <dd class="mt-0.5 tabular-nums text-sand-700 dark:text-sand-200">{{ l.homeLabel if l.homeLabel else "—" }}</dd>
-            </div>
+          <dl class="mt-auto grid gap-x-3 gap-y-1 border-t border-sand-100 pt-3 text-xs dark:border-sand-800" style="grid-template-columns: repeat(auto-fit, minmax(0, 1fr));">
+            {% for c in l.commuteList %}
+              <div>
+                <dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">
+                  <span class="h-2 w-2 rounded-full" style="background-color: {{ c.anchor.color }}" aria-hidden="true"></span> {{ c.anchor.short }}
+                </dt>
+                <dd class="mt-0.5 tabular-nums {% if c.slow %}font-semibold text-rose-600 dark:text-rose-400{% else %}text-sand-700 dark:text-sand-200{% endif %}">
+                  {{ c.label if c.label else "—" }}
+                </dd>
+              </div>
+            {% endfor %}
           </dl>
 
           <p class="text-sm leading-none text-amber-500" aria-label="Rated {{ l.rating | default(0) }} out of 5">
@@ -185,17 +184,17 @@ description: Every rental we are tracking as cards, with rent, commute times and
     {% endfor %}
   </div>
 
-  <p id="empty-state" class="hidden rounded-2xl border border-dashed border-sand-300 px-6 py-12 text-center text-sm text-sand-500 dark:border-sand-700 dark:text-sand-400">
-    Nothing matches those filters. Try tapping <strong class="font-semibold">All</strong>.
+  <p id="empty-state" class="{{ 'hidden' if search.listings.length else '' }} rounded-2xl border border-dashed border-sand-300 px-6 py-12 text-center text-sm text-sand-500 dark:border-sand-700 dark:text-sand-400">
+    {% if search.listings.length %}Nothing matches those filters. Try tapping <strong class="font-semibold">All</strong>.{% else %}No listings tracked here yet.{% endif %}
   </p>
 
   <p class="mt-8 text-center">
-    <a href="/map/" class="tap rounded-full border border-sand-300 bg-white px-5 text-sm font-semibold text-clay-700 hover:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-clay-300">See them all on the map</a>
+    <a href="{{ search.basePath }}" class="tap rounded-full border border-sand-300 bg-white px-5 text-sm font-semibold text-clay-700 hover:border-clay-400 dark:border-sand-700 dark:bg-sand-900 dark:text-clay-300">See them all on the map</a>
   </p>
 
 </div>
 
-<script id="dash-config" type="application/json">{{ { knownUrls: homes.knownUrls } | jsonScript | safe }}</script>
+<script id="dash-config" type="application/json">{{ { knownUrls: search.knownUrls, anchors: search.anchors } | jsonScript | safe }}</script>
 
 <script>
 (function () {
@@ -207,10 +206,10 @@ description: Every rental we are tracking as cards, with rent, commute times and
   var sortButtons = Array.prototype.slice.call(document.querySelectorAll("[data-sort]"));
   var countEl = document.getElementById("result-count");
   var emptyEl = document.getElementById("empty-state");
-  var STORE_KEY = "home-finder-view";
+  var STORE_KEY = "home-finder-view:{{ search.key }}";
 
-  var GROUPS = ["band", "kind", "state", "rating", "new", "fav"];
-  var active = { band: [], kind: [], state: [], rating: [], new: [], fav: [] };
+  var GROUPS = ["band", "kind", "state", "rating", "new", "fav", "fact"];
+  var active = { band: [], kind: [], state: [], rating: [], new: [], fav: [], fact: [] };
   var sortBy = "rating";
   // Hearts arrive after the page does. Until they land, the ❤ chip holds its
   // fire — otherwise coming back to a remembered ❤ filter flashes "nothing
@@ -233,6 +232,7 @@ description: Every rental we are tracking as cards, with rent, commute times and
     // data-fav is stamped on once /api/favorites lands; if that call failed the
     // chip ends up matching nothing, which is the honest answer.
     if (active.fav.length && favsLoaded && card.getAttribute("data-fav") !== "1") return false;
+    if (active.fact.length && !active.fact.every(function (key) { return card.getAttribute("data-fact-" + key) === "1"; })) return false;
     return true;
   }
 
@@ -252,8 +252,7 @@ description: Every rental we are tracking as cards, with rent, commute times and
     if (goneDelta !== 0) return goneDelta;
 
     if (sortBy === "rent") return compareNumbers(a, b, "data-rent");
-    if (sortBy === "work") return compareNumbers(a, b, "data-work");
-    if (sortBy === "home") return compareNumbers(a, b, "data-home");
+    if (sortBy.indexOf("c-") === 0) return compareNumbers(a, b, "data-" + sortBy);
 
     var ratingDelta = (num(b, "data-rating") || 0) - (num(a, "data-rating") || 0);
     if (ratingDelta !== 0) return ratingDelta;
@@ -310,7 +309,7 @@ description: Every rental we are tracking as cards, with rent, commute times and
     chip.addEventListener("click", function () {
       var group = chip.getAttribute("data-group");
       if (group === "all") {
-        active = { band: [], kind: [], state: [], rating: [], new: [], fav: [] };
+        active = { band: [], kind: [], state: [], rating: [], new: [], fav: [], fact: [] };
       } else {
         var value = chip.getAttribute("data-value");
         var list = active[group];
@@ -350,8 +349,20 @@ description: Every rental we are tracking as cards, with rent, commute times and
     if (!window.HF) return;
 
     var configEl = document.getElementById("dash-config");
-    var known = [];
-    try { known = (JSON.parse(configEl.textContent) || {}).knownUrls || []; } catch (err) { /* ignore */ }
+    var config = {};
+    try { config = JSON.parse(configEl.textContent) || {}; } catch (err) { /* ignore */ }
+    var known = config.knownUrls || [];
+    var anchors = config.anchors || [];
+
+    function commuteFor(item, anchor) {
+      // New shape: item.commutes[anchorKey] = { min, miles }. Legacy pending
+      // items (queued before the multi-anchor pivot) may instead carry
+      // commute_work / commute_home for the two original anchor keys.
+      if (item.commutes && item.commutes[anchor.key]) return item.commutes[anchor.key];
+      if (anchor.key === "work" && item.commute_work) return item.commute_work;
+      if (anchor.key === "home" && item.commute_home) return item.commute_home;
+      return null;
+    }
 
     function pendingCard(item) {
       var card = document.createElement("article");
@@ -364,6 +375,14 @@ description: Every rental we are tracking as cards, with rent, commute times and
       var sub = [item.name ? item.address : null, place].filter(Boolean).join(" · ");
       var specs = [];
       if (typeof item.beds === "number") specs.push(item.beds === 0 ? "Studio" : item.beds + " bd");
+
+      var commuteRows = anchors.map(function (anchor) {
+        var commute = commuteFor(item, anchor);
+        return '<div><dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">' +
+          '<span class="h-2 w-2 rounded-full" style="background-color: ' + esc(anchor.color) + '" aria-hidden="true"></span> ' + esc(anchor.short) + "</dt>" +
+          '<dd class="mt-0.5 tabular-nums text-sand-700 dark:text-sand-200">' +
+            (HF.minsLabel(commute) || "—") + "</dd></div>";
+      }).join("");
 
       card.innerHTML =
         '<div class="flex items-start justify-between gap-3">' +
@@ -390,15 +409,8 @@ description: Every rental we are tracking as cards, with rent, commute times and
         (item.notes
           ? '<p class="line-clamp-3 text-sm leading-relaxed text-sand-600 dark:text-sand-300">' + esc(item.notes) + "</p>"
           : "") +
-        '<dl class="mt-auto grid grid-cols-2 gap-x-3 gap-y-1 border-t border-teal-500/20 pt-3 text-xs">' +
-          '<div><dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">' +
-            '<span class="h-2 w-2 rounded-full bg-route-work" aria-hidden="true"></span> Work</dt>' +
-            '<dd class="mt-0.5 tabular-nums text-sand-700 dark:text-sand-200">' +
-              (HF.minsLabel(item.commute_work) || "—") + "</dd></div>" +
-          '<div><dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">' +
-            '<span class="h-2 w-2 rounded-full bg-route-home" aria-hidden="true"></span> Home</dt>' +
-            '<dd class="mt-0.5 tabular-nums text-sand-700 dark:text-sand-200">' +
-              (HF.minsLabel(item.commute_home) || "—") + "</dd></div>" +
+        '<dl class="mt-auto grid gap-x-3 gap-y-1 border-t border-teal-500/20 pt-3 text-xs" style="grid-template-columns: repeat(auto-fit, minmax(0, 1fr));">' +
+          commuteRows +
         "</dl>" +
         '<div class="flex flex-wrap items-center justify-between gap-2 pt-1">' +
           (item.url
@@ -413,7 +425,7 @@ description: Every rental we are tracking as cards, with rent, commute times and
       return card;
     }
 
-    HF.pending().then(function (items) {
+    HF.pending("{{ search.key }}").then(function (items) {
       items
         .filter(function (item) {
           var key = HF.normUrl(item.url);

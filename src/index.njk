@@ -1,33 +1,37 @@
 ---
 layout: base.njk
+pagination:
+  data: homes.searches
+  size: 1
+  alias: search
+permalink: "{{ search.basePath }}"
 useMap: true
-description: Every rental we are tracking, on one map. Tap a dot for the full story.
+eleventyComputed:
+  # The primary search owns "/" and is the site's front door, so it carries no
+  # page title of its own; every other search's map is titled.
+  title: "{{ '' if search.isPrimary else 'Map' }}"
+  # `| safe` keeps the computed value RAW — base.njk escapes it once into the
+  # meta attribute, and without this an apostrophe comes out double-escaped.
+  description: "{{ search.blurb | safe }}"
 ---
 
-{# The homepage IS the map. Filters mirror the card list (/list/); tapping a
-   marker opens the detail panel on the right. All behaviour lives in
-   /assets/js/map-app.js; this page is just the shell plus a baked copy of the
-   data feed as the offline fallback (the app prefers GET /api/data). #}
+{# The map page for ONE search (this template is paginated over homes.searches,
+   one page per search — "/" for the primary, "{basePath}" for the rest).
+   Filters mirror the card list ({basePath}list/); tapping a marker opens the
+   detail panel on the right. All behaviour lives in /assets/js/map-app.js;
+   this page is just the shell plus a baked copy of this search's data feed as
+   the offline fallback (the app prefers GET /api/data?search=<key>).
+
+   Chips come from search.filters — generated in homes.js from the search's
+   bands, kinds, states and bool facts — so a new fact or kind needs no edit
+   here. #}
 
 <div class="mx-auto max-w-[100rem] px-3 pt-4 sm:px-5">
 
   <section aria-label="Filter the map" class="mb-3">
     <div class="-mx-3 overflow-x-auto px-3 pb-1 no-scrollbar sm:mx-0 sm:overflow-visible sm:px-0">
       <div class="flex w-max items-center gap-2 sm:w-full sm:flex-wrap">
-        {% set chips = [
-          { group: "all", value: "", label: "All" },
-          { group: "band", value: "in-budget", label: "In budget", band: "in-budget" },
-          { group: "band", value: "stretch", label: "Stretch", band: "stretch" },
-          { group: "band", value: "over", label: "Over", band: "over" },
-          { group: "kind", value: "apartment", label: "Apartments" },
-          { group: "kind", value: "townhouse", label: "Townhouses" },
-          { group: "state", value: "PA", label: "PA" },
-          { group: "state", value: "NJ", label: "NJ" },
-          { group: "rating", value: "4", label: "★ 4+" },
-          { group: "new", value: "1", label: "New" },
-          { group: "fav", value: "1", label: "Favorites", heart: true }
-        ] %}
-        {% for chip in chips %}
+        {% for chip in search.filters %}
           <button type="button"
                   class="chip {% if chip.band %}band-{{ chip.band }}{% endif %} border-sand-300 bg-white text-sand-700 hover:border-clay-400 hover:text-clay-700 aria-pressed:border-clay-600 aria-pressed:bg-clay-600 aria-pressed:text-white dark:border-sand-700 dark:bg-sand-900 dark:text-sand-300 dark:hover:text-clay-300 dark:aria-pressed:border-clay-500 dark:aria-pressed:bg-clay-600 dark:aria-pressed:text-white"
                   data-group="{{ chip.group }}"
@@ -39,9 +43,9 @@ description: Every rental we are tracking, on one map. Tap a dot for the full st
           </button>
         {% endfor %}
         <span id="map-count" class="ml-1 whitespace-nowrap text-xs text-sand-500 dark:text-sand-400" role="status" aria-live="polite">
-          {{ homes.counts.total }} listings
+          {{ search.counts.total }} listings
         </span>
-        <a href="/list/" class="ml-auto hidden whitespace-nowrap text-xs font-semibold text-clay-700 hover:text-clay-600 sm:inline dark:text-clay-300">
+        <a href="{{ search.basePath }}list/" class="ml-auto hidden whitespace-nowrap text-xs font-semibold text-clay-700 hover:text-clay-600 sm:inline dark:text-clay-300">
           Browse as cards &rarr;
         </a>
       </div>
@@ -70,5 +74,5 @@ description: Every rental we are tracking, on one map. Tap a dot for the full st
   </p>
 </div>
 
-<script id="map-config" type="application/json">{{ homes.feed | jsonScript | safe }}</script>
+<script id="map-config" type="application/json">{{ search.feed | jsonScript | safe }}</script>
 <script src="/assets/js/map-app.js" defer></script>

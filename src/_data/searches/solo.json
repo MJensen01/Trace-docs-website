@@ -1,0 +1,155 @@
+{
+ "key": "solo",
+ "version": "2.0",
+ "updated": "2026-09-02",
+ "label": "Evelyn's place",
+ "shortLabel": "Evelyn",
+ "blurb": "A cheap studio, basement or 1BR for Evelyn on her own — under 20 minutes from Matt's and from work.",
+ "basePath": "/",
+ "order": 0,
+ "primary": true,
+ "anchors": [
+  {
+   "key": "home",
+   "label": "Matt's house — East Brunswick, NJ",
+   "short": "Matt's",
+   "query": "East Brunswick, NJ 08816",
+   "coords": [
+    -74.415984,
+    40.4278841
+   ],
+   "glyph": "🏠",
+   "color": "#7c3aed",
+   "maxMin": 20
+  },
+  {
+   "key": "work",
+   "label": "Once Upon A Child — 561 US-1, Edison, NJ",
+   "short": "Work",
+   "query": "561 US-1, Edison, NJ 08817",
+   "coords": [
+    -74.3963,
+    40.506
+   ],
+   "glyph": "💼",
+   "color": "#2563eb",
+   "maxMin": 20
+  }
+ ],
+ "budget": {
+  "max": 1200,
+  "stretch_max": 1400
+ },
+ "bandLabels": {
+  "in-budget": "Ideal",
+  "stretch": "In budget",
+  "over": "Over budget",
+  "unknown": "Rent unknown"
+ },
+ "kinds": [
+  {
+   "key": "studio",
+   "label": "Studio",
+   "short": "Studio",
+   "chip": "Studio",
+   "prefix": "stu"
+  },
+  {
+   "key": "basement",
+   "label": "Basement / in-law unit",
+   "short": "Basement",
+   "chip": "Basement",
+   "prefix": "bsm",
+   "checklist": [
+    "Ask to see the Certificate of Occupancy — in NJ a basement unit is only legal with one",
+    "Second way out (egress window or door) besides the main stairs?",
+    "Ceiling height and window size — does it feel like a legal bedroom?",
+    "Is the rent all-in or are utilities extra?",
+    "Written lease, not cash-only"
+   ]
+  },
+  {
+   "key": "1br",
+   "label": "1-bedroom",
+   "short": "1BR",
+   "chip": "1BR",
+   "prefix": "one"
+  }
+ ],
+ "facts": [
+  {
+   "key": "utilities_included",
+   "type": "bool",
+   "label": "Utilities included",
+   "chip": "Utils incl.",
+   "column": true,
+   "form": true
+  },
+  {
+   "key": "furnished",
+   "type": "bool",
+   "label": "Furnished",
+   "chip": "Furnished",
+   "column": true,
+   "form": true
+  },
+  {
+   "key": "private_entrance",
+   "type": "bool",
+   "label": "Private entrance",
+   "chip": "Own door",
+   "column": false,
+   "form": true
+  },
+  {
+   "key": "legal_unit",
+   "type": "bool",
+   "label": "Legal unit (has C.O.)",
+   "chip": "Has C.O.",
+   "column": true,
+   "form": true
+  },
+  {
+   "key": "lease_flex",
+   "type": "text",
+   "label": "Lease terms",
+   "column": false,
+   "form": true
+  },
+  {
+   "key": "deposit",
+   "type": "text",
+   "label": "Deposit",
+   "column": false,
+   "form": true
+  },
+  {
+   "key": "source",
+   "type": "enum",
+   "label": "Source",
+   "column": true,
+   "form": true,
+   "options": [
+    "Craigslist",
+    "Facebook",
+    "Zillow",
+    "Apartments.com",
+    "HotPads",
+    "Sulekha",
+    "Rutgers",
+    "Word of mouth",
+    "Other"
+   ]
+  }
+ ],
+ "states": [
+  "NJ"
+ ],
+ "bbox": [
+  -74.8,
+  40.25,
+  -74.1,
+  40.72
+ ],
+ "listings": []
+}

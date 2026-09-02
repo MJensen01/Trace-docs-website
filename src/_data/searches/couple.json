@@ -1,28 +1,79 @@
 {
- "version": "1.2",
+ "key": "couple",
+ "version": "2.0",
  "updated": "2026-08-14",
- "anchors": {
-  "work": {
-   "label": "Keystone Trade Center, Fairless Hills, PA",
-   "query": "100 River Rd, Fairless Hills, PA 19030",
-   "coords": [
-    -74.7563037,
-    40.1741817
-   ]
-  },
-  "home": {
+ "label": "Matt & Evelyn's apartments",
+ "shortLabel": "Apartments",
+ "blurb": "The joint apartment search — paused for now, kept for later.",
+ "basePath": "/apartments/",
+ "order": 1,
+ "primary": false,
+ "anchors": [
+  {
+   "key": "home",
    "label": "East Brunswick Township, NJ",
+   "short": "East Brunswick",
    "query": "East Brunswick, NJ 08816",
    "coords": [
     -74.415984,
     40.4278841
-   ]
+   ],
+   "glyph": "🏠",
+   "color": "#7c3aed",
+   "maxMin": 30
+  },
+  {
+   "key": "work",
+   "label": "Keystone Trade Center, Fairless Hills, PA",
+   "short": "Keystone",
+   "query": "100 River Rd, Fairless Hills, PA 19030",
+   "coords": [
+    -74.7563037,
+    40.1741817
+   ],
+   "glyph": "💼",
+   "color": "#2563eb",
+   "maxMin": 52
   }
- },
+ ],
  "budget": {
   "max": 1600,
   "stretch_max": 1900
  },
+ "bandLabels": {
+  "in-budget": "In budget",
+  "stretch": "Stretch",
+  "over": "Over budget",
+  "unknown": "Rent unknown"
+ },
+ "kinds": [
+  {
+   "key": "apartment",
+   "label": "Apartment",
+   "short": "Apt",
+   "chip": "Apartments",
+   "prefix": "apa"
+  },
+  {
+   "key": "townhouse",
+   "label": "Townhouse",
+   "short": "Town",
+   "chip": "Townhouses",
+   "prefix": "tow"
+  }
+ ],
+ "facts": [],
+ "states": [
+  "NJ",
+  "PA"
+ ],
+ "bbox": [
+  -76.5,
+  39,
+  -73,
+  41.5
+ ],
+ "site_base_url": "https://trace-docs.com",
  "listings": [
   {
    "id": "apa-levittown-trace-apartments",
@@ -37,15 +88,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": 760,
-   "commute_work": {
-    "min": 18,
-    "miles": 9.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 58,
-    "miles": 42.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 18,
+     "miles": 9.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 58,
+     "miles": 42.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $35/applicant",
    "move_in_cost": "~$2,900 (1st+1mo sec+app)",
@@ -81,15 +134,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 800,
-   "commute_work": {
-    "min": 13,
-    "miles": 6.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 55,
-    "miles": 35.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 13,
+     "miles": 6.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 55,
+     "miles": 35.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $100/applicant",
    "move_in_cost": "~$2,900 (1st+1mo sec+app)",
@@ -125,15 +180,17 @@
    "beds": 2,
    "baths": 1.5,
    "sqft": 1100,
-   "commute_work": {
-    "min": 7,
-    "miles": 3.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 48,
-    "miles": 30.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 7,
+     "miles": 3.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 48,
+     "miles": 30.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo (call to confirm)",
    "move_in_cost": "~$3,300 (1st+1mo sec)",
@@ -168,15 +225,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 650,
-   "commute_work": {
-    "min": 18,
-    "miles": 9.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 60,
-    "miles": 43.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 18,
+     "miles": 9.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 60,
+     "miles": 43.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $60 + $17/mo damage waiver",
    "move_in_cost": "~$2,400 (1st+1mo sec+app)",
@@ -212,15 +271,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 650,
-   "commute_work": {
-    "min": 13,
-    "miles": 6.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 55,
-    "miles": 40.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 13,
+     "miles": 6.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 55,
+     "miles": 40.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $50",
    "move_in_cost": "~$2,700 (1st+1mo sec+app)",
@@ -256,15 +317,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 685,
-   "commute_work": {
-    "min": 14,
-    "miles": 6.9,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 55,
-    "miles": 40.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 14,
+     "miles": 6.9,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 55,
+     "miles": 40.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $60; optional $17/mo damage waiver",
    "move_in_cost": "~$3,150 (1st+1mo sec+app)",
@@ -299,15 +362,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 712,
-   "commute_work": {
-    "min": 16,
-    "miles": 8.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 58,
-    "miles": 41.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 16,
+     "miles": 8.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 58,
+     "miles": 41.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $55",
    "move_in_cost": "~$2,650 (1st+1mo sec+app)",
@@ -342,15 +407,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 900,
-   "commute_work": {
-    "min": 23,
-    "miles": 14.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 57,
-    "miles": 39,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 23,
+     "miles": 14.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 57,
+     "miles": 39,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $25",
    "move_in_cost": "~$3,800",
@@ -385,15 +452,17 @@
    "beds": null,
    "baths": null,
    "sqft": null,
-   "commute_work": {
-    "min": 16,
-    "miles": 9.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 54,
-    "miles": 37.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 16,
+     "miles": 9.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 54,
+     "miles": 37.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "Verify",
@@ -428,15 +497,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 33,
-    "miles": 20.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 24,
-    "miles": 13.3,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 33,
+     "miles": 20.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 24,
+     "miles": 13.3,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $25/applicant",
    "move_in_cost": "~$3,100 (1st+1mo sec+app)",
@@ -472,15 +543,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 560,
-   "commute_work": {
-    "min": 35,
-    "miles": 21.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 27,
-    "miles": 15.3,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 35,
+     "miles": 21.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 27,
+     "miles": 15.3,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo; app $50/applicant",
    "move_in_cost": "~$2,900 (1st+1mo sec+app)",
@@ -515,15 +588,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 32,
-    "miles": 19.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 24,
-    "miles": 13.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 32,
+     "miles": 19.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 24,
+     "miles": 13.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,350 (1st+1mo sec)",
@@ -559,15 +634,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 33,
-    "miles": 21.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 22,
-    "miles": 9.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 33,
+     "miles": 21.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 22,
+     "miles": 9.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$4,000",
@@ -603,15 +680,17 @@
    "beds": null,
    "baths": null,
    "sqft": null,
-   "commute_work": {
-    "min": 35,
-    "miles": 21.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 21,
-    "miles": 11.2,
-    "method": "osrm-freeflow/complex-name"
+   "commutes": {
+    "work": {
+     "min": 35,
+     "miles": 21.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 21,
+     "miles": 11.2,
+     "method": "osrm-freeflow/complex-name"
+    }
    },
    "lease": "—",
    "move_in_cost": "—",
@@ -645,15 +724,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 14,
-    "miles": 6.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 44,
-    "miles": 28.1,
-    "method": "osrm-freeflow/complex-name"
+   "commutes": {
+    "work": {
+     "min": 14,
+     "miles": 6.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 44,
+     "miles": 28.1,
+     "method": "osrm-freeflow/complex-name"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$2,800 (1st+1mo sec)",
@@ -689,15 +770,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 16,
-    "miles": 8.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 41,
-    "miles": 26.7,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 16,
+     "miles": 8.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 41,
+     "miles": 26.7,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$2,800 (1st+1mo sec)",
@@ -733,15 +816,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 16,
-    "miles": 8.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 41,
-    "miles": 26.7,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 16,
+     "miles": 8.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 41,
+     "miles": 26.7,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$2,800 (1st+1mo sec)",
@@ -777,15 +862,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 16,
-    "miles": 6.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 44,
-    "miles": 28.6,
-    "method": "osrm-freeflow/complex-name"
+   "commutes": {
+    "work": {
+     "min": 16,
+     "miles": 6.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 44,
+     "miles": 28.6,
+     "method": "osrm-freeflow/complex-name"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$2,950 (1st+1mo sec)",
@@ -821,15 +908,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 16,
-    "miles": 8.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 41,
-    "miles": 26.7,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 16,
+     "miles": 8.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 41,
+     "miles": 26.7,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,200 (1st+1mo sec)",
@@ -865,15 +954,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 16,
-    "miles": 8.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 49,
-    "miles": 32.8,
-    "method": "osrm-freeflow/complex-name"
+   "commutes": {
+    "work": {
+     "min": 16,
+     "miles": 8.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 49,
+     "miles": 32.8,
+     "method": "osrm-freeflow/complex-name"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,200 (1st+1mo sec)",
@@ -909,15 +1000,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 15,
-    "miles": 7.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 49,
-    "miles": 31.8,
-    "method": "osrm-freeflow/complex-name"
+   "commutes": {
+    "work": {
+     "min": 15,
+     "miles": 7.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 49,
+     "miles": 31.8,
+     "method": "osrm-freeflow/complex-name"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$2,650 (1st+1mo sec)",
@@ -953,15 +1046,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 13,
-    "miles": 6.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 46,
-    "miles": 29.4,
-    "method": "osrm-freeflow/complex-name"
+   "commutes": {
+    "work": {
+     "min": 13,
+     "miles": 6.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 46,
+     "miles": 29.4,
+     "method": "osrm-freeflow/complex-name"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$2,850 (1st+1mo sec)",
@@ -997,15 +1092,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 14,
-    "miles": 7.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 48,
-    "miles": 30.2,
-    "method": "osrm-freeflow/complex-name"
+   "commutes": {
+    "work": {
+     "min": 14,
+     "miles": 7.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 48,
+     "miles": 30.2,
+     "method": "osrm-freeflow/complex-name"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$2,950 (1st+1mo sec)",
@@ -1041,15 +1138,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 13,
-    "miles": 6.9,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 50,
-    "miles": 33.5,
-    "method": "osrm-freeflow/complex-name"
+   "commutes": {
+    "work": {
+     "min": 13,
+     "miles": 6.9,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 50,
+     "miles": 33.5,
+     "method": "osrm-freeflow/complex-name"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,150 (1st+1mo sec)",
@@ -1085,15 +1184,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 16,
-    "miles": 8.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 47,
-    "miles": 30.9,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 16,
+     "miles": 8.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 47,
+     "miles": 30.9,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,700",
@@ -1128,15 +1229,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 20,
-    "miles": 10.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 42,
-    "miles": 27.3,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 20,
+     "miles": 10.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 42,
+     "miles": 27.3,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -1172,15 +1275,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 20,
-    "miles": 10.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 42,
-    "miles": 27.3,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 20,
+     "miles": 10.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 42,
+     "miles": 27.3,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -1216,15 +1321,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 21,
-    "miles": 13.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 33,
-    "miles": 19.7,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 21,
+     "miles": 13.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 33,
+     "miles": 19.7,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "Varies (owner)",
    "move_in_cost": "—",
@@ -1260,15 +1367,17 @@
    "beds": null,
    "baths": null,
    "sqft": null,
-   "commute_work": {
-    "min": 29,
-    "miles": 15.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 34,
-    "miles": 18.4,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 29,
+     "miles": 15.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 34,
+     "miles": 18.4,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "—",
    "move_in_cost": "—",
@@ -1302,15 +1411,17 @@
    "beds": null,
    "baths": 2,
    "sqft": 1824,
-   "commute_work": {
-    "min": 18,
-    "miles": 8.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 56,
-    "miles": 40.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 18,
+     "miles": 8.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 56,
+     "miles": 40.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$2,700 (1st+1mo sec)",
@@ -1345,15 +1456,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 720,
-   "commute_work": {
-    "min": 17,
-    "miles": 8.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 55,
-    "miles": 40.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 17,
+     "miles": 8.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 55,
+     "miles": 40.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$2,750 (1st+1mo sec)",
@@ -1388,15 +1501,17 @@
    "beds": 2,
    "baths": 1.5,
    "sqft": 1500,
-   "commute_work": {
-    "min": 17,
-    "miles": 9.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 58,
-    "miles": 41.3,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 17,
+     "miles": 9.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 58,
+     "miles": 41.3,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$2,950 (1st+1mo sec)",
@@ -1432,15 +1547,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": 729,
-   "commute_work": {
-    "min": 17,
-    "miles": 8.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 55,
-    "miles": 40,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 17,
+     "miles": 8.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 55,
+     "miles": 40,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,050 (1st+1mo sec)",
@@ -1476,15 +1593,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 800,
-   "commute_work": {
-    "min": 13,
-    "miles": 6.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 47,
-    "miles": 29.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 13,
+     "miles": 6.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 47,
+     "miles": 29.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,050 (1st+1mo sec)",
@@ -1519,15 +1638,17 @@
    "beds": 0,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 20,
-    "miles": 9.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 58,
-    "miles": 41.4,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 20,
+     "miles": 9.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 58,
+     "miles": 41.4,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,100 (1st+1mo sec)",
@@ -1563,15 +1684,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 12,
-    "miles": 6.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 48,
-    "miles": 30.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 12,
+     "miles": 6.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 48,
+     "miles": 30.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,350 (1st+1mo sec)",
@@ -1606,15 +1729,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 667,
-   "commute_work": {
-    "min": 34,
-    "miles": 20.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 26,
-    "miles": 13.8,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 20.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 26,
+     "miles": 13.8,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,350 (1st+1mo sec)",
@@ -1650,15 +1775,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 17,
-    "miles": 9.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 59,
-    "miles": 43.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 17,
+     "miles": 9.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 59,
+     "miles": 43.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,400 (1st+1mo sec)",
@@ -1693,15 +1820,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 18,
-    "miles": 9.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 56,
-    "miles": 41,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 18,
+     "miles": 9.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 56,
+     "miles": 41,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,450 (1st+1mo sec)",
@@ -1736,15 +1865,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 675,
-   "commute_work": {
-    "min": 33,
-    "miles": 19.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 25,
-    "miles": 13.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 33,
+     "miles": 19.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 25,
+     "miles": 13.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,450 (1st+1mo sec)",
@@ -1779,15 +1910,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": 950,
-   "commute_work": {
-    "min": 17,
-    "miles": 8.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 55,
-    "miles": 40.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 17,
+     "miles": 8.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 55,
+     "miles": 40.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,550 (1st+1mo sec)",
@@ -1822,15 +1955,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 620,
-   "commute_work": {
-    "min": 34,
-    "miles": 19.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 25,
-    "miles": 13.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 19.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 25,
+     "miles": 13.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,550 (1st+1mo sec)",
@@ -1866,15 +2001,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 1000,
-   "commute_work": {
-    "min": 22,
-    "miles": 14.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 57,
-    "miles": 39,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 22,
+     "miles": 14.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 57,
+     "miles": 39,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,650 (1st+1mo sec)",
@@ -1910,15 +2047,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 822,
-   "commute_work": {
-    "min": 34,
-    "miles": 22,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 20,
-    "miles": 8.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 22,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 20,
+     "miles": 8.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,650 (1st+1mo sec)",
@@ -1953,15 +2092,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": 1564,
-   "commute_work": {
-    "min": 20,
-    "miles": 10.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 42,
-    "miles": 27.3,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 20,
+     "miles": 10.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 42,
+     "miles": 27.3,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,650 (1st+1mo sec)",
@@ -1997,15 +2138,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 775,
-   "commute_work": {
-    "min": 34,
-    "miles": 19.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 26,
-    "miles": 13.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 19.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 26,
+     "miles": 13.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,650 (1st+1mo sec)",
@@ -2041,15 +2184,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 22,
-    "miles": 13.7,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 34,
-    "miles": 20.4,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 22,
+     "miles": 13.7,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 34,
+     "miles": 20.4,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,700 (1st+1mo sec)",
@@ -2085,15 +2230,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 900,
-   "commute_work": {
-    "min": 17,
-    "miles": 8.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 41,
-    "miles": 26.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 17,
+     "miles": 8.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 41,
+     "miles": 26.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "13-mo (promo)",
    "move_in_cost": "~$1,900 net w/ promo",
@@ -2129,15 +2276,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": 1100,
-   "commute_work": {
-    "min": 10,
-    "miles": 4.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 46,
-    "miles": 29.8,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 10,
+     "miles": 4.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 46,
+     "miles": 29.8,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "Verify",
    "move_in_cost": "~$3,700 (1st+1mo sec)",
@@ -2172,15 +2321,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 667,
-   "commute_work": {
-    "min": 34,
-    "miles": 19.7,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 26,
-    "miles": 13.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 19.7,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 26,
+     "miles": 13.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "~$3,850 (1st+1mo sec)",
@@ -2216,15 +2367,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 976,
-   "commute_work": {
-    "min": 32,
-    "miles": 20.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 23,
-    "miles": 13.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 32,
+     "miles": 20.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 23,
+     "miles": 13.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -2260,15 +2413,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": 1100,
-   "commute_work": {
-    "min": 25,
-    "miles": 14.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 38,
-    "miles": 21.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 25,
+     "miles": 14.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 38,
+     "miles": 21.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -2304,15 +2459,17 @@
    "beds": 2,
    "baths": 1.5,
    "sqft": 1120,
-   "commute_work": {
-    "min": 20,
-    "miles": 9.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 41,
-    "miles": 23.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 20,
+     "miles": 9.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 41,
+     "miles": 23.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -2348,15 +2505,17 @@
    "beds": 2,
    "baths": 2,
    "sqft": 1130,
-   "commute_work": {
-    "min": 15,
-    "miles": 7.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 50,
-    "miles": 34.4,
-    "method": "osrm-freeflow/town-center"
+   "commutes": {
+    "work": {
+     "min": 15,
+     "miles": 7.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 50,
+     "miles": 34.4,
+     "method": "osrm-freeflow/town-center"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -2392,15 +2551,17 @@
    "beds": 2,
    "baths": 1.5,
    "sqft": 1131,
-   "commute_work": {
-    "min": 32,
-    "miles": 20.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 23,
-    "miles": 13.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 32,
+     "miles": 20.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 23,
+     "miles": 13.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -2435,15 +2596,17 @@
    "beds": 2,
    "baths": 2,
    "sqft": null,
-   "commute_work": {
-    "min": 22,
-    "miles": 13.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 33,
-    "miles": 20.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 22,
+     "miles": 13.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 33,
+     "miles": 20.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -2479,15 +2642,17 @@
    "beds": 2,
    "baths": 2,
    "sqft": 1040,
-   "commute_work": {
-    "min": 35,
-    "miles": 21.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 27,
-    "miles": 15.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 35,
+     "miles": 21.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 27,
+     "miles": 15.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -2522,15 +2687,17 @@
    "beds": 2,
    "baths": 2.5,
    "sqft": 1476,
-   "commute_work": {
-    "min": 25,
-    "miles": 15.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 60,
-    "miles": 40.4,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 25,
+     "miles": 15.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 60,
+     "miles": 40.4,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": "12-mo",
    "move_in_cost": "—",
@@ -2565,15 +2732,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 1424,
-   "commute_work": {
-    "min": 46,
-    "miles": 29.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 6,
-    "miles": 2.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 46,
+     "miles": 29.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 6,
+     "miles": 2.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2609,15 +2778,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 47,
-    "miles": 29.9,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 7,
-    "miles": 2.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 47,
+     "miles": 29.9,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 7,
+     "miles": 2.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2653,15 +2824,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 46,
-    "miles": 29.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 9,
-    "miles": 3.3,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 46,
+     "miles": 29.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 9,
+     "miles": 3.3,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2697,15 +2870,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 46,
-    "miles": 30,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 10,
-    "miles": 4.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 46,
+     "miles": 30,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 10,
+     "miles": 4.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2741,15 +2916,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 46,
-    "miles": 30.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 12,
-    "miles": 5.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 46,
+     "miles": 30.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 12,
+     "miles": 5.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2785,15 +2962,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 47,
-    "miles": 29.9,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 13,
-    "miles": 5.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 47,
+     "miles": 29.9,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 13,
+     "miles": 5.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2829,15 +3008,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 45,
-    "miles": 29.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 14,
-    "miles": 6.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 45,
+     "miles": 29.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 14,
+     "miles": 6.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2873,15 +3054,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 46,
-    "miles": 29.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 14,
-    "miles": 6.3,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 46,
+     "miles": 29.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 14,
+     "miles": 6.3,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2917,15 +3100,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 45,
-    "miles": 27.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 14,
-    "miles": 6.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 45,
+     "miles": 27.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 14,
+     "miles": 6.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -2961,15 +3146,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 590,
-   "commute_work": {
-    "min": 43,
-    "miles": 27.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 16,
-    "miles": 7.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 43,
+     "miles": 27.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 16,
+     "miles": 7.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3005,15 +3192,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 630,
-   "commute_work": {
-    "min": 43,
-    "miles": 27.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 16,
-    "miles": 6.8,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 43,
+     "miles": 27.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 16,
+     "miles": 6.8,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3049,15 +3238,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 700,
-   "commute_work": {
-    "min": 34,
-    "miles": 22,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 21,
-    "miles": 11.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 22,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 21,
+     "miles": 11.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3093,15 +3284,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 770,
-   "commute_work": {
-    "min": 36,
-    "miles": 23.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 18,
-    "miles": 10.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 36,
+     "miles": 23.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 18,
+     "miles": 10.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3137,15 +3330,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 520,
-   "commute_work": {
-    "min": 43,
-    "miles": 28.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 14,
-    "miles": 5.8,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 43,
+     "miles": 28.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 14,
+     "miles": 5.8,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3181,15 +3376,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 36,
-    "miles": 23.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 18,
-    "miles": 10.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 36,
+     "miles": 23.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 18,
+     "miles": 10.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3225,15 +3422,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 800,
-   "commute_work": {
-    "min": 32,
-    "miles": 20.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 23,
-    "miles": 13.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 32,
+     "miles": 20.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 23,
+     "miles": 13.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3269,15 +3468,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 36,
-    "miles": 22.4,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 24,
-    "miles": 13.4,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 36,
+     "miles": 22.4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 24,
+     "miles": 13.4,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3313,15 +3514,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 667,
-   "commute_work": {
-    "min": 34,
-    "miles": 19.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 25,
-    "miles": 13.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 19.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 25,
+     "miles": 13.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3357,15 +3560,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 772,
-   "commute_work": {
-    "min": 34,
-    "miles": 20.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 26,
-    "miles": 13.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 20.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 26,
+     "miles": 13.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3401,15 +3606,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 675,
-   "commute_work": {
-    "min": 33,
-    "miles": 19.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 25,
-    "miles": 13.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 33,
+     "miles": 19.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 25,
+     "miles": 13.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3445,15 +3652,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 675,
-   "commute_work": {
-    "min": 34,
-    "miles": 19.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 25,
-    "miles": 13.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 19.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 25,
+     "miles": 13.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3489,15 +3698,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 775,
-   "commute_work": {
-    "min": 34,
-    "miles": 20.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 26,
-    "miles": 13.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 20.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 26,
+     "miles": 13.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3533,15 +3744,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 667,
-   "commute_work": {
-    "min": 34,
-    "miles": 20.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 26,
-    "miles": 13.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 20.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 26,
+     "miles": 13.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3577,15 +3790,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 667,
-   "commute_work": {
-    "min": 34,
-    "miles": 20.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 26,
-    "miles": 13.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 20.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 26,
+     "miles": 13.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3621,15 +3836,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 667,
-   "commute_work": {
-    "min": 34,
-    "miles": 20.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 26,
-    "miles": 13.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 34,
+     "miles": 20.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 26,
+     "miles": 13.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3665,15 +3882,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 529,
-   "commute_work": {
-    "min": 38,
-    "miles": 22.9,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 28,
-    "miles": 15,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 38,
+     "miles": 22.9,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 28,
+     "miles": 15,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3709,15 +3928,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 45,
-    "miles": 27.9,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 16,
-    "miles": 7.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 45,
+     "miles": 27.9,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 16,
+     "miles": 7.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3753,15 +3974,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 506,
-   "commute_work": {
-    "min": 41,
-    "miles": 25,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 23,
-    "miles": 11.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 41,
+     "miles": 25,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 23,
+     "miles": 11.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3797,15 +4020,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 700,
-   "commute_work": {
-    "min": 44,
-    "miles": 27.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 17,
-    "miles": 8,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 44,
+     "miles": 27.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 17,
+     "miles": 8,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3841,15 +4066,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 700,
-   "commute_work": {
-    "min": 44,
-    "miles": 27.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 17,
-    "miles": 8,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 44,
+     "miles": 27.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 17,
+     "miles": 8,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3885,15 +4112,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 742,
-   "commute_work": {
-    "min": 33,
-    "miles": 20.6,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 24,
-    "miles": 13.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 33,
+     "miles": 20.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 24,
+     "miles": 13.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3929,15 +4158,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 810,
-   "commute_work": {
-    "min": 33,
-    "miles": 20.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 24,
-    "miles": 13.3,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 33,
+     "miles": 20.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 24,
+     "miles": 13.3,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -3973,15 +4204,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 40,
-    "miles": 26,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 19,
-    "miles": 7.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 40,
+     "miles": 26,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 19,
+     "miles": 7.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4017,15 +4250,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 37,
-    "miles": 23.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 19,
-    "miles": 8.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 37,
+     "miles": 23.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 19,
+     "miles": 8.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4061,15 +4296,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 37,
-    "miles": 24.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 18,
-    "miles": 10.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 37,
+     "miles": 24.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 18,
+     "miles": 10.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4105,15 +4342,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 42,
-    "miles": 27.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 13,
-    "miles": 7.1,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 42,
+     "miles": 27.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 13,
+     "miles": 7.1,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4149,15 +4388,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 43,
-    "miles": 27.7,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 12,
-    "miles": 4.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 43,
+     "miles": 27.7,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 12,
+     "miles": 4.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4193,15 +4434,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 747,
-   "commute_work": {
-    "min": 45,
-    "miles": 29,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 13,
-    "miles": 5.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 45,
+     "miles": 29,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 13,
+     "miles": 5.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4237,15 +4480,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 42,
-    "miles": 27,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 17,
-    "miles": 7.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 42,
+     "miles": 27,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 17,
+     "miles": 7.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4281,15 +4526,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 825,
-   "commute_work": {
-    "min": 38,
-    "miles": 25.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 19,
-    "miles": 11,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 38,
+     "miles": 25.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 19,
+     "miles": 11,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4325,15 +4572,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 39,
-    "miles": 25.5,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 19,
-    "miles": 7.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 39,
+     "miles": 25.5,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 19,
+     "miles": 7.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4369,15 +4618,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 675,
-   "commute_work": {
-    "min": 31,
-    "miles": 18.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 27,
-    "miles": 14.6,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 31,
+     "miles": 18.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 27,
+     "miles": 14.6,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4413,15 +4664,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 763,
-   "commute_work": {
-    "min": 30,
-    "miles": 16.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 28,
-    "miles": 15.3,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 30,
+     "miles": 16.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 28,
+     "miles": 15.3,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4457,15 +4710,17 @@
    "beds": 2,
    "baths": 1,
    "sqft": 1250,
-   "commute_work": {
-    "min": 40,
-    "miles": 24.7,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 25,
-    "miles": 12.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 40,
+     "miles": 24.7,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 25,
+     "miles": 12.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4501,15 +4756,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": 780,
-   "commute_work": {
-    "min": 29,
-    "miles": 18.8,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 25,
-    "miles": 14.2,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 29,
+     "miles": 18.8,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 25,
+     "miles": 14.2,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4545,15 +4802,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 28,
-    "miles": 18.3,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 27,
-    "miles": 15.4,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 28,
+     "miles": 18.3,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 27,
+     "miles": 15.4,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4589,15 +4848,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 31,
-    "miles": 19.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 28,
-    "miles": 14.7,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 31,
+     "miles": 19.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 28,
+     "miles": 14.7,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4633,15 +4894,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 24,
-    "miles": 15.1,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 30,
-    "miles": 18.9,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 24,
+     "miles": 15.1,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 30,
+     "miles": 18.9,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4677,15 +4940,17 @@
    "beds": 1,
    "baths": 1,
    "sqft": null,
-   "commute_work": {
-    "min": 36,
-    "miles": 23.2,
-    "method": "osrm-freeflow"
-   },
-   "commute_home": {
-    "min": 17,
-    "miles": 9.5,
-    "method": "osrm-freeflow"
+   "commutes": {
+    "work": {
+     "min": 36,
+     "miles": 23.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 17,
+     "miles": 9.5,
+     "method": "osrm-freeflow"
+    }
    },
    "lease": null,
    "move_in_cost": null,
@@ -4708,6 +4973,5 @@
    "v1_url": null,
    "last_checked": "2026-08-14"
   }
- ],
- "site_base_url": "https://trace-docs.com"
+ ]
 }

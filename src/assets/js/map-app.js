@@ -1,13 +1,21 @@
 /**
- * map-app.js — the map-first homepage.
+ * map-app.js — the map page, one search at a time.
+ *
+ * The page bakes ONE search's feed into #map-config (see index.njk). Every
+ * anchor-specific thing on this map — the pins, the drive lines, the chips on
+ * those lines, the panel's commute cells, the pending-popup rows — is derived
+ * from `feed.anchors`, which is an ORDERED array of
+ * { key, label, short, color, glyph, lat, lon, maxMin }. There are no anchor
+ * keys hardcoded in this file: adding a third anchor to a search's JSON gives
+ * you a third pin, a third line and a third panel cell for free.
  *
  * Data: the inline #map-config feed (baked at build) is the fallback; GET
- * /api/data is preferred because a sweep can push fresher data between
- * deploys. The live layer (pending, hidden, favorites) arrives afterwards via
- * HF and never blocks the first paint.
+ * /api/data?search=<key> is preferred because a sweep can push fresher data
+ * between deploys. The live layer (pending, hidden, favorites) arrives
+ * afterwards via HF and never blocks the first paint.
  *
- * Filters mirror the /list/ page and filter the markers; tapping a marker
- * opens the detail panel with the whole listing story.
+ * Filters mirror the card list and filter the markers; tapping a marker opens
+ * the detail panel with the whole listing story.
  */
 (function () {
   "use strict";
@@ -20,7 +28,10 @@
     var feed;
     try { feed = JSON.parse(configEl.textContent); } catch (err) { return; }
 
-    fetch("/api/data")
+    // The feed is per search, and so is every endpoint below it.
+    var searchKey = feed.key || "";
+
+    fetch("/api/data?search=" + encodeURIComponent(searchKey))
       .then(function (res) { return res.ok ? res.json() : null; })
       .catch(function () { return null; })
       .then(function (fresh) {
@@ -34,15 +45,21 @@
       "over": "#78716c",
       "unknown": "#64748b"
     };
-    var WORK_COLOR = "#2563eb";
-    var HOME_COLOR = "#7c3aed";
-    var STORE_KEY = "home-finder-map";
-    var GROUPS = ["band", "kind", "state", "rating", "new", "fav"];
+    // Filter state is per search: the kind/fact values differ between searches,
+    // so a shared key would leave you looking at "nothing matches those filters".
+    var STORE_KEY = "home-finder-map:" + searchKey;
+    var GROUPS = ["band", "kind", "state", "rating", "new", "fav", "fact"];
 
     function esc(value) {
       return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
       });
+    }
+
+    function emptyActive() {
+      var out = {};
+      GROUPS.forEach(function (g) { out[g] = []; });
+      return out;
     }
 
     function start() {
@@ -65,6 +82,12 @@
       var countEl = document.getElementById("map-count");
       var chips = Array.prototype.slice.call(document.querySelectorAll("[data-group]"));
 
+      // Ordered, and only the ones we can actually put on a map.
+      var anchors = (feed.anchors || []).filter(function (a) {
+        return a && typeof a.lat === "number" && typeof a.lon === "number";
+      });
+      var facts = feed.facts || [];
+
       var listings = feed.listings.filter(function (l) {
         return typeof l.lat === "number" && typeof l.lon === "number";
       });
@@ -81,11 +104,11 @@
       var suppressMapClick = false;
 
       // Drive lines for the selected listing. Geometries are fetched once from
-      // the baked routes file; until they land, selecting falls back to a
-      // plain fly-to.
+      // this search's baked routes file; until they land, selecting falls back
+      // to a plain fly-to.
       var routesData = null;
       var routeGroup = L.layerGroup().addTo(map);
-      fetch("/assets/data/routes.json")
+      fetch("/assets/data/routes/" + encodeURIComponent(searchKey) + ".json")
         .then(function (res) { return res.ok ? res.json() : null; })
         .catch(function () { return null; })
         .then(function (data) {
@@ -93,7 +116,7 @@
           if (selectedId) drawRoutes(byId[selectedId]);
         });
 
-      var active = { band: [], kind: [], state: [], rating: [], new: [], fav: [] };
+      var active = emptyActive();
       try {
         var saved = JSON.parse(sessionStorage.getItem(STORE_KEY) || "null");
         if (saved) GROUPS.forEach(function (g) {
@@ -136,22 +159,22 @@
         markers[l.id] = marker;
       });
 
-      // Work & family anchors.
-      [["work", WORK_COLOR, "💼", "Work"], ["home", HOME_COLOR, "🏠", "Family"]].forEach(function (row) {
-        var anchor = feed.anchors && feed.anchors[row[0]];
-        if (!anchor || anchor.lat == null) return;
-        L.marker([anchor.lat, anchor.lon], {
+      // One pin per anchor of THIS search, in the search file's order. Colour
+      // and glyph are config, never a class name (Tailwind can't generate a
+      // dynamic one).
+      anchors.forEach(function (a) {
+        L.marker([a.lat, a.lon], {
           icon: L.divIcon({
             className: "",
-            html: '<span class="anchor-pin" style="background:' + row[1] + '">' + row[2] + "</span>",
+            html: '<span class="anchor-pin" style="background:' + esc(a.color) + '">' + esc(a.glyph) + "</span>",
             iconSize: [32, 32],
             iconAnchor: [16, 16],
             popupAnchor: [0, -16]
           }),
-          title: anchor.label,
-          alt: row[3] + ": " + anchor.label,
+          title: a.label,
+          alt: a.short + ": " + a.label,
           zIndexOffset: 1000
-        }).addTo(map).bindPopup("<strong>" + row[3] + "</strong><br>" + esc(anchor.label));
+        }).addTo(map).bindPopup("<strong>" + esc(a.short) + "</strong><br>" + esc(a.label));
       });
 
       // ----- filtering -------------------------------------------------------
@@ -164,6 +187,14 @@
         if (active.rating.length && (l.rating || 0) < 4) return false;
         if (active.new.length && !l.isNew) return false;
         if (active.fav.length && favsLoaded && !favIndex[l.id]) return false;
+        // Bool facts are tri-state (true / false / unknown); the chip matches
+        // only an explicit true, and several chips AND together.
+        if (active.fact.length) {
+          var extras = l.extras || {};
+          for (var i = 0; i < active.fact.length; i++) {
+            if (extras[active.fact[i]] !== true) return false;
+          }
+        }
         return true;
       }
 
@@ -197,12 +228,14 @@
           chip.setAttribute("aria-pressed", on ? "true" : "false");
         });
         try { sessionStorage.setItem(STORE_KEY, JSON.stringify(active)); } catch (err) { /* ignore */ }
-        if (fit && bounds.length) {
-          if (feed.anchors) ["work", "home"].forEach(function (key) {
-            var a = feed.anchors[key];
-            if (a && a.lat != null) bounds.push([a.lat, a.lon]);
-          });
-          map.fitBounds(bounds, { padding: [30, 30] });
+        if (fit) {
+          // The anchors are always in frame. A brand-new search has no listings
+          // at all, so they may be the ONLY thing in frame — and the map still
+          // has to get a view, or Leaflet never finishes initialising.
+          anchors.forEach(function (a) { bounds.push([a.lat, a.lon]); });
+          if (bounds.length > 1) map.fitBounds(bounds, { padding: [40, 40] });
+          else if (bounds.length === 1) map.setView(bounds[0], 12);
+          else map.setView([0, 0], 2);
         }
       }
 
@@ -210,9 +243,10 @@
         chip.addEventListener("click", function () {
           var group = chip.getAttribute("data-group");
           if (group === "all") {
-            active = { band: [], kind: [], state: [], rating: [], new: [], fav: [] };
+            active = emptyActive();
           } else {
             var list = active[group];
+            if (!list) return;
             var at = list.indexOf(chip.getAttribute("data-value"));
             if (at === -1) list.push(chip.getAttribute("data-value")); else list.splice(at, 1);
           }
@@ -252,13 +286,41 @@
           "</dd></div>";
       }
 
+      /** A declared extra field's value, rendered for a fact cell. */
+      function extraLabel(fact, value) {
+        if (value === null || value === undefined || value === "") return null;
+        if (fact.type === "bool") return value ? "Yes" : "No";
+        return String(value);
+      }
+
+      /**
+       * One cell per anchor, side by side however many there are — auto-fit
+       * rather than grid-cols-N, because Tailwind can't generate a class name
+       * we only know at runtime.
+       */
+      function commuteGrid(l) {
+        if (!anchors.length) return "";
+        var cells = anchors.map(function (a) {
+          var leg = (l.commutes && l.commutes[a.key]) || {};
+          return '<div class="rounded-xl border border-sand-200 bg-white p-3 dark:border-sand-800 dark:bg-sand-900">' +
+            '<p class="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">' +
+              '<span class="h-2 w-2 shrink-0 rounded-full" style="background-color:' + esc(a.color) + '" aria-hidden="true"></span> ' +
+              esc(a.short) + "</p>" +
+            '<p class="mt-1 text-sm font-semibold tabular-nums ' +
+              (leg.slow ? "text-rose-600 dark:text-rose-400" : "text-sand-900 dark:text-sand-50") + '">' +
+              (leg.label ? esc(leg.label) : "—") + "</p>" +
+          "</div>";
+        }).join("");
+        return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:0.5rem">' + cells + "</div>";
+      }
+
       function panelHtml(l) {
         var fav = favIndex[l.id];
         var pills = [];
         if (l.isNew && !l.isGone) pills.push(chipHtml("New", "border-teal-500/40 bg-teal-100/70 text-teal-800 dark:bg-teal-900/50 dark:text-teal-200"));
         pills.push('<span class="band-pill inline-flex items-center rounded-full border px-2 py-0.5 text-[0.6875rem] font-semibold">' + esc(l.bandLabel) + "</span>");
         if (l.tierLabel) pills.push(chipHtml(esc(l.tierLabel), "border-sand-200 bg-sand-100 text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300"));
-        pills.push(chipHtml(esc(l.kind === "townhouse" ? "Townhouse" : "Apartment"), "border-sand-200 bg-sand-100 text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300"));
+        if (l.kindLabel) pills.push(chipHtml(esc(l.kindLabel), "border-sand-200 bg-sand-100 text-sand-600 dark:border-sand-700 dark:bg-sand-800 dark:text-sand-300"));
         if (l.isGone) pills.push(chipHtml("No longer listed", "border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300"));
         else if (l.verificationLabel) pills.push(chipHtml(esc(l.verificationLabel),
           l.verificationTone === "good"
@@ -272,6 +334,20 @@
         if (l.bedsLabel) specs.push(l.bedsLabel === "Studio" ? "Studio" : l.bedsLabel + " bd");
         if (l.bathsLabel) specs.push(l.bathsLabel + " ba");
         if (l.sqftLabel) specs.push(l.sqftLabel);
+
+        // The four core cells, then one per declared fact that this listing
+        // actually has a value for.
+        var extras = l.extras || {};
+        var factCells = factCell("Available", l.available) +
+          factCell("Lease", l.lease) +
+          factCell("Move-in cost", l.moveIn) +
+          factCell("Added", l.addedLabel) +
+          facts.map(function (fact) {
+            var label = extraLabel(fact, extras[fact.key]);
+            return label === null ? "" : factCell(esc(fact.label), label);
+          }).join("");
+
+        var checklist = l.checklist || [];
 
         return '<article class="band-' + esc(l.band) + '">' +
 
@@ -309,22 +385,10 @@
 
             (specs.length ? '<p class="text-sm text-sand-600 dark:text-sand-300">' + specs.join(" &middot; ") + "</p>" : "") +
 
-            '<div class="grid grid-cols-2 gap-2">' +
-              '<div class="rounded-xl border border-sand-200 bg-white p-3 dark:border-sand-800 dark:bg-sand-900">' +
-                '<p class="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400"><span class="h-2 w-2 rounded-full bg-route-work" aria-hidden="true"></span> Work</p>' +
-                '<p class="mt-1 text-sm font-semibold tabular-nums ' + (l.workSlow ? "text-rose-600 dark:text-rose-400" : "text-sand-900 dark:text-sand-50") + '">' + (l.workLabel || "—") + "</p>" +
-              "</div>" +
-              '<div class="rounded-xl border border-sand-200 bg-white p-3 dark:border-sand-800 dark:bg-sand-900">' +
-                '<p class="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400"><span class="h-2 w-2 rounded-full bg-route-home" aria-hidden="true"></span> Family</p>' +
-                '<p class="mt-1 text-sm font-semibold tabular-nums text-sand-900 dark:text-sand-50">' + (l.homeLabel || "—") + "</p>" +
-              "</div>" +
-            "</div>" +
+            commuteGrid(l) +
 
             '<dl class="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-sand-200 bg-sand-200 dark:border-sand-800 dark:bg-sand-800">' +
-              factCell("Available", l.available) +
-              factCell("Lease", l.lease) +
-              factCell("Move-in cost", l.moveIn) +
-              factCell("Added", l.addedLabel) +
+              factCells +
             "</dl>" +
 
             (l.pros && l.pros.length
@@ -337,6 +401,14 @@
               ? '<section class="rounded-xl border border-amber-200/70 bg-amber-50/50 p-3 dark:border-amber-900/60 dark:bg-amber-950/25">' +
                 '<h3 class="font-serif text-sm font-semibold text-amber-800 dark:text-amber-300">Watch out for</h3>' +
                 '<ul class="mt-1.5 space-y-1">' + bulletList(l.cons, "bg-amber-500") + "</ul></section>"
+              : "") +
+
+            // Per-kind "ask before you sign" list — e.g. the Certificate of
+            // Occupancy questions a basement unit needs.
+            (checklist.length
+              ? '<section class="rounded-xl border border-amber-200/70 bg-amber-50/50 p-3 dark:border-amber-900/60 dark:bg-amber-950/25">' +
+                '<h3 class="font-serif text-sm font-semibold text-amber-800 dark:text-amber-300">Before you tour</h3>' +
+                '<ul class="mt-1.5 space-y-1">' + bulletList(checklist, "bg-amber-500") + "</ul></section>"
               : "") +
 
             (l.notes
@@ -397,9 +469,9 @@
       }
 
       /**
-       * Both drives for the selected listing: coloured polylines with a
-       * drive-time chip pinned to each line's midpoint, then a zoom that fits
-       * the whole picture into the part of the map the panel doesn't cover.
+       * Every drive for the selected listing — one coloured polyline per anchor
+       * with a drive-time chip pinned to the line's midpoint, then a zoom that
+       * fits the whole picture into the part of the map the panel doesn't cover.
        */
       function drawRoutes(l) {
         routeGroup.clearLayers();
@@ -407,12 +479,12 @@
         if (!entry) return false;
 
         var bounds = [[l.lat, l.lon]];
-        [["work", WORK_COLOR, "💼", l.workLabel], ["home", HOME_COLOR, "🏠", l.homeLabel]].forEach(function (row) {
-          var leg = entry[row[0]];
+        anchors.forEach(function (a) {
+          var leg = entry[a.key];
           if (!leg || !Array.isArray(leg.geometry) || leg.geometry.length < 2) return;
 
           L.polyline(leg.geometry, {
-            color: row[1],
+            color: a.color,
             weight: 5,
             opacity: 0.85,
             lineCap: "round",
@@ -423,7 +495,8 @@
           // per drive keeps the canvas cheap.
 
           var mid = leg.geometry[Math.floor(leg.geometry.length / 2)];
-          var label = row[3] || (leg.min ? leg.min + " min" : "");
+          var commute = (l.commutes && l.commutes[a.key]) || {};
+          var label = commute.label || (leg.min ? Math.round(leg.min) + " min" : "");
           if (mid && label) {
             L.marker(mid, {
               icon: L.divIcon({
@@ -431,7 +504,7 @@
                 // Self-centres over the point whatever the label width; the
                 // extra 8px lifts the tail clear of the line.
                 html: '<div style="transform:translate(-50%,-100%) translateY(-8px);width:max-content">' +
-                  '<span class="route-chip" style="background:' + row[1] + '">' + row[2] + " " + esc(label) + "</span></div>",
+                  '<span class="route-chip" style="background:' + esc(a.color) + '">' + esc(a.glyph) + " " + esc(label) + "</span></div>",
                 iconSize: null,
                 iconAnchor: [0, 0]
               }),
@@ -518,8 +591,19 @@
         if (selectedId) openPanel(byId[selectedId]); // repaint hearts
       });
 
+      /**
+       * A queued submission's drive times. New items carry
+       * `commutes: { <anchorKey>: { min, miles } }`; items queued before the
+       * multi-search change carry a flat `commute_<anchorKey>` instead, so fall
+       * back to that for the ≤30 days those live in KV.
+       */
+      function pendingLeg(item, anchorKey) {
+        if (item.commutes && item.commutes[anchorKey]) return item.commutes[anchorKey];
+        return item["commute_" + anchorKey] || null;
+      }
+
       var known = feed.knownUrls || [];
-      HF.pending().then(function (items) {
+      HF.pending(searchKey).then(function (items) {
         items.forEach(function (item) {
           if (!Array.isArray(item.coords)) return;
           var key = HF.normUrl(item.url);
@@ -546,8 +630,11 @@
               esc(HF.whoLabel(item.who)) + "</p>" +
             '<p style="margin:0 0 6px;font-size:0.9rem"><strong>' +
               (typeof item.rent === "number" ? "$" + item.rent.toLocaleString("en-US") : "Rent TBD") + "</strong></p>" +
-            '<p style="margin:0 0 2px;font-size:0.78rem"><span style="color:' + WORK_COLOR + '">●</span> Work: ' + (HF.minsLabel(item.commute_work) || "unknown") + "</p>" +
-            '<p style="margin:0 0 8px;font-size:0.78rem"><span style="color:' + HOME_COLOR + '">●</span> Family: ' + (HF.minsLabel(item.commute_home) || "unknown") + "</p>" +
+            anchors.map(function (a) {
+              return '<p style="margin:0 0 2px;font-size:0.78rem"><span style="color:' + esc(a.color) + '">●</span> ' +
+                esc(a.short) + ": " + (HF.minsLabel(pendingLeg(item, a.key)) || "unknown") + "</p>";
+            }).join("") +
+            '<div style="height:6px"></div>' +
             (item.url ? '<a href="' + esc(item.url) + '" target="_blank" rel="noopener noreferrer" style="font-weight:600;color:#a95c34">Open the listing →</a>' : "");
           node.appendChild(HF.removeControl(item, function () { map.removeLayer(marker); }));
           marker.bindPopup(node, { minWidth: 200 });

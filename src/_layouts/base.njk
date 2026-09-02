@@ -1,3 +1,4 @@
+{% set s = search if search else l.search %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="referrer" content="no-referrer">
   <meta name="color-scheme" content="light dark">
-  <title>{% if title %}{{ title }} · {% endif %}Matt &amp; Evelyn&rsquo;s Home Finder</title>
+  <title>{% if title %}{{ title }} · {% endif %}{{ s.label }} · Home Finder</title>
   <meta name="description" content="{{ description | default('A private list of rentals we are considering, with rent, commute times and maps.') }}">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%A1%3C/text%3E%3C/svg%3E">
   <link rel="manifest" href="/manifest.webmanifest">
@@ -30,18 +31,41 @@
   <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-clay-700 focus:shadow-lg dark:focus:bg-sand-800 dark:focus:text-clay-300">Skip to content</a>
 
   <header class="sticky top-0 z-40 border-b border-sand-200/80 bg-sand-50/90 backdrop-blur-sm dark:border-sand-800 dark:bg-sand-950/90">
-    <nav class="mx-auto flex max-w-6xl items-center gap-1 px-3 sm:px-5" aria-label="Main">
-      <a href="/" class="tap -ml-2 gap-2 whitespace-nowrap rounded-xl px-2 font-serif text-base font-semibold tracking-tight text-sand-900 hover:text-clay-600 sm:text-lg dark:text-sand-50 dark:hover:text-clay-400">
+    <nav class="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto no-scrollbar px-3 sm:px-5" aria-label="Main">
+      <a href="/" class="tap -ml-2 shrink-0 gap-2 whitespace-nowrap rounded-xl px-2 font-serif text-base font-semibold tracking-tight text-sand-900 hover:text-clay-600 sm:text-lg dark:text-sand-50 dark:hover:text-clay-400">
         <span aria-hidden="true" class="text-lg">&#127969;</span>
         <span>Home Finder</span>
       </a>
-      <a href="/list/" class="tap rounded-xl px-3 text-sm font-medium text-sand-600 hover:bg-sand-100 hover:text-clay-700 dark:text-sand-400 dark:hover:bg-sand-800 dark:hover:text-clay-300">List</a>
-      <a href="/all/" class="tap rounded-xl px-3 text-sm font-medium text-sand-600 hover:bg-sand-100 hover:text-clay-700 dark:text-sand-400 dark:hover:bg-sand-800 dark:hover:text-clay-300">Database</a>
-      <a href="/add/" class="tap rounded-xl px-3 text-sm font-medium text-sand-600 hover:bg-sand-100 hover:text-clay-700 dark:text-sand-400 dark:hover:bg-sand-800 dark:hover:text-clay-300">Add</a>
+
+      <!-- Search switcher: one pill per search, linking to its own basePath. -->
+      <div class="flex shrink-0 items-center gap-1">
+        {% for item in homes.searches %}
+        <a href="{{ item.basePath }}"
+           {% if item.key == s.key %}aria-current="page"{% endif %}
+           class="chip shrink-0 border-sand-300 bg-white text-sand-700 hover:border-clay-400 hover:text-clay-700 aria-[current=page]:border-clay-600 aria-[current=page]:bg-clay-600 aria-[current=page]:text-white dark:border-sand-700 dark:bg-sand-900 dark:text-sand-300 dark:hover:text-clay-300 dark:aria-[current=page]:border-clay-500 dark:aria-[current=page]:bg-clay-600 dark:aria-[current=page]:text-white">
+          {{ item.shortLabel }}
+        </a>
+        {% endfor %}
+      </div>
+
+      <!-- Tabs for the ACTIVE search only — hrefs are relative to its basePath. -->
+      {% set tabs = [
+        { href: s.basePath, label: "Map" },
+        { href: s.basePath ~ "list/", label: "List" },
+        { href: s.basePath ~ "all/", label: "Database" },
+        { href: s.basePath ~ "add/", label: "Add" }
+      ] %}
+      {% for tab in tabs %}
+      <a href="{{ tab.href }}"
+         {% if page.url == tab.href %}aria-current="page"{% endif %}
+         class="tap shrink-0 rounded-xl px-3 text-sm font-medium text-sand-600 hover:bg-sand-100 hover:text-clay-700 aria-[current=page]:bg-sand-100 aria-[current=page]:text-clay-700 dark:text-sand-400 dark:hover:bg-sand-800 dark:hover:text-clay-300 dark:aria-[current=page]:bg-sand-800 dark:aria-[current=page]:text-clay-300">{{ tab.label }}</a>
+      {% endfor %}
+
       <span class="ml-auto shrink-0 whitespace-nowrap text-xs text-sand-500 dark:text-sand-400">
-        <!-- Four nav items plus the date is a squeeze on a phone: shorten the
-             date on small screens, and drop it entirely on the narrowest ones. -->
-        <span class="hidden sm:inline">Updated {{ homes.updatedLabel }}</span><span class="hidden min-[26rem]:inline sm:hidden">{{ homes.updatedShortLabel }}</span>
+        <!-- Four nav items plus the switcher plus the date is a squeeze on a
+             phone: shorten the date on small screens, drop it entirely on the
+             narrowest ones, and let the row scroll sideways past that. -->
+        <span class="hidden sm:inline">Updated {{ s.updatedLabel }}</span><span class="hidden min-[26rem]:inline sm:hidden">{{ s.updatedShortLabel }}</span>
       </span>
     </nav>
   </header>
@@ -51,7 +75,7 @@
   </main>
 
   <footer class="mx-auto max-w-6xl px-4 py-10 text-xs leading-relaxed text-sand-500 sm:px-6 dark:text-sand-400">
-    <p>Private list for Matt &amp; Evelyn. Data updated {{ homes.updatedLabel }} &middot; {{ homes.counts.total }} listings tracked.</p>
+    <p>Private list for Matt &amp; Evelyn &middot; {{ s.label }} &middot; data updated {{ s.updatedLabel }} &middot; {{ s.counts.total }} listings tracked.</p>
     <p class="mt-1">Rents and availability change fast &mdash; always confirm with the leasing office before making plans.</p>
   </footer>
 
