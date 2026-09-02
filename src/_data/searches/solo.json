@@ -10,17 +10,18 @@
  "primary": true,
  "anchors": [
   {
-   "key": "home",
-   "label": "Matt's house — East Brunswick, NJ",
-   "short": "Matt's",
-   "query": "East Brunswick, NJ 08816",
+   "key": "niece",
+   "label": "Niece — 575 Allgair Ave, North Brunswick, NJ",
+   "short": "Niece",
+   "query": "575 Allgair Ave, North Brunswick, NJ 08902",
    "coords": [
-    -74.415984,
-    40.4278841
+    -74.44784,
+    40.471
    ],
-   "glyph": "🏠",
-   "color": "#7c3aed",
-   "maxMin": 20
+   "glyph": "🧒",
+   "color": "#db2777",
+   "maxMin": 15,
+   "hard": true
   },
   {
    "key": "work",
@@ -33,7 +34,22 @@
    ],
    "glyph": "💼",
    "color": "#2563eb",
-   "maxMin": 20
+   "maxMin": 20,
+   "hard": true
+  },
+  {
+   "key": "home",
+   "label": "Matt's house — East Brunswick, NJ",
+   "short": "Matt's",
+   "query": "East Brunswick, NJ 08816",
+   "coords": [
+    -74.415984,
+    40.4278841
+   ],
+   "glyph": "🏠",
+   "color": "#7c3aed",
+   "maxMin": 30,
+   "hard": false
   }
  ],
  "budget": {

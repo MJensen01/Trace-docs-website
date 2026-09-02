@@ -305,7 +305,9 @@
           return '<div class="rounded-xl border border-sand-200 bg-white p-3 dark:border-sand-800 dark:bg-sand-900">' +
             '<p class="flex items-center gap-1.5 text-[0.6875rem] font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">' +
               '<span class="h-2 w-2 shrink-0 rounded-full" style="background-color:' + esc(a.color) + '" aria-hidden="true"></span> ' +
-              esc(a.short) + "</p>" +
+              esc(a.short) +
+              (a.hard === false ? ' <span class="text-[0.625rem] font-medium uppercase tracking-wider text-sand-400 dark:text-sand-500">bonus</span>' : "") +
+              "</p>" +
             '<p class="mt-1 text-sm font-semibold tabular-nums ' +
               (leg.slow ? "text-rose-600 dark:text-rose-400" : "text-sand-900 dark:text-sand-50") + '">' +
               (leg.label ? esc(leg.label) : "—") + "</p>" +

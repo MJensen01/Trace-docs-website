@@ -229,6 +229,9 @@ function deriveSearch(raw, routes, photoManifest) {
     lat: Array.isArray(anchor.coords) ? anchor.coords[1] : null,
     lon: Array.isArray(anchor.coords) ? anchor.coords[0] : null,
     maxMin: typeof anchor.maxMin === "number" ? anchor.maxMin : null,
+    // "bonus" anchor: shown everywhere (drive time, route, red flag over
+    // maxMin) but excluded from the sweep's keep rule. Defaults to true.
+    hard: anchor.hard !== false,
   }));
 
   const kinds = (raw.kinds || []).map((kind) => ({

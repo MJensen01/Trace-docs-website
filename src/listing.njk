@@ -210,6 +210,7 @@ eleventyComputed:
         <div class="rounded-2xl border border-sand-200 bg-white p-4 dark:border-sand-800 dark:bg-sand-900">
           <p class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-sand-500 dark:text-sand-400">
             <span class="h-2.5 w-2.5 rounded-full" style="background-color: {{ drive.anchor.color }}" aria-hidden="true"></span> Drive to {{ drive.anchor.short }}
+            {% if drive.anchor.hard == false %}<span class="text-[0.625rem] font-medium uppercase tracking-wider text-sand-400 dark:text-sand-500">bonus</span>{% endif %}
           </p>
           <p class="mt-1.5 text-lg font-semibold tabular-nums {% if drive.slow %}text-rose-600 dark:text-rose-400{% else %}text-sand-900 dark:text-sand-50{% endif %}">{{ drive.label if drive.label else "Unknown" }}</p>
           <p class="mt-0.5 text-xs text-sand-500 dark:text-sand-400">{{ drive.anchor.label }}</p>

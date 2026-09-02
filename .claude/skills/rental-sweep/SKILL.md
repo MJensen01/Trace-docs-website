@@ -34,9 +34,11 @@ never hardcode criteria here or in the candidates you write.** The repo contract
 
 ## The `solo` keep rule (Evelyn's place)
 
-- **≤ 20 min free-flow drive to *each* anchor** — Matt's house (East Brunswick) **and**
-  Once Upon A Child, 561 US-1 Edison. Both, not either. Use `anchors[].maxMin` rather
-  than the literal 20.
+- **≤ 15 min to the niece anchor (575 Allgair Ave, North Brunswick) AND ≤ 20 min to
+  work** (Once Upon A Child, 561 US-1 Edison) — both hard, both required. Matt's house
+  (East Brunswick, ≤ 30 min) is a **bonus** anchor (`hard: false`): shown on every
+  listing like any other anchor, red-flagged when over its `maxMin`, but **not** part
+  of the keep rule. Use `anchors[].maxMin` and `anchors[].hard` rather than literals.
 - **Rent ≤ `budget.stretch_max`** ($1,400). `budget.max` ($1,200) is the "Ideal" band.
   Banding is rent-only; utilities-included is a separate fact, not a discount.
 - **Self-contained places only.** A studio, a basement/in-law unit with its own
@@ -124,7 +126,9 @@ Hard-won browser rules (all sources):
    `https://router.project-osrm.org/table/v1/driving/<anchorLon,anchorLat>;<lon1,lat1>;...?sources=0`
    (≤ ~90 points per call; every coord must be non-null or the whole call 400s).
    Remember `coords` are `[lon, lat]`.
-3. Apply the keep rule — for `solo`, a listing must clear **every** anchor's `maxMin`.
+3. Apply the keep rule — a listing must clear the `maxMin` of every anchor with
+   `hard !== false` (for `solo`, that's niece and work; Matt's house is a bonus and is
+   not part of the filter).
 4. Drop anything whose normalized URL is already known, or whose id already exists in
    any search.
 5. Junk filter: $1-priced bait, for-sale items, and — for `solo` — single-room and

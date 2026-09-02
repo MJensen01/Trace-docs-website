@@ -167,6 +167,7 @@ description: Every rental we are tracking as cards, with rent, commute times and
               <div>
                 <dt class="flex items-center gap-1.5 font-medium text-sand-500 dark:text-sand-400">
                   <span class="h-2 w-2 rounded-full" style="background-color: {{ c.anchor.color }}" aria-hidden="true"></span> {{ c.anchor.short }}
+                  {% if c.anchor.hard == false %}<span class="text-[0.625rem] font-medium uppercase tracking-wider text-sand-400 dark:text-sand-500">bonus</span>{% endif %}
                 </dt>
                 <dd class="mt-0.5 tabular-nums {% if c.slow %}font-semibold text-rose-600 dark:text-rose-400{% else %}text-sand-700 dark:text-sand-200{% endif %}">
                   {{ c.label if c.label else "—" }}

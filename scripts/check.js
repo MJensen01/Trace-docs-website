@@ -171,6 +171,9 @@ for (const { key, file, data: s } of searches) {
         err(key, `anchor "${a.key}": coords [${a.coords}] are outside "${key}"'s bbox`);
       }
       if (typeof a.maxMin !== "number") err(key, `anchor "${a.key}": maxMin must be numeric`);
+      if (a.hard !== undefined && typeof a.hard !== "boolean") {
+        err(key, `anchor "${a.key}": hard must be boolean if present`);
+      }
     }
   }
 
