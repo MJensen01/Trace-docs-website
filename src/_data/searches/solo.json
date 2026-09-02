@@ -20,7 +20,7 @@
    ],
    "glyph": "🧒",
    "color": "#db2777",
-   "maxMin": 15,
+   "maxMin": 20,
    "hard": true
   },
   {
@@ -167,5 +167,268 @@
   -74.1,
   40.72
  ],
- "listings": []
+ "listings": [
+  {
+   "id": "stu-45-bristol-road",
+   "kind": "studio",
+   "name": "45 Bristol Road",
+   "address": "45 Bristol Rd",
+   "town": "Piscataway",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1095,
+   "band": "in-budget",
+   "beds": 0,
+   "baths": 1,
+   "sqft": null,
+   "commutes": {
+    "niece": {
+     "min": 15,
+     "miles": 8.7,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 17,
+     "miles": 8.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 23,
+     "miles": 12.8,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "Cheapest self-contained unit found on the browser sources. Own studio unit, not a room. Close to major highways, shops and restaurants.",
+   "cons": "Tenant pays all utilities. No central AC — listing says bring your own window units. Driveway shared with two other apartments. Niece drive is right at the 15-minute cap.",
+   "url": "https://www.zillow.com/apartments/piscataway-nj/45-bristol-road/97PB4Z/",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.49798,
+    40.558266
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 15m · work 17m · home 22m (OSRM free-flow). Also listed on HotPads (/45-bristol-road-piscataway-nj-08854-1jahus3/). Listing text: \"cozy studio in Piscataway... The driveway is shared with two other apartments. Tenants are responsible for all utilities. Tenants can bring their own window AC units.\"",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "utilities_included": false,
+   "source": "Zillow"
+  },
+  {
+   "id": "one-tov-manor",
+   "kind": "1br",
+   "name": "Tov Manor",
+   "address": "80 Phelps Ave",
+   "town": "New Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1300,
+   "band": "stretch",
+   "beds": 1,
+   "baths": 1,
+   "sqft": null,
+   "commutes": {
+    "niece": {
+     "min": 6,
+     "miles": 2.6,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 8,
+     "miles": 3.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 10,
+     "miles": 4.7,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "Managed apartment community with on-site management, not a private-landlord room. Best commute numbers of any keeper. Pet-friendly, shared laundry, central air, covered parking. 2 units available at the time of the sweep.",
+   "cons": "Only $100 under the hard cap. Building rents run 1-2BR ($1,300-$1,860), so the $1,300 is the entry price and may not be the unit that is actually free. Square footage not published.",
+   "url": "https://www.zillow.com/apartments/new-brunswick-nj/tov-manor/5Xt4N5/",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.425842,
+    40.482634
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 6m · work 7m · home 10m (OSRM free-flow). Cross-listed on HotPads (/tov-manor-new-brunswick-nj-08901-sm7jq2/) at the same $1,300+ entry price; HotPads shows 2 units available. Phone on HotPads: 732-719-7672.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "source": "Zillow"
+  },
+  {
+   "id": "one-socam290-1x1-standard",
+   "kind": "1br",
+   "name": "SoCam290 — 1x1 Standard",
+   "address": "290 George St",
+   "town": "New Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1310,
+   "band": "stretch",
+   "beds": 1,
+   "baths": 1,
+   "sqft": 680,
+   "commutes": {
+    "niece": {
+     "min": 5,
+     "miles": 1.7,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 10,
+     "miles": 4,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 13,
+     "miles": 5.7,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "680 sq ft for $1,310 — much the largest keeper per dollar, and a whole self-contained 1BR/1BA (the 1x1 Standard floor plan). 3 units available. In-unit washer/dryer, dishwasher, A/C, hardwood, granite, elevator, controlled access, fitness center. Closest to the niece of every keeper (5 min).",
+   "cons": "Student-oriented building next to Rutgers — the 2x2 plan is advertised at $925 which is per-bed, so expect a young/student-heavy tenant mix and by-the-bed leasing culture. Tours by appointment only.",
+   "url": "https://www.apartments.com/socam290-new-brunswick-nj/bpd2fv8/",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.44337,
+    40.49155
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 5m · work 9m · home 13m (OSRM free-flow). Rent quoted is the 1x1 Standard whole-unit price (680 sq ft), NOT a per-bed price — confirm that on the call. 3 units available at sweep time. Phone: 732-641-6545.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "source": "Apartments.com"
+  },
+  {
+   "id": "stu-29-s-adelaide-ave",
+   "kind": "studio",
+   "name": "29 S Adelaide Ave",
+   "address": "29 S Adelaide Ave",
+   "town": "Highland Park",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1375,
+   "band": "stretch",
+   "beds": 0,
+   "baths": 1,
+   "sqft": 400,
+   "commutes": {
+    "niece": {
+     "min": 7,
+     "miles": 2.7,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 8,
+     "miles": 2.6,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 15,
+     "miles": 6.8,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "Renovated studio — quartz counters, gas range, tile/vinyl floors, high ceilings, crown molding, walk-in closet, A/C, on-site laundry. 5-minute drive to New Brunswick NJ Transit; 6 min to the niece, 7 to work.",
+   "cons": "$2,195 deposit (1.6x the rent) is the highest of any keeper. Small — 350-450 sq ft. $25 under the hard cap, no headroom.",
+   "url": "https://www.apartments.com/29-s-adelaide-ave-highland-park-nj/fye55er/",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.43396,
+    40.49689
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 6m · work 7m · home 13m (OSRM free-flow). Studio floor plan is 350-450 sq ft at $1,375; the building's other plan is a 2BR at $2,050. Deposit $2,195. Photos of the studio floor plan itself were listed as not available — gallery photos are building/common shots. Phone: 848-800-2144.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "deposit": "$2,195",
+   "source": "Apartments.com"
+  },
+  {
+   "id": "stu-raritan-crossing-apartment-homes-the-brunswick",
+   "kind": "studio",
+   "name": "Raritan Crossing Apartment Homes — THE BRUNSWICK",
+   "address": "18 Regency Manor Dr",
+   "town": "New Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1400,
+   "band": "stretch",
+   "beds": 0,
+   "baths": 1,
+   "sqft": 560,
+   "commutes": {
+    "niece": {
+     "min": 12,
+     "miles": 6,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 6,
+     "miles": 2.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 17,
+     "miles": 8.4,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Available Soon",
+   "rating": null,
+   "pros": "560 sq ft studio in a real managed community — gated, on-site manager and maintenance, pool, fitness center, hardwood floors, walk-in closets, dishwasher, laundry facilities. Pet friendly. Commute is excellent in all three directions.",
+   "cons": "Exactly at the $1,400 cap — zero headroom, and community fees are likely on top. The studio is listed 'Available Soon', not now, so it may not be rentable on Evelyn's timeline.",
+   "url": "https://www.apartments.com/raritan-crossing-apartment-homes-new-brunswick-nj/y2jl27r/",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.41289,
+    40.48853
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 7m · work 7m · home 11m (OSRM free-flow). THE BRUNSWICK floor plan: studio, 1 bath, 560 sq ft, $1,400, status 'Available Soon' — ask for the actual availability date and whether the $1,400 is base rent before required fees.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "source": "Apartments.com"
+  }
+ ]
 }

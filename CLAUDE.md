@@ -92,7 +92,7 @@ old flat `listings.json`/`routes.json` — kept for review only; don't run it ag
 **`solo` — Evelyn's place** (as of 2026-09-02, `searches/solo.json`)
 - Anchors: niece = 575 Allgair Ave, North Brunswick NJ (hard); work = Once Upon A Child,
   561 US-1, Edison NJ (hard); home = Matt's house, East Brunswick NJ (bonus, `hard: false`).
-- Keep: **≤ 15 min to the niece anchor AND ≤ 20 min to work (both hard); Matt's house
+- Keep: **≤ 20 min to the niece anchor AND ≤ 20 min to work (both hard); Matt's house
   (≤ 30 min) is a bonus shown but not filtered on.**
 - Budget: **$1,200 "Ideal", $1,400 cap**, rent only — utilities are a separate fact.
 - Kinds: studio, basement/in-law, 1BR. **Self-contained places only** — no rooms in a

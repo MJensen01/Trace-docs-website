@@ -34,7 +34,7 @@ never hardcode criteria here or in the candidates you write.** The repo contract
 
 ## The `solo` keep rule (Evelyn's place)
 
-- **≤ 15 min to the niece anchor (575 Allgair Ave, North Brunswick) AND ≤ 20 min to
+- **≤ 20 min to the niece anchor (575 Allgair Ave, North Brunswick) AND ≤ 20 min to
   work** (Once Upon A Child, 561 US-1 Edison) — both hard, both required. Matt's house
   (East Brunswick, ≤ 30 min) is a **bonus** anchor (`hard: false`): shown on every
   listing like any other anchor, red-flagged when over its `maxMin`, but **not** part
