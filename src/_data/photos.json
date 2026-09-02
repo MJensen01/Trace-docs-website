@@ -746,5 +746,25 @@
   "gallery": [
    "01.jpg"
   ]
+ },
+ "bsm-estudio-grande-basement-with-own-kitchen-bath": {
+  "thumb": true,
+  "gallery": [
+   "01.jpg",
+   "02.jpg",
+   "03.jpg",
+   "04.jpg",
+   "05.jpg"
+  ]
+ },
+ "bsm-renovated-2br-basement-unit-near-rutgers": {
+  "thumb": true,
+  "gallery": [
+   "01.jpg",
+   "02.jpg",
+   "03.jpg",
+   "04.jpg",
+   "05.jpg"
+  ]
  }
 }

@@ -128,16 +128,22 @@ function slug(text) {
 
 function normUrl(value) {
   if (!value || typeof value !== "string") return null;
-  return (
-    value
-      .trim()
-      .toLowerCase()
-      .replace(/^https?:\/\//, "")
-      .replace(/^www\./, "")
-      .split("#")[0]
-      .split("?")[0]
-      .replace(/\/+$/, "") || null
-  );
+  const stripped = value.trim().toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("#")[0];
+  const key = stripped.split("?")[0].replace(/\/+$/, "") || null;
+  // Facebook post URLs are otherwise indistinguishable without their query
+  // (…/photo/?fbid=123 vs …/photo/?fbid=456), so keep the one identifying param.
+  const host = stripped.split("/")[0];
+  if (key && (host === "facebook.com" || host === "m.facebook.com")) {
+    const query = stripped.includes("?") ? stripped.slice(stripped.indexOf("?") + 1) : "";
+    for (const p of ["fbid", "story_fbid", "id", "set"]) {
+      const m = query.match(new RegExp(`(?:^|&)${p}=([^&]*)`));
+      if (m) return `${key}?${p}=${decodeURIComponent(m[1])}`;
+    }
+  }
+  return key;
 }
 
 function band(rent, budget) {

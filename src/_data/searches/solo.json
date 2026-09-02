@@ -596,6 +596,166 @@
    "lease_flex": "1 year lease",
    "deposit": "1.5 months security",
    "source": "Craigslist"
+  },
+  {
+   "id": "bsm-estudio-grande-basement-with-own-kitchen-bath",
+   "kind": "basement",
+   "name": "Estudio grande (basement) with own kitchen & bath",
+   "address": null,
+   "town": "New Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1100,
+   "band": "in-budget",
+   "beds": 1,
+   "baths": 1,
+   "sqft": null,
+   "commutes": {
+    "niece": {
+     "min": 5,
+     "miles": 1.8,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 10,
+     "miles": 4.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 13,
+     "miles": 5.8,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "Genuinely self-contained: its own room, its own kitchen and its own bathroom with an independent entrance. Semi-furnished. Rent includes electricity, gas, water and building maintenance. Best commute of the whole sweep - 5 min to the niece, 9 min to work. Posted 11 days before the sweep and the photos show a freshly renovated space.",
+   "cons": "No street address - New Brunswick town centroid only. Two contact numbers are given and one of them, the WhatsApp number 903-941-2971, is a Texas area code; the other, 862-640-3254, is a New Jersey number. Spanish-language post with no lease term, deposit or C.O. detail. 'Semi-amueblado' means only partly furnished.",
+   "url": "https://www.facebook.com/photo/?fbid=2214550012735531",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.4436416,
+    40.4936119
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 5m · work 9m · home 13m (OSRM free-flow from the New Brunswick centroid). location approximate (town only). Posted 2026-08-22 by Edwin Encarnacion in the public group 'Grupo Latinos en new brunswick nj'. Full body: 'ESTUDIO GRANDE (BASEMENT) | HABITACION | COCINA | BANO | SEMI-AMUEBLADO | ENTRADA INDEPENDIENTE | INCLUYE: energia electrica, gas, agua, mantenimiento del edificio | RENTA $1,100 USD | Para mas informacion llamar: 862-640-3254 | Contactanos via WhatsApp: 903-941-2971.' Photo URLs expire in days. Source: Facebook post - verify identity, insist on an in-person viewing, never pay before seeing the unit and a written lease.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "utilities_included": true,
+   "furnished": true,
+   "private_entrance": true,
+   "source": "Facebook"
+  },
+  {
+   "id": "bsm-renovated-2br-basement-unit-near-rutgers",
+   "kind": "basement",
+   "name": "Renovated 2BR basement unit near Rutgers",
+   "address": null,
+   "town": "New Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1400,
+   "band": "stretch",
+   "beds": 2,
+   "baths": 1,
+   "sqft": 900,
+   "commutes": {
+    "niece": {
+     "min": 5,
+     "miles": 1.8,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 10,
+     "miles": 4.2,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 13,
+     "miles": 5.8,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "Freshest lead of the sweep - posted about a day before it ran. Renovated self-contained basement unit, 900 sq ft, luxury vinyl flooring, updated kitchen with stainless steel appliances. Near Rutgers and the NJ Transit station, easy access to Route 18 and Route 1. 5 min to the niece, 9 min to work.",
+   "cons": "Exactly at the $1,400 cap with no headroom. Posted by a Facebook Page ('Real estate management') with no phone number, no street address and no landlord name, so the only contact route is a Facebook message and the coordinates are the town centroid. Two bedrooms means it is priced for sharers and the landlord may expect two tenants.",
+   "url": "https://www.facebook.com/photo/?fbid=122096336853469792",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.4436416,
+    40.4936119
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "niece 5m · work 9m · home 13m (OSRM free-flow from the New Brunswick centroid). location approximate (town only). Posted 2026-09-01, about 22 hours before the sweep, by the Page 'Real estate management', tagged in New Brunswick. Full body: 'House for Rent | 2Beds 1Bath 900sqft | $1,400/mo | New Brunswick, NJ | Beautifully renovated 2-bedroom, 1-bath basement unit featuring luxury vinyl flooring throughout and an updated kitchen with stainless steel appliances... Ideally located near Rutgers University and the NJ Transit train station... Convenient access to Route 18, Route 1, major hospitals, and vibrant Downtown New Brunswick... Move-in ready.' Photo URLs expire in days. Source: Facebook post - verify identity, insist on an in-person viewing, never pay before seeing the unit and a written lease.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "source": "Facebook"
+  },
+  {
+   "id": "bsm-161-howard-st-floor-1",
+   "kind": "basement",
+   "name": null,
+   "address": "161 Howard St, Floor 1",
+   "town": "New Brunswick",
+   "state": "NJ",
+   "tier": 2,
+   "rent": 1000,
+   "band": "in-budget",
+   "beds": 1,
+   "baths": 1,
+   "sqft": null,
+   "commutes": {
+    "niece": {
+     "min": 4,
+     "miles": 1.2,
+     "method": "osrm-freeflow"
+    },
+    "work": {
+     "min": 11,
+     "miles": 4.7,
+     "method": "osrm-freeflow"
+    },
+    "home": {
+     "min": 15,
+     "miles": 6.2,
+     "method": "osrm-freeflow"
+    }
+   },
+   "lease": null,
+   "move_in_cost": null,
+   "available": "Now",
+   "rating": null,
+   "pros": "The only post in the sweep that calls itself a LEGAL basement apartment - ask for the Certificate of Occupancy. Full street address, a named person and a New Jersey (908) phone number. Freshly painted 1BR with living room, updated kitchen (gas range in the photos) and updated bath, tiled throughout, use of a large backyard.",
+   "cons": "Posted 2026-06-24, so it may already be rented - call first. The address line says Floor 1 while the body says basement; confirm which. No utilities, lease or deposit details in the post.",
+   "url": "https://www.facebook.com/photo/?fbid=1713856376423464",
+   "url_status": "direct",
+   "verification": "unverified",
+   "screenshot": null,
+   "coords": [
+    -74.450805154428,
+    40.482769708853
+   ],
+   "date_added": "2026-09-02",
+   "v1_status": "New",
+   "notes": "Facebook post by Fatima Magallanes, contact Kealoha 908-297-5458. Included despite its age because it is the best-documented basement unit found. Photo URLs are signed fbcdn links that expire in days. Source: Facebook post - verify identity, insist on an in-person viewing, never pay before seeing the unit and a written lease.",
+   "geocode_method": "provided",
+   "v1_url": null,
+   "last_checked": "2026-09-02",
+   "private_entrance": null,
+   "source": "Facebook"
   }
  ]
 }

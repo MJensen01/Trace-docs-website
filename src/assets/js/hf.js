@@ -82,14 +82,26 @@
    */
   function normUrl(value) {
     if (!value || typeof value !== "string") return "";
-    return value
+    var stripped = value
       .trim()
       .toLowerCase()
       .replace(/^https?:\/\//, "")
       .replace(/^www\./, "")
-      .split("#")[0]
-      .split("?")[0]
-      .replace(/\/+$/, "");
+      .split("#")[0];
+    var key = stripped.split("?")[0].replace(/\/+$/, "");
+    // Facebook post URLs are otherwise indistinguishable without their query
+    // (…/photo/?fbid=123 vs …/photo/?fbid=456), so keep the one identifying param.
+    var host = stripped.split("/")[0];
+    if (key && (host === "facebook.com" || host === "m.facebook.com")) {
+      var qIndex = stripped.indexOf("?");
+      var query = qIndex === -1 ? "" : stripped.slice(qIndex + 1);
+      var idParams = ["fbid", "story_fbid", "id", "set"];
+      for (var i = 0; i < idParams.length; i++) {
+        var m = query.match(new RegExp("(?:^|&)" + idParams[i] + "=([^&]*)"));
+        if (m) return key + "?" + idParams[i] + "=" + decodeURIComponent(m[1]);
+      }
+    }
+    return key;
   }
 
   function whoLabel(who) {
